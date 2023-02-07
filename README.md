@@ -4,25 +4,26 @@ Automated microservices architecture graph generator.
 
 ---
 
-- [Setup](#setup)
-- [Commands](#commands)
-  - [Common](#common)
-  - [Generating a new package](#generating-a-new-package)
-- [Testing packages locally](#testing-packages-locally)
-  - [With link](#with-link)
-  - [With local registry](#with-local-registry)
-    - [Publish locally](#publish-locally)
-    - [Installing a local package](#installing-a-local-package)
+- [Contributing](#contributing)
+  - [Setup](#setup)
+  - [Commands](#commands)
+    - [Common](#common)
+    - [Generating a new package](#generating-a-new-package)
+  - [Testing packages locally](#testing-packages-locally)
+    - [With link](#with-link)
+    - [With local registry](#with-local-registry)
 
-## Setup
+## Contributing
+
+### Setup
 
 ```bash
 npm ci
 ```
 
-## Commands
+### Commands
 
-### Common
+#### Common
 
 ```bash
 npx nx lint <project name>
@@ -32,15 +33,15 @@ npx nx build <project name>
 
 _Read more about [running tasks with Nx](https://nx.dev/core-features/run-tasks)_
 
-### Generating a new package
+#### Generating a new package
 
 ```bash
 npm run generate:package <project name>
 ```
 
-## Testing packages locally
+### Testing packages locally
 
-### With link
+#### With link
 
 In the package `dist` folder run `npm link`
 
@@ -50,7 +51,7 @@ Run `npm unlink` in the package `dist` folder to remove the link.
 
 Run `nx build <project>` to take changes you make into the consumer.
 
-### With local registry
+#### With local registry
 
 We are using [verdaccio](https://verdaccio.org/) for the local registry.
 
@@ -62,7 +63,7 @@ npm run local-registry help
 
 See more in [local-registry.mjs](tools/scripts/local-registry.mjs)
 
-#### Publish locally
+##### Publish locally
 
 ```bash
 npm run local-registry publish <project name>
@@ -72,7 +73,7 @@ By default, the version is `0.0.0-local.1` with the tag `local` and the registry
 
 _In local environment, the version is being overwritten if it is already exist._
 
-#### Installing a local package
+##### Installing a local package
 
 npm:
 
