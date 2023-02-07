@@ -1,0 +1,11 @@
+{
+    "extends": "./node_modules/gts/tsconfig-google.json",
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "skipLibCheck": true,
+        "noImplicitOverride": true,
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitAny": true,
+        "esModuleInterop": true
+    }
+}

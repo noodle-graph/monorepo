@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "nrwl.angular-console",
+        "dbaeumer.vscode-eslint",
+        "firsttris.vscode-jest-runner",
+        "streetsidesoftware.code-spell-checker",
+        "editorconfig.editorconfig",
+        "redhat.vscode-yaml"
+    ]
+}
