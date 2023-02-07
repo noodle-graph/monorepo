@@ -1,0 +1,18 @@
+{
+    "name": "inventory-server",
+    "targets": {
+        "publish": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "node tools/scripts/publish.mjs inventory-server {args.ver} {args.env} {args.tag}"
+            }
+        },
+        "install": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "npm ci",
+                "cwd": "packages/inventory-server"
+            }
+        }
+    }
+}
