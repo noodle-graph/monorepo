@@ -8,8 +8,8 @@ The graph displayed using [vis.js](https://visjs.org/).
   * Nodes and relationships
   * Open node view by clicking on it
   * Filter nodes by:
-    * By tags
-    * By nodes
+    * Tags
+    * Name
 * Node view:
   * Name
   * Tags
