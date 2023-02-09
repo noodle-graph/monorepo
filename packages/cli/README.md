@@ -2,10 +2,10 @@
 
 - [Commands](#commands)
   - [Scan](#scan)
-    - [Arguments](#arguments)
+    - [Parameters](#parameters)
     - [Config file](#config-file)
   - [Serve UI](#serve-ui)
-    - [Arguments](#arguments-1)
+    - [Parameters](#parameters-1)
 
 ## Commands
 
@@ -17,24 +17,29 @@ noodle scan
 
 It will use the [scanner](../scanner) to scan the repositories for dependencies and produce the results.
 
-#### Arguments
+#### Parameters
 
-| Name | Description |
-|---|---|
-| `--config` | Path the configuration file |
+| Command Argument | Environment Variable | Default | Description |
+|-|-|-|-|
+| `--config` | `NOODLE_CONFIG` | `./noodle.json` | Path the configuration file. |
+| `--gitHubToken` | `NOODLE_GITHUB_TOKEN` | - | GitHub access token. Required for GitHub resources. |
 
 #### Config file
 
 ```json
-[
-  {
-    "id": "my-api-service",
-    "name": "My API Service",
-    "tags": ["api", "nodejs", "rest", "feature1"],
-    "description": "REST API for managing data of some feature.",
-    "url": "https://github.com/my-organization/my-api-service"
-  }
-]
+{
+  "title": "My Organization",
+  "resources": [
+    {
+      "id": "my-api-service",
+      "name": "My API Service",
+      "description": "REST API for managing data of some feature.",
+      "tags": ["api", "nodejs", "rest", "feature1"],
+      "url": "https://github.com/my-organization/my-api-service",
+      "platform": "GitHub"
+    }
+  ]
+}
 ```
 
 ### Serve UI
@@ -43,8 +48,8 @@ It will use the [scanner](../scanner) to scan the repositories for dependencies 
 noodle serve
 ```
 
-#### Arguments
+#### Parameters
 
-| Name | Description |
-|---|---|
-| `--results` | Path to a scan results file |
+| Command Argument | Environment Variable | Default | Description |
+|-|-|-|-|
+| `--results` | - | Path to a scan results file |
