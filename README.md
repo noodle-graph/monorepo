@@ -4,24 +4,31 @@ Automated microservices architecture graph generator.
 
 ---
 
+- [Using Noodle](#using-noodle)
 - [Contributing](#contributing)
-  - [Setup](#setup)
-  - [Commands](#commands)
+  - [Setup locally](#setup-locally)
+  - [Useful commands](#useful-commands)
     - [Common](#common)
     - [Generating a new package](#generating-a-new-package)
   - [Testing packages locally](#testing-packages-locally)
     - [With link](#with-link)
     - [With local registry](#with-local-registry)
 
+## Using Noodle
+
+TODO
+
 ## Contributing
 
-### Setup
+Check out the Noodle [ecosystem](docs/ecosystem.md) for more details on how Noodle works.
+
+### Setup locally
 
 ```bash
-npm ci
+npm install
 ```
 
-### Commands
+### Useful commands
 
 #### Common
 
