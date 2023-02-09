@@ -1,19 +1,50 @@
 # CLI
 
+- [Commands](#commands)
+  - [Scan](#scan)
+    - [Arguments](#arguments)
+    - [Config file](#config-file)
+  - [Serve UI](#serve-ui)
+    - [Arguments](#arguments-1)
+
 ## Commands
 
-### Scan and print
+### Scan
 
 ```bash
 noodle scan
 ```
 
-It will use the [scanner](../scanner) to scan the repository for dependencies and print the results.
+It will use the [scanner](../scanner) to scan the repositories for dependencies and produce the results.
 
-### Scan and publish
+#### Arguments
 
-```bash
-noodle scan --inventory-url {inventory server URL}
+| Name | Description |
+|---|---|
+| `--config` | Path the configuration file |
+
+#### Config file
+
+```json
+[
+  {
+    "id": "my-api-service",
+    "name": "My API Service",
+    "tags": ["api", "nodejs", "rest", "feature1"],
+    "description": "REST API for managing data of some feature.",
+    "url": "https://github.com/my-organization/my-api-service"
+  }
+]
 ```
 
-It will use the [scanner](../scanner) to scan the repository for dependencies and publish the results to the [inventory](../inventory-server).
+### Serve UI
+
+```bash
+noodle serve
+```
+
+#### Arguments
+
+| Name | Description |
+|---|---|
+| `--results` | Path to a scan results file |
