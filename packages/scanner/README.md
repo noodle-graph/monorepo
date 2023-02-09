@@ -35,7 +35,20 @@ The scanner will generate a results file with the following structure:
     "tags": ["api", "nodejs", "rest", "feature1"],
     "description": "REST API for managing data of some feature.",
     "url": "https://github.com/my-organization/my-api-service",
-    "dependencies": ["another-api-service", "S3/my-bucket"]
+    "dependencies": [
+      {
+        "nodeId": "another-api-service",
+        "relationship": "calls",
+        "tags": ["http", "get", "feature1"],
+        "url": "https://github.com/my-organization/my-api-service/blob/master/src/index.ts#17"
+      },
+      {
+        "nodeId": "my-bucket",
+        "relationship": "download",
+        "tags": ["s3"],
+        "url": "https://github.com/my-organization/my-api-service/blob/master/src/downloadClient.ts#3"
+      }
+    ]
   },
   {
     "id": "another-api-service",
