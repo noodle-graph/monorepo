@@ -19,6 +19,7 @@ A code comment that represents a dependency. It has the following structure: `no
 For example:
 
 - `// noodle -requests from-> another-api-service (http,get,feature1,feature1)`
+- `// noodle <-requests from- sqs`
 - `/* noodle -uploads to-> s3-my-bucket (s3,feature1) */`
 - `# noodle -publish to-> sns-topic1 (sns,feature2)`
 
@@ -43,10 +44,10 @@ The scanner will generate a results file with the following structure:
       "tags": ["api", "nodejs", "rest", "feature1", "feature2"],
       "url": "https://github.com/my-organization/my-api-service",
       "platform": "GitHub",
-      "dependencies": [
+      "relationships": [
         {
           "resourceId": "another-api-service",
-          "relationship": "requests from",
+          "action": "requests from",
           "tags": ["http", "feature1"],
           "url": "https://github.com/my-organization/my-api-service/blob/master/src/index.ts#17"
         },
