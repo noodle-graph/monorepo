@@ -1,0 +1,11 @@
+{
+    "eslint.validate": [
+        "json"
+    ],
+    "eslint.enable": true,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnType": true,
+    "eslint.format.enable": true,
+    "json.format.enable": false
+}
