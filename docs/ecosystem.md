@@ -9,7 +9,7 @@
 ```mermaid
 graph TD
 
-config.json[/config.json/]
+noodle.json[/noodle.json/]
 noodleDist[/noodleDist/]
 Repos[/Local Repositories/]
 noodleScanOutput.json[/noodleScanOutput.json/]
@@ -27,7 +27,7 @@ bundle -->|output| noodleDist
 CLI --> bundle --> UI -.-> noodleScanOutput.json
 noodleScanOutput.json --> bundle
 CLI --> scan --> Scanner
-config.json --> scan
+noodle.json --> scan
 Scanner --> Login --> Credentials
 Scanner & Credentials --> Clone --> Repos
 Scanner & Repos --> Scan --> TypeEvaluation & ScanResults
