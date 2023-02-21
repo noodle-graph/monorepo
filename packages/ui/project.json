@@ -1,12 +1,6 @@
 {
     "name": "ui",
     "targets": {
-        "publish": {
-            "executor": "nx:run-commands",
-            "options": {
-                "command": "node tools/scripts/publish.mjs ui {args.ver} {args.env} {args.tag}"
-            }
-        },
         "install": {
             "executor": "nx:run-commands",
             "options": {
