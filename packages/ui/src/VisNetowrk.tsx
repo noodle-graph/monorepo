@@ -18,6 +18,7 @@ export interface Resource {
     tags?: string[];
     url?: string;
     relationships?: Relationship[];
+    description?: string;
 }
 
 export interface VisNetworkProps {
