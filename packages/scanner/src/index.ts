@@ -1,6 +1,6 @@
-import types, {Relationship} from '@noodle-graph/types';
+import types, { Relationship } from '@noodle-graph/types';
 
-import {persist, relationships} from './noodle-utils';
+import { persist, relationships } from './noodle-utils';
 
 const fs = require('fs');
 const os = require('os');
@@ -23,7 +23,7 @@ async function scan(scan_config: types.ScanConfig, outputPath, token) {
     const promises = scan_config.resources.map(async (resource) => {
         switch (resource.source) {
             case 'github': {
-                const {url, id, name, type} = resource;
+                const { url, id, name, type } = resource;
                 console.log(`Handling resource, ${url} ${id} ${name} ${type}`);
                 let branch = 'HEAD';
                 const parts = url.split('#');
@@ -42,7 +42,7 @@ async function scan(scan_config: types.ScanConfig, outputPath, token) {
                     ref: branch,
                     http: http,
                     singleBranch: true,
-                    onAuth: () => ({username: token, password: ''}),
+                    onAuth: () => ({ username: token, password: '' }),
                 });
 
                 let files = await git.listFiles({
@@ -65,12 +65,12 @@ async function scan(scan_config: types.ScanConfig, outputPath, token) {
                 return resource;
             }
             default: {
-                return resource
+                return resource;
             }
         }
     });
 
-    await persist({resources:await Promise.all(promises)}, outputPath);
+    await persist({ resources: await Promise.all(promises) }, outputPath);
 }
 
 module.exports = scan;
