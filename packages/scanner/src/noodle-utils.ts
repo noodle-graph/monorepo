@@ -1,23 +1,37 @@
 import * as console from 'console';
-import { writeFile } from 'fs';
+import {writeFile} from 'fs';
 
-import { Relationship } from '@noodle-graph/types';
-import { stringify } from 'ts-jest';
+import {Direction, Relationship} from '@noodle-graph/types';
+import {stringify} from 'ts-jest';
 
-const noodleRegEx = /noodle\s+--([a-z\s]+)->\s+([a-z-]+)\s+(?:\(([a-z-,]+)+\)|)/;
+const noodleRegEx = /noodle\s+(-|<)-([a-z\s]+)-(>|-)\s+([a-z-]+)\s+(?:\(([a-z-,]+)+\)|)/;
+
 
 export function relationships(path: string, content: string) {
     const comments: Relationship[] = [];
     const lines = content.split('\n');
     lines.forEach((line, i) => {
-        // const matches = line.match(regex);
         const matches = noodleRegEx.exec(line);
         if (matches) {
+            const startDirectionArrow = matches[1]
+            const endDirectionArrow = matches[3]
+            let direction: Direction = Direction.None;
+            if (startDirectionArrow == '-' && endDirectionArrow == '>') {
+                direction = Direction.To
+            } else if (startDirectionArrow == '<' && endDirectionArrow == '-') {
+                direction = Direction.From
+            } else if (startDirectionArrow == '<' && endDirectionArrow == '>') {
+                direction = Direction.Both
+            } else {
+                console.log('bad direction')
+                // todo: raise exception
+            }
             comments.push({
-                action: matches[1],
-                resourceId: matches[2],
+                action: matches[2],
+                resourceId: matches[4],
                 tags: matches[3].split(','),
                 url: path + '#' + stringify(i + 1),
+                direction: direction,
             });
         }
     });
