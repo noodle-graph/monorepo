@@ -17,6 +17,7 @@
     "react-scripts": "^5.0.1",
     "tailwindcss": "^3.2.7",
     "typescript": "^4.9.5",
+    "vis-data": "^7.1.4",
     "vis-network": "^9.1.2"
   },
   "homepage": ".",
@@ -24,7 +25,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint .",
-    "test": "react-scripts test"
+    "test": "react-scripts test --watchAll=false"
   },
   "browserslist": {
     "production": [

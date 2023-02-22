@@ -3,11 +3,13 @@ import React, { useState } from 'react';
 import './App.css';
 import { Filter } from './Filter';
 import { Pill } from './Pill';
+import { VisNetwork } from './VisNetowrk';
+import scanOutput from './data/scanOutput.json';
 
 export function App() {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-    const tags = ['abiafhjgsadghsdah1', 'fsiadfhsaofvlksdfjnlk2', 'fsihfksjadhf sa3']; // TODO: Take dynamically.
+    const tags = [...new Set(scanOutput.resources.flatMap((resource) => resource.tags ?? []))];
     const tagsForFilter = tags.map((tag) => ({
         key: tag,
         value: tag,
@@ -24,8 +26,8 @@ export function App() {
                     ))}
                 </div>
             </div>
-            <div>
-                <div>test</div>
+            <div className="w-screen h-screen">
+                <VisNetwork scanOutput={scanOutput} selectedTags={selectedTags} />
             </div>
         </div>
     );

@@ -15,8 +15,3 @@ export function Pill(props: PillProps) {
         </div>
     );
 }
-
-Pill.defaultProps = {
-    disabled: false,
-    color: 'secondary',
-};
