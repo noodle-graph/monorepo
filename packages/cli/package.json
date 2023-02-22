@@ -8,6 +8,8 @@
         "start": "npm run build && node ./dist/index.js"
     },
     "dependencies": {
+        "@noodle-graph/scanner": "file:.yalc/@noodle-graph/scanner",
+        "@noodle-graph/types": "file:.yalc/@noodle-graph/types",
         "commander": "^10.0.0",
         "figlet": "^1.5.2"
     },

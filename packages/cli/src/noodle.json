@@ -1,0 +1,25 @@
+{
+    "options": {
+        "typeEvaluation": true
+    },
+    "resources": [
+        {
+            "id": "scan-manager",
+            "name": "Scan Manager",
+            "description": "Scan manager service",
+            "type": "aws/ecs",
+            "tags": ["api", "nodejs", "rest", "GMF-FLYBOX"],
+            "url": "https://github.office.opendns.com/OOB-DLP/scan-manager",
+            "source": "github"
+        },
+        {
+            "id": "analysis-engine",
+            "name": "Analysis Engine",
+            "description": "Analysis engine service",
+            "type": "aws/ecs",
+            "tags": ["api", "java", "rest", "GMF-FLYBOX"],
+            "url": "https://github.office.opendns.com/OOB-DLP/dar-core-analysis-engine",
+            "source": "github"
+        }
+    ]
+}

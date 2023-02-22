@@ -21,7 +21,12 @@ const hereCommand = new Command('here')
 
 const scanCommand = new Command('scan')
     .description('Using the scanner to search resources relationships.')
-    // .argument('<name>', 'Name of the person to say goodbye to')
+    .option('--config, -c <string>', 'Path to the scan configuration file.','./noodle.json')
+    .option('--output, -o <string>', 'Path of the output file.','./noodleScanOutput.json')
+    .requiredOption('--githubToken <string>', 'GitHub access token.')
+    // .argument('[config]', 'Path to the scan configuration file.','./noodle.json')
+    // .argument('[output]', 'Path of the output file.','./noodleScanOutput.json')
+    // .argument('<githubToken>', 'GitHub access token.')
     .action(scan)
 ;
 
