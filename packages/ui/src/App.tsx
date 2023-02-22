@@ -37,6 +37,10 @@ export function App() {
         document.body.appendChild(script);
     }, []);
 
+    useEffect(() => {
+        setSelectedNode(null);
+    }, [tags]);
+
     function handlePillClick(clickedTag) {
         const newTags = JSON.parse(JSON.stringify(tags));
 
@@ -70,11 +74,11 @@ export function App() {
                         <Pill key={`pill-${i}`} onClick={() => handlePillClick(tag)} label={tag.value} />
                     ))}
                 </div>
+                {selectedNode && <Details node={scanOutput.resources.find((r) => (r.id = selectedNode))!} />}
             </div>
             <div className="w-screen h-screen">
                 {scanOutput && <VisNetwork scanOutput={scanOutput} selectedTags={selectedTagValues} selectNode={(nodeId) => setSelectedNode(nodeId)} />}
             </div>
-            {selectedNode && <Details node={scanOutput.resources.find((r) => (r.id = selectedNode))!} />}
         </div>
     );
 }

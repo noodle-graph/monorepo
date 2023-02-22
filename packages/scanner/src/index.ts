@@ -1,6 +1,6 @@
-import types, { Relationship } from '@noodle-graph/types';
+import types, {Relationship} from '@noodle-graph/types';
 
-import { persist, relationships } from './noodle-utils';
+import {persist, relationships} from './noodle-utils';
 
 const fs = require('fs');
 const os = require('os');
@@ -13,16 +13,17 @@ const http = require('isomorphic-git/http/node');
 export function foo() {
     console.log('foo');
 }
+
 export function scan_config(configPath, outputPath, token) {
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     return scan(config, outputPath, token);
 }
 
-export function scan(scan_config: types.ScanConfig, outputPath, token) {
+async function scan(scan_config: types.ScanConfig, outputPath, token) {
     const promises = scan_config.resources.map(async (resource) => {
         switch (resource.source) {
             case 'github': {
-                const { url, id, name, type } = resource;
+                const {url, id, name, type} = resource;
                 console.log(`Handling resource, ${url} ${id} ${name} ${type}`);
                 let branch = 'HEAD';
                 const parts = url.split('#');
@@ -41,7 +42,7 @@ export function scan(scan_config: types.ScanConfig, outputPath, token) {
                     ref: branch,
                     http: http,
                     singleBranch: true,
-                    onAuth: () => ({ username: token, password: '' }),
+                    onAuth: () => ({username: token, password: ''}),
                 });
 
                 let files = await git.listFiles({
@@ -69,14 +70,7 @@ export function scan(scan_config: types.ScanConfig, outputPath, token) {
         }
     });
 
-    Promise.all(promises)
-        .then((outputResource) => {
-            persist(outputResource, outputPath);
-        })
-        .catch((err) => {
-            console.error(`Error: ${err.message}`);
-            throw err;
-        });
+    await persist({resources:await Promise.all(promises)}, outputPath);
 }
 
 module.exports = scan;
