@@ -104,21 +104,34 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
     private extractEdges() {
         let i = 0;
 
-        return new DataView(
-            new DataSet(
-                this.props.scanOutput.resources.flatMap(
-                    (resource: Resource) =>
-                        resource.relationships?.map((relationship: Relationship) => ({
-                            id: i++,
-                            from: resource.id,
-                            to: relationship.resourceId,
-                            arrows: relationship.direction === 'both' ? 'from, to' : relationship.direction === 'none' ? undefined : relationship.direction,
-                            label: relationship.action,
-                        })) ?? []
-                ),
-                {}
-            )
-        );
+        const edges: any = {};
+        for (const resource of this.props.scanOutput.resources) {
+            for (const relationship of resource.relationships ?? []) {
+                const key = [resource.id, relationship.resourceId].sort().join(',');
+                console.log(key);
+                if (edges[key]) {
+                    edges[key].label += `\n${relationship.action}`;
+                    edges[key].arrows =
+                        relationship.direction === 'both' ||
+                        (edges[key].arrows === 'from' && relationship.direction === 'to') ||
+                        (edges[key].arrows === 'to' && relationship.direction === 'from')
+                            ? 'from, to'
+                            : relationship.direction === 'none'
+                            ? edges[key].arrows
+                            : relationship.direction;
+                } else {
+                    edges[key] = {
+                        id: i++,
+                        from: resource.id,
+                        to: relationship.resourceId,
+                        arrows: relationship.direction === 'both' ? 'from, to' : relationship.direction === 'none' ? undefined : relationship.direction,
+                        label: relationship.action,
+                    };
+                }
+            }
+        }
+
+        return new DataView(new DataSet(Object.values(edges), {}));
     }
 
     override componentDidMount(): void {
