@@ -1,14 +1,9 @@
 import * as console from "console";
 import {Relationship} from "@noodle-graph/types";
+import {stringify} from "ts-jest";
 
 
 const noodleRegEx: RegExp = /noodle\s+--([a-z\s]+)->\s+([a-z-]+)\s+(?:\(([a-z-,]+)+\)|)/;
-
-type Finding = {
-    source: string;
-    line: number;
-    match: string;
-};
 
 export function relationships(path: string, content: string) {
     const comments: Relationship[] = [];
@@ -18,7 +13,7 @@ export function relationships(path: string, content: string) {
         const matches = noodleRegEx.exec(line);
         if (matches) {
             comments.push({
-                action: matches[1], resourceId: matches[2], tags: matches[3].split(','), url: path, line: i+1,
+                action: matches[1], resourceId: matches[2], tags: matches[3].split(','), url: path + '#' + stringify(i+1),
             });
         }
     });
