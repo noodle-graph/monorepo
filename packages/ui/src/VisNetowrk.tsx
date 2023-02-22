@@ -9,6 +9,7 @@ export interface Relationship {
     action: string;
     tags: string[];
     url: string;
+    direction: 'none' | 'from' | 'to' | 'both';
 }
 
 export interface Resource {
@@ -110,7 +111,7 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                             id: i++,
                             from: resource.id,
                             to: relationship.resourceId,
-                            arrows: 'to',
+                            arrows: relationship.direction === 'both' ? 'from, to' : relationship.direction === 'none' ? undefined : relationship.direction,
                             label: relationship.action,
                         })) ?? []
                 ),
