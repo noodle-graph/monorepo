@@ -8,7 +8,8 @@
     },
     "devDependencies": {},
     "dependencies": {
-        "@noodle-graph/types": "file:.yalc/@noodle-graph/types"
+        "@noodle-graph/types": "file:.yalc/@noodle-graph/types",
+        "isomorphic-git": "^1.21.0"
     },
     "engines": {
         "node": ">=16"
