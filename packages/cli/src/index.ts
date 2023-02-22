@@ -1,17 +1,16 @@
-import figlet from "figlet";
 import { Command } from "commander";
 import {here} from "./here";
 import {scan} from "./scan";
 import {bundle} from "./bundle";
+import { printLogo } from "./utils";
+
+printLogo();
 
 export const program = new Command();
-
-console.log(figlet.textSync("Noodle cli"));
-
 program
     .name("noodle")
     .version("1.0.0")
-    .description("Noodle CLI for managing a directory");
+    .description("Noodle-Graph CLI for managing a directory");
 
 const hereCommand = new Command('here')
     .description('Runs a scan on the current directory and bundle the UI locally.')
