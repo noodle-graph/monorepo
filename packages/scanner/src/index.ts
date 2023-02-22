@@ -1,4 +1,4 @@
-import types, { Relationship } from '@noodle-graph/types';
+import { Relationship, Resource, ScanConfig } from './types';
 
 import { persist, relationships } from './noodle-utils';
 
@@ -19,7 +19,7 @@ export function scan_config(configPath, outputPath, token) {
     return scan(config, outputPath, token);
 }
 
-async function scan(scan_config: types.ScanConfig, outputPath, token) {
+async function scan(scan_config: ScanConfig, outputPath, token) {
     const promises = scan_config.resources.map(async (resource) => {
         switch (resource.source) {
             case 'github': {
@@ -85,7 +85,7 @@ module.exports = scan;
 // ];
 // writeToJSONFile(resourceList);
 
-const test_resource1: types.Resource = {
+const test_resource1: Resource = {
     id: 'sm',
     name: 'scan manager',
     description: '',
@@ -95,7 +95,7 @@ const test_resource1: types.Resource = {
     tags: new Array<string>(),
 };
 
-const test_resource2: types.Resource = {
+const test_resource2: Resource = {
     id: 'ae',
     name: 'analytics engine',
     description: '',
@@ -105,11 +105,11 @@ const test_resource2: types.Resource = {
     tags: new Array<string>(),
 };
 
-const resources = new Array<types.Resource>();
+const resources = new Array<Resource>();
 resources.push(test_resource1);
 resources.push(test_resource2);
 
-const test_config: types.ScanConfig = {
+const test_config: ScanConfig = {
     resources: resources,
 };
 

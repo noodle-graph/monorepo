@@ -1,7 +1,7 @@
 import * as console from 'console';
 import { writeFile } from 'fs';
 
-import { Direction, Relationship } from '@noodle-graph/types';
+import { Direction, Relationship } from './types';
 import { stringify } from 'ts-jest';
 
 const noodleRegEx = /noodle\s+(-|<)-([a-z\s]+)-(>|-)\s+([a-z-]+)\s+(?:\(([a-z-,]+)+\)|)/;
