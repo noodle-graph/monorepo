@@ -27,14 +27,16 @@ const scanCommand = new Command('scan')
     // .argument('[config]', 'Path to the scan configuration file.','./noodle.json')
     // .argument('[output]', 'Path of the output file.','./noodleScanOutput.json')
     // .argument('<githubToken>', 'GitHub access token.')
-    .action(scan)
-;
+    .action(scan);
 
 const bundleCommand = new Command('bundle')
     .description('Creates a UI bundle with the specified scan output.')
     // .argument('<name>', 'Name of the person to say goodbye to')
-    .action(bundle)
-;
+    .description('Using the scanner to search resources relationships.')
+    .option('--scanOutput <string>', 'Path to the scan output file.','./noodleScanOutput.json')
+    .option('--output <string>', 'Path the the bundle output directory.','./noodleDist')
+    .option('--open <boolen>', 'Whether to open in the browser the bundled UI when finished.','false')
+    .action(bundle);
 
 program.addCommand(hereCommand);
 program.addCommand(scanCommand);
