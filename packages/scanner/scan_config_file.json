@@ -1,0 +1,105 @@
+[
+  {
+    "id": "sm",
+    "name": "scan manager",
+    "type": "ecs",
+    "tags": [],
+    "relationships": [
+      {
+        "action": "publish to",
+        "resourceId": "webex",
+        "tags": [
+          "post",
+          "discovery-scan",
+          "discovery-scan-init",
+          "discovery-scan-control"
+        ],
+        "url": "https://github.office.opendns.com/OOB-DLP/scan-manager#hackathon",
+        "line": 16
+      },
+      {
+        "action": "requests to",
+        "resourceId": "policy-service",
+        "tags": [
+          "http",
+          "post",
+          "discovery-scan",
+          "discovery-scan-init"
+        ],
+        "url": "https://github.office.opendns.com/OOB-DLP/scan-manager#hackathon",
+        "line": 19
+      },
+      {
+        "action": "requests to",
+        "resourceId": "scan-db",
+        "tags": [
+          "discovery-scan",
+          "discovery-scan-init",
+          "discovery-scan-events",
+          "discovery-scan-control"
+        ],
+        "url": "https://github.office.opendns.com/OOB-DLP/scan-manager#hackathon",
+        "line": 6
+      },
+      {
+        "action": "requests to",
+        "resourceId": "reporting-service",
+        "tags": [
+          "http",
+          "post",
+          "discovery-scan",
+          "discovery-scan-init"
+        ],
+        "url": "https://github.office.opendns.com/OOB-DLP/scan-manager#hackathon",
+        "line": 18
+      }
+    ]
+  },
+  {
+    "id": "ae",
+    "name": "analytics engine",
+    "type": "ecs",
+    "tags": [],
+    "relationships": [
+      {
+        "action": "request to",
+        "resourceId": "dynamo-db",
+        "tags": [
+          "discovery-scan",
+          "incremental"
+        ],
+        "url": "https://github.office.opendns.com/OOB-DLP/dar-core-analysis-engine#hackathon",
+        "line": 38
+      },
+      {
+        "action": "request to",
+        "resourceId": "policy-service",
+        "tags": [
+          "discovery-scan",
+          "incremental"
+        ],
+        "url": "https://github.office.opendns.com/OOB-DLP/dar-core-analysis-engine#hackathon",
+        "line": 39
+      },
+      {
+        "action": "request to",
+        "resourceId": "scan-manager",
+        "tags": [
+          "discovery-scan"
+        ],
+        "url": "https://github.office.opendns.com/OOB-DLP/dar-core-analysis-engine#hackathon",
+        "line": 31
+      },
+      {
+        "action": "request to",
+        "resourceId": "sns",
+        "tags": [
+          "discovery-scan",
+          "incremental"
+        ],
+        "url": "https://github.office.opendns.com/OOB-DLP/dar-core-analysis-engine#hackathon",
+        "line": 44
+      }
+    ]
+  }
+]
