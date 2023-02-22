@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
 import './App.css';
+
+import { Details } from './Details';
 import { Filter } from './Filter';
 import { Pill } from './Pill';
 import { VisNetwork } from './VisNetowrk';
@@ -11,6 +13,7 @@ export function App() {
 
     const selectedTags = tags.filter((tag) => tag.selected);
     const selectedTagValues = selectedTags.map((tag) => tag.value);
+    const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -68,7 +71,10 @@ export function App() {
                     ))}
                 </div>
             </div>
-            <div className="w-screen h-screen">{scanOutput && <VisNetwork scanOutput={scanOutput} selectedTags={selectedTagValues} />}</div>
+            <div className="w-screen h-screen">
+                {scanOutput && <VisNetwork scanOutput={scanOutput} selectedTags={selectedTagValues} selectNode={(nodeId) => setSelectedNode(nodeId)} />}
+            </div>
+            {selectedNode && <Details node={scanOutput.resources.find((r) => (r.id = selectedNode))!} />}
         </div>
     );
 }

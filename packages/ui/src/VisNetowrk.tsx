@@ -16,6 +16,7 @@ export interface Resource {
     name?: string;
     type?: string;
     tags?: string[];
+    url?: string;
     relationships?: Relationship[];
 }
 
@@ -24,6 +25,7 @@ export interface VisNetworkProps {
         resources: Resource[];
     };
     selectedTags: string[];
+    selectNode: (nodeId: string) => void;
 }
 
 export class VisNetwork extends React.Component<VisNetworkProps> {
@@ -76,7 +78,9 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                 },
                 groups,
             }
-        );
+        ).on('click', (e) => {
+            this.props.selectNode(e.nodes[0]);
+        });
     }
 
     private extractNodes() {
