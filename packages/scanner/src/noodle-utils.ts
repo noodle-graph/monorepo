@@ -15,11 +15,11 @@ export function relationships(path: string, content: string) {
             const startDirectionArrow = matches[1];
             const endDirectionArrow = matches[3];
             let direction: Direction = Direction.None;
-            if (startDirectionArrow == '-' && endDirectionArrow == '>') {
+            if (startDirectionArrow === '-' && endDirectionArrow === '>') {
                 direction = Direction.To;
-            } else if (startDirectionArrow == '<' && endDirectionArrow == '-') {
+            } else if (startDirectionArrow === '<' && endDirectionArrow === '-') {
                 direction = Direction.From;
-            } else if (startDirectionArrow == '<' && endDirectionArrow == '>') {
+            } else if (startDirectionArrow === '<' && endDirectionArrow === '>') {
                 direction = Direction.Both;
             } else {
                 console.log('bad direction');
