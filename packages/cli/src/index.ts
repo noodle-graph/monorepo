@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import { Command } from "commander";
 import {here} from "./here";
 import {scan} from "./scan";

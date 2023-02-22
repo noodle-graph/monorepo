@@ -2,7 +2,11 @@
     "name": "@noodle-graph/cli",
     "version": "0.0.0",
     "description": "Architecture diagram that maintains itself",
-    "main": "./bin/index.js",
+    "main": "dist/index.js",
+    "bin": {
+      "noodle": "./dist/index.js",
+      "noodle-graph": "./dist/index.js"
+    },
     "scripts": {
         "build": "tsc --project tsconfig.lib.json && cp package.json dist",
         "lint": "eslint .",
