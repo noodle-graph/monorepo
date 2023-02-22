@@ -8,7 +8,7 @@
       "noodle-graph": "./dist/index.js"
     },
     "scripts": {
-        "build": "tsc --project tsconfig.lib.json && cp package.json dist",
+        "build": "nx build ui && copy-files && tsc --project tsconfig.lib.json && cp package.json dist",
         "lint": "eslint .",
         "test": "jest",
         "start": "npm run build && node ./dist/index.js",
