@@ -1,11 +1,19 @@
 {
     "name": "@noodle-graph/cli",
     "version": "0.0.0",
+    "description": "Architecture diagram that maintains itself",
+    "main": "dist/index.js",
+    "bin": {
+      "noodle": "./dist/index.js",
+      "noodle-graph": "./dist/index.js"
+    },
     "scripts": {
         "build": "tsc --project tsconfig.lib.json && cp package.json dist",
         "lint": "eslint .",
         "test": "jest",
-        "start": "npm run build && node ./dist/index.js"
+        "start": "npm run build && node ./dist/index.js",
+        "noodle": "node ./dist/index.js",
+        "noodle-graph": "./dist/index.js"
     },
     "dependencies": {
         "@noodle-graph/scanner": "file:.yalc/@noodle-graph/scanner",
