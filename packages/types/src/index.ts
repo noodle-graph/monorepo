@@ -26,3 +26,7 @@ export interface Resource {
     tags?: string[];
     relationships?: Relationship[];
 }
+
+export function foo() {
+    console.log('foo');
+}

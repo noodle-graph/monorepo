@@ -9,6 +9,9 @@ const fs = require('fs');
 const git = require('isomorphic-git');
 const http = require('isomorphic-git/http/node');
 
+export function foo() {
+    console.log('foo');
+}
 export function scan_config(configPath, outputPath, token) {
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     return scan(config, outputPath, token);
