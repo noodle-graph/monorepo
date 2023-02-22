@@ -1,11 +1,10 @@
 import * as console from 'console';
-import {writeFile} from 'fs';
+import { writeFile } from 'fs';
 
-import {Direction, Relationship} from '@noodle-graph/types';
-import {stringify} from 'ts-jest';
+import { Direction, Relationship } from '@noodle-graph/types';
+import { stringify } from 'ts-jest';
 
 const noodleRegEx = /noodle\s+(-|<)-([a-z\s]+)-(>|-)\s+([a-z-]+)\s+(?:\(([a-z-,]+)+\)|)/;
-
 
 export function relationships(path: string, content: string) {
     const comments: Relationship[] = [];
@@ -13,17 +12,17 @@ export function relationships(path: string, content: string) {
     lines.forEach((line, i) => {
         const matches = noodleRegEx.exec(line);
         if (matches) {
-            const startDirectionArrow = matches[1]
-            const endDirectionArrow = matches[3]
+            const startDirectionArrow = matches[1];
+            const endDirectionArrow = matches[3];
             let direction: Direction = Direction.None;
             if (startDirectionArrow == '-' && endDirectionArrow == '>') {
-                direction = Direction.To
+                direction = Direction.To;
             } else if (startDirectionArrow == '<' && endDirectionArrow == '-') {
-                direction = Direction.From
+                direction = Direction.From;
             } else if (startDirectionArrow == '<' && endDirectionArrow == '>') {
-                direction = Direction.Both
+                direction = Direction.Both;
             } else {
-                console.log('bad direction')
+                console.log('bad direction');
                 // todo: raise exception
             }
             comments.push({
