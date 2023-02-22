@@ -18,7 +18,7 @@ export function relationships(path: string, content: string) {
         const matches = noodleRegEx.exec(line);
         if (matches) {
             comments.push({
-                action: matches[1], resourceId: matches[2], tags: matches[3].split(','), url: path, line: i,
+                action: matches[1], resourceId: matches[2], tags: matches[3].split(','), url: path, line: i+1,
             });
         }
     });
