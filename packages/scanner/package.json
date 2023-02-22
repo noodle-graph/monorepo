@@ -7,11 +7,11 @@
         "lint": "eslint .",
         "test": "jest"
     },
-    "devDependencies": {},
     "dependencies": {
         "@noodle-graph/types": "file:.yalc/@noodle-graph/types",
+        "fast-glob": "^3.2.12",
         "isomorphic-git": "^1.21.0",
-        "fast-glob": "^3.2.12"
+        "ts-jest": "^29.0.5"
     },
     "engines": {
         "node": ">=16"

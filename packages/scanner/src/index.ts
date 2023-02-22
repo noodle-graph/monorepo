@@ -32,17 +32,6 @@ export function scan(scan_config: types.ScanConfig, outputPath, token) {
         const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
         console.log(dir);
 
-        // await git.clone({
-        //     fs,
-        //     http,
-        //     dir,
-        //     url: baseURL,
-        //     ref: branch,
-        //     singleBranch: true,
-        //     depth: 10,
-        //     token: token,
-        // });
-
         // Clone the repository
         await git.clone({
             fs: fs,
@@ -72,6 +61,7 @@ export function scan(scan_config: types.ScanConfig, outputPath, token) {
 
         const outputResource: types.Resource = {
             id: resource.id,
+            url: url,
             name: resource.name,
             type: resource.type,
             tags: resource.tags,
@@ -103,7 +93,7 @@ module.exports = scan;
 // ];
 // writeToJSONFile(resourceList);
 
-const test_resource1: types.ConfigResource = {
+const test_resource1: types.Resource = {
     id: 'sm',
     name: 'scan manager',
     description: '',
@@ -113,7 +103,7 @@ const test_resource1: types.ConfigResource = {
     tags: new Array<string>(),
 };
 
-const test_resource2: types.ConfigResource = {
+const test_resource2: types.Resource = {
     id: 'ae',
     name: 'analytics engine',
     description: '',
@@ -123,7 +113,7 @@ const test_resource2: types.ConfigResource = {
     tags: new Array<string>(),
 };
 
-const resources = new Array<types.ConfigResource>();
+const resources = new Array<types.Resource>();
 resources.push(test_resource1);
 resources.push(test_resource2);
 
@@ -131,4 +121,4 @@ const test_config: types.ScanConfig = {
     resources: resources,
 };
 
-scan(test_config, undefined, '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');
+scan(test_config, undefined, 'put token here');

@@ -2,6 +2,7 @@ import * as console from 'console';
 import { writeFile } from 'fs';
 
 import { Relationship } from '@noodle-graph/types';
+import { stringify } from 'ts-jest';
 
 const noodleRegEx = /noodle\s+--([a-z\s]+)->\s+([a-z-]+)\s+(?:\(([a-z-,]+)+\)|)/;
 
@@ -16,8 +17,7 @@ export function relationships(path: string, content: string) {
                 action: matches[1],
                 resourceId: matches[2],
                 tags: matches[3].split(','),
-                url: path,
-                line: i + 1,
+                url: path + '#' + stringify(i + 1),
             });
         }
     });
@@ -26,7 +26,7 @@ export function relationships(path: string, content: string) {
     return comments;
 }
 
-export async function persist(resources, path: string = process.cwd() + '/scan_config_file.json') {
+export async function persist(resources, path: string = process.cwd() + '/scan_output_file.json') {
     console.log(`persisting ${resources} to $ ${path}`);
     await new Promise((resolve) => writeFile(path, JSON.stringify(resources, null, 2), resolve));
 }
