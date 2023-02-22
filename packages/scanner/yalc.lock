@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "@noodle-graph/types": {
+      "signature": "3d2111e5fe3f00d2a1444b5c5583d519",
+      "file": true
+    }
+  }
+}

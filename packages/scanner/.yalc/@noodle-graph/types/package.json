@@ -1,16 +1,14 @@
 {
-    "name": "@noodle-graph/scanner",
+    "name": "@noodle-graph/types",
     "version": "0.0.0",
     "scripts": {
         "build": "tsc --project tsconfig.lib.json && cp package.json dist",
         "lint": "eslint .",
         "test": "jest"
     },
-    "devDependencies": {},
-    "dependencies": {
-        "@noodle-graph/types": "file:.yalc/@noodle-graph/types"
-    },
+    "dependencies": {},
     "engines": {
         "node": ">=16"
-    }
+    },
+    "yalcSig": "3d2111e5fe3f00d2a1444b5c5583d519"
 }
