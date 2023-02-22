@@ -1,5 +1,4 @@
 (function () {
-    console.log('hello2');
     // eslint-disable-next-line no-undef
     window.window.scanOutput = {
         resources: [

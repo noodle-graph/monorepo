@@ -10,8 +10,6 @@ export function App() {
     const [scanOutput, setScanOutput] = useState<any>();
     const [tags, setTags] = useState<string[]>([]);
 
-    console.log('hertoiherjng');
-
     useEffect(() => {
         const script = document.createElement('script');
         script.src = 'scanOutput.js';
