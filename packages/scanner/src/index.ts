@@ -36,17 +36,17 @@ export function scan(scan_config: types.ScanConfig, outputPath, token) {
 
         const comments = await Promise.all(
             tree.map(async (entry) => {
-                if (entry.type === 'blob') {
-                    const content = await git.readBlob({
-                        dir: '.',
-                        oid: entry.oid,
-                        http,
-                        url,
-                        token: token,
-                    });
-                    const results = relationships(entry.path, content);
-                    return { id: id, name: name, repo: url, type: type, path: entry.path, relationships: results };
-                }
+                // if (entry.type === 'blob') {
+                const content = await git.readBlob({
+                    dir: '.',
+                    oid: entry.oid,
+                    http,
+                    url,
+                    token: token,
+                });
+                const results = relationships(entry.path, content);
+                return { id: id, name: name, repo: url, type: type, path: entry.path, relationships: results };
+                // }
             })
         );
 
