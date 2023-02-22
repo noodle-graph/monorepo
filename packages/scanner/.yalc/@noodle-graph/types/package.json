@@ -1,0 +1,14 @@
+{
+    "name": "@noodle-graph/types",
+    "version": "0.0.0",
+    "scripts": {
+        "build": "tsc --project tsconfig.lib.json && cp package.json dist",
+        "lint": "eslint .",
+        "test": "jest"
+    },
+    "dependencies": {},
+    "engines": {
+        "node": ">=16"
+    },
+    "yalcSig": "9f4baca37ca9b3d2aa44e880b937dc7f"
+}

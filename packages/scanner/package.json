@@ -2,12 +2,17 @@
     "name": "@noodle-graph/scanner",
     "version": "0.0.0",
     "scripts": {
+        "start": "ts-node src/index.ts",
         "build": "tsc --project tsconfig.lib.json && cp package.json dist",
         "lint": "eslint .",
         "test": "jest"
     },
-    "devDependencies": {},
-    "dependencies": {},
+    "dependencies": {
+        "@noodle-graph/types": "file:.yalc/@noodle-graph/types",
+        "fast-glob": "^3.2.12",
+        "isomorphic-git": "^1.21.0",
+        "ts-jest": "^29.0.5"
+    },
     "engines": {
         "node": ">=16"
     }
