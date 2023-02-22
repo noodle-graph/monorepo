@@ -8,7 +8,7 @@
         "test": "jest"
     },
     "dependencies": {
-        "@noodle-graph/types": "file:.yalc/@noodle-graph/types",
+        "@noodle-graph/types": "^0.0.0-local.1",
         "fast-glob": "^3.2.12",
         "isomorphic-git": "^1.21.0",
         "ts-jest": "^29.0.5"
