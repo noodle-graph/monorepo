@@ -45,7 +45,9 @@ export function App() {
                     ))}
                 </div>
             </div>
-            <div className="w-screen h-screen">{scanOutput && <VisNetwork scanOutput={scanOutput} selectedTags={selectedTags} />}</div>
+            <div className="w-screen h-screen">
+                {scanOutput && <VisNetwork scanOutput={scanOutput} selectedTags={selectedTags} selectNode={(nodeId) => setSelectedNode(nodeId)} />}
+            </div>
             {selectedNode && <Details node={scanOutput.resources.find((r) => (r.id = selectedNode))!} />}
         </div>
     );
