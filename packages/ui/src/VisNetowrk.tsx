@@ -2,6 +2,8 @@ import React from 'react';
 import { DataSet, DataView } from 'vis-data';
 import { Network } from 'vis-network';
 
+const IMG_DIR = '../../img/';
+
 export interface Relationship {
     resourceId: string;
     action: string;
@@ -36,25 +38,43 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
     private produceNetwork(): void {
         this.nodes = this.extractNodes();
         this.edges = this.extractEdges();
+
+        let i = 0;
+        // eslint-disable-next-line node/no-unsupported-features/es-builtins
+        const groups = Object.fromEntries(
+            [...new Set(this.nodes.map((node: any) => node.group)).values()].map((group) => [
+                group,
+                {
+                    id: i++,
+                    shape: 'image',
+                    image: IMG_DIR + group + '.svg',
+                },
+            ])
+        );
+
         new Network(
             this.container.current!,
             { nodes: this.nodes, edges: this.edges },
             {
                 edges: {
                     smooth: false,
-                    color: '#fef9c3',
+                    color: '#f1f5f9',
+                    chosen: false,
+                    font: {
+                        color: '#94a3b8',
+                        background: '#1e293b',
+                        strokeWidth: 0,
+                    },
+                    length: 250,
                 },
                 nodes: {
                     color: '#94a3b8',
                     font: {
-                        color: '#080d17',
+                        color: '#f1f5f9',
+                        background: '#1e293b',
                     },
                 },
-                groups: {
-                    'aws/ecs': {},
-                    'aws/ec2': {},
-                    'aws/s3': {},
-                },
+                groups,
             }
         );
     }
@@ -66,11 +86,11 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                     id: resource.id,
                     label: resource.name ?? resource.id,
                     group: resource.type,
-                    tags: resource.tags?.join(','),
+                    tags: resource.tags as any,
                 }))
             ),
             {
-                filter: (node) => this.props.selectedTags.length === 0 || this.props.selectedTags.every((tag) => node.tags?.split(',').includes(tag)),
+                filter: (node) => this.props.selectedTags.length === 0 || this.props.selectedTags.every((tag) => node.tags?.includes(tag)),
             }
         );
     }
@@ -87,11 +107,11 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                             from: resource.id,
                             to: relationship.resourceId,
                             arrows: 'to',
-                            relation: relationship.action,
+                            label: relationship.action,
                         })) ?? []
-                )
-            ),
-            {}
+                ),
+                {}
+            )
         );
     }
 
