@@ -2,7 +2,6 @@ import * as console from 'console';
 import { writeFile } from 'fs';
 
 import { Direction, Relationship } from './types';
-import { stringify } from 'ts-jest';
 
 const noodleRegEx = /noodle\s+(-|<)-([a-z\s]+)-(>|-)\s+([a-z-]+)\s+(?:\(([a-z-,]+)+\)|)/;
 
@@ -21,16 +20,13 @@ export function relationships(path: string, content: string) {
                 direction = Direction.From;
             } else if (startDirectionArrow === '<' && endDirectionArrow === '>') {
                 direction = Direction.Both;
-            } else {
-                console.log('bad direction');
-                // todo: raise exception
             }
             comments.push({
                 action: matches[2],
                 resourceId: matches[4],
                 tags: matches[3].split(','),
-                url: path + '#' + stringify(i + 1),
-                direction: direction,
+                url: path + `#${i + 1}`,
+                direction,
             });
         }
     });
