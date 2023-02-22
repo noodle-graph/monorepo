@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "@noodle-graph/types": {
-      "signature": "7a38e69e081f9756c275322a96fcc742",
+      "signature": "9f4baca37ca9b3d2aa44e880b937dc7f",
       "file": true
     }
   }

@@ -1,48 +1,54 @@
-import * as console from "console";
+import * as console from 'console';
+import { writeFile } from 'fs';
 
-const regex = '/noodle.+';
+import { Direction, Relationship } from './types';
 
-let noodleRegEx: RegExp = /noodle.+/;
-
-type Finding = {
-    source: string;
-    line: number;
-    match: string;
-};
+const noodleRegEx = /noodle\s+(-|<)-([a-z\s]+)-(>|-)\s+([a-z-]+)\s+(?:\(([a-z-,]+)+\)|)/;
 
 export function relationships(path: string, content: string) {
-    const comments: Finding[] = [];
+    const comments: Relationship[] = [];
     const lines = content.split('\n');
     lines.forEach((line, i) => {
-        // const matches = line.match(regex);
         const matches = noodleRegEx.exec(line);
         if (matches) {
+            const startDirectionArrow = matches[1];
+            const endDirectionArrow = matches[3];
+            let direction: Direction = Direction.None;
+            if (startDirectionArrow === '-' && endDirectionArrow === '>') {
+                direction = Direction.To;
+            } else if (startDirectionArrow === '<' && endDirectionArrow === '-') {
+                direction = Direction.From;
+            } else if (startDirectionArrow === '<' && endDirectionArrow === '>') {
+                direction = Direction.Both;
+            }
             comments.push({
-                source: path,
-                line: i + 1,
-                match: matches[0],
+                action: matches[2],
+                resourceId: matches[4],
+                tags: matches[3].split(','),
+                url: path + `#${i + 1}`,
+                direction,
             });
         }
     });
 
+    console.log(comments);
     return comments;
 }
 
-export function persist(resources, path: string) {
+export async function persist(resources, path: string = process.cwd() + '/scan_output_file.json') {
     console.log(`persisting ${resources} to $ ${path}`);
-    return '';
+    await new Promise((resolve) => writeFile(path, JSON.stringify(resources, null, 2), resolve));
 }
 
-const testContent = 'export class NotificationClientWebex implements NotificationClient {\n' +
-    '    @inject(TYPE.HTTP_CLIENT) @named(NAME.WEBEX_API) private readonly client!: HttpClient;\n' +
-    '\n' +
-    '    // noodle --publish to-> webex (post,discovery-scan,discovery-scan-init,discovery-scan-control)\n' +
-    '    @tryCatch.tryCatch(undefined, undefined, false)\n' +
-    '    async notify(markdown: string): Promise<void> {\n' +
-    '        await this.client.post({ url: \'\', data: { roomId: notificationSettings.roomId, markdown } });'
+// const testContent =
+//     'export class NotificationClientWebex implements NotificationClient {\n' +
+//     '    @inject(TYPE.HTTP_CLIENT) @named(NAME.WEBEX_API) private readonly client!: HttpClient;\n' +
+//     '\n' +
+//     '    // noodle --publish to-> webex (post,discovery-scan,discovery-scan-init,discovery-scan-control)\n' +
+//     '    @tryCatch.tryCatch(undefined, undefined, false)\n' +
+//     '    async notify(markdown: string): Promise<void> {\n' +
+//     "        await this.client.post({ url: '', data: { roomId: notificationSettings.roomId, markdown } });";
 
-
-let commentsTest;
-commentsTest = relationships('file_nane', testContent);
-console.log(commentsTest);
-console.log('fsdfsdf');
+// const commentsTest = relationships('file_nane', testContent);
+// console.log(commentsTest);
+// console.log('fsdfsdf');

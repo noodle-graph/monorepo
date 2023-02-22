@@ -1,3 +1,4 @@
+// TODO: Move to common types
 export interface ScanConfig {
     resources: Resource[];
 }
