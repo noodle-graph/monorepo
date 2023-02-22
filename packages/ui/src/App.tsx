@@ -10,15 +10,21 @@ export function App() {
     const [scanOutput, setScanOutput] = useState<any>();
     const [tags, setTags] = useState<string[]>([]);
 
+    console.log('hertoiherjng');
+
     useEffect(() => {
-        fetch('scanOutput.json', { mode: 'no-cors' })
-            .then((response) => response.json())
-            .then((json) => {
-                console.log(json);
-                setScanOutput(json);
-                setTags([...new Set<string>(json.resources.flatMap((resource: any) => resource.tags ?? []))]);
-            });
-    });
+        const script = document.createElement('script');
+        script.src = 'scanOutput.js';
+        script.async = true;
+        script.onload = function () {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            const scanOutputNew = window.scanOutput;
+            setScanOutput(scanOutputNew);
+            setTags([...new Set<string>(scanOutputNew.resources.flatMap((resource: any) => resource.tags ?? []))]);
+        };
+        document.body.appendChild(script);
+    }, []);
 
     const tagsForFilter = tags.map((tag: any) => ({
         key: tag,

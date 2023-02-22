@@ -2,7 +2,7 @@ import React from 'react';
 import { DataSet, DataView } from 'vis-data';
 import { Network } from 'vis-network';
 
-const IMG_DIR = '../../img/';
+const IMG_DIR = 'img/';
 
 export interface Relationship {
     resourceId: string;
