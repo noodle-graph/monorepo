@@ -1,6 +1,5 @@
 import {writeFile} from 'fs';
-// @ts-ignore
-import {Resource} from "../../ui/src/VisNetowrk";
+import {Resource} from "../../types/src";
 
 export function foo() {
     console.log('foo');
