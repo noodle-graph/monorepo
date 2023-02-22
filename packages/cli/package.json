@@ -4,11 +4,19 @@
     "scripts": {
         "build": "tsc --project tsconfig.lib.json && cp package.json dist",
         "lint": "eslint .",
-        "test": "jest"
+        "test": "jest",
+        "start": "npm run build && node ./dist/index.js"
     },
-    "devDependencies": {},
-    "dependencies": {},
+    "dependencies": {
+        "commander": "^10.0.0",
+        "figlet": "^1.5.2"
+    },
     "engines": {
         "node": ">=16"
+    },
+    "devDependencies": {
+        "@types/figlet": "^1.5.5",
+        "@types/node": "^18.14.0",
+        "typescript": "^4.9.5"
     }
 }
