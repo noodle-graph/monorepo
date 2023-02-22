@@ -8,7 +8,9 @@
       "noodle-graph": "./dist/index.js"
     },
     "scripts": {
-        "build": "nx build ui && copy-files && tsc --project tsconfig.lib.json && cp package.json dist",
+        "build": "nx build ui && tsc --project tsconfig.lib.json && cp package.json dist && npm run copy-files",
+        "build-t": "tsc --project tsconfig.lib.json && cp package.json dist && npm run copy-files",
+        "copy-files": "cp -R ../ui/build dist/uiBuild",
         "lint": "eslint .",
         "test": "jest",
         "start": "npm run build && node ./dist/index.js",
@@ -16,8 +18,8 @@
         "noodle-graph": "./dist/index.js"
     },
     "dependencies": {
-        "@noodle-graph/scanner": "file:.yalc/@noodle-graph/scanner",
-        "@noodle-graph/types": "file:.yalc/@noodle-graph/types",
+        "@noodle-graph/scanner": "*",
+        "@noodle-graph/types": "*",
         "commander": "^10.0.0",
         "figlet": "^1.5.2"
     },
