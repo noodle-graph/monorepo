@@ -1,6 +1,6 @@
 import { writeFile } from 'fs';
 
-import types = require('@noodle-graph/types');
+import types from '@noodle-graph/types';
 
 import { persist, relationships } from './noodle-utils';
 
