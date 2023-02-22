@@ -1,5 +1,5 @@
 {
-    "name": "@noodle-graph/scanner",
+    "name": "@noodle-graph/types",
     "version": "0.0.0",
     "scripts": {
         "build": "tsc --project tsconfig.lib.json && cp package.json dist",
@@ -7,10 +7,7 @@
         "test": "jest"
     },
     "devDependencies": {},
-    "dependencies": {
-        "@noodle-graph/types": "file:.yalc/@noodle-graph/types",
-        "isomorphic-git": "^1.21.0"
-    },
+    "dependencies": {},
     "engines": {
         "node": ">=16"
     }
