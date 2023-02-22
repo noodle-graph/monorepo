@@ -19,56 +19,54 @@ export function scan_config(configPath, outputPath, token) {
 }
 
 export function scan(scan_config: types.ScanConfig, outputPath, token) {
-    const resources = scan_config.resources.filter((resource) => resource.source === 'github');
-    const promises = resources.map(async (resource) => {
-        const { url, id, name, type } = resource;
-        console.log(`Handling resource, ${url} ${id} ${name} ${type}`);
-        let branch = 'HEAD';
-        const parts = url.split('#');
-        const baseURL = parts[0];
-        branch = parts[1];
+    const promises = scan_config.resources.map(async (resource) => {
+        switch (resource.source) {
+            case 'github': {
+                const { url, id, name, type } = resource;
+                console.log(`Handling resource, ${url} ${id} ${name} ${type}`);
+                let branch = 'HEAD';
+                const parts = url.split('#');
+                const baseURL = parts[0];
+                branch = parts[1];
 
-        // Make temporary directory
-        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
-        console.log(dir);
+                // Make temporary directory
+                const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
+                console.log(dir);
 
-        // Clone the repository
-        await git.clone({
-            fs: fs,
-            dir: dir,
-            url: baseURL,
-            ref: branch,
-            http: http,
-            singleBranch: true,
-            onAuth: () => ({ username: token, password: '' }),
-        });
+                // Clone the repository
+                await git.clone({
+                    fs: fs,
+                    dir: dir,
+                    url: baseURL,
+                    ref: branch,
+                    http: http,
+                    singleBranch: true,
+                    onAuth: () => ({ username: token, password: '' }),
+                });
 
-        let files = await git.listFiles({
-            fs: fs,
-            dir: dir,
-            ref: branch,
-        });
+                let files = await git.listFiles({
+                    fs: fs,
+                    dir: dir,
+                    ref: branch,
+                });
 
-        // files = await glob('**/*.{js,jsx,ts,tsx,java}', { cwd: dir, files });
-        files = files.filter((file) => file.endsWith('ts') || file.endsWith('java')); //DOR fix with an amazing regex filter
-        const results: Relationship[] = [];
-        for (const file of files) {
-            console.log(`${file}`);
-            const fileData = fs.readFileSync(path.join(dir, file), 'utf8');
-            // console.log(`${fileData}`);
-            results.push(...relationships(url, fileData));
+                // files = await glob('**/*.{js,jsx,ts,tsx,java}', { cwd: dir, files });
+                files = files.filter((file) => file.endsWith('ts') || file.endsWith('java')); //DOR fix with an amazing regex filter
+                const results: Relationship[] = [];
+                for (const file of files) {
+                    console.log(`${file}`);
+                    const fileData = fs.readFileSync(path.join(dir, file), 'utf8');
+                    // console.log(`${fileData}`);
+                    results.push(...relationships(url, fileData));
+                }
+
+                resource.relationships = results;
+                return resource;
+            }
+            default: {
+                return resource
+            }
         }
-
-        const outputResource: types.Resource = {
-            id: resource.id,
-            url: url,
-            name: resource.name,
-            type: resource.type,
-            tags: resource.tags,
-            relationships: results,
-        };
-
-        return outputResource;
     });
 
     Promise.all(promises)
