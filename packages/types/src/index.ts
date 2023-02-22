@@ -16,7 +16,8 @@ export interface Relationship {
     resourceId: string;
     action: string;
     tags: string[];
-    url: string;
+    url: string;  // repo+filename
+    line: number;
 }
 
 export interface Resource {

@@ -1,8 +1,8 @@
 import * as console from "console";
+import {Relationship} from "@noodle-graph/types";
 
-const regex = '/noodle.+';
 
-let noodleRegEx: RegExp = /noodle.+/;
+const noodleRegEx: RegExp = /noodle\s+--([a-z\s]+)->\s+([a-z-]+)\s+(?:\(([a-z-,]+)+\)|)/;
 
 type Finding = {
     source: string;
@@ -11,16 +11,14 @@ type Finding = {
 };
 
 export function relationships(path: string, content: string) {
-    const comments: Finding[] = [];
+    const comments: Relationship[] = [];
     const lines = content.split('\n');
     lines.forEach((line, i) => {
         // const matches = line.match(regex);
         const matches = noodleRegEx.exec(line);
         if (matches) {
             comments.push({
-                source: path,
-                line: i + 1,
-                match: matches[0],
+                action: matches[1], resourceId: matches[2], tags: matches[3].split(','), url: path, line: i+1,
             });
         }
     });

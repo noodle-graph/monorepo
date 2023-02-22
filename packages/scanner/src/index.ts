@@ -3,6 +3,7 @@ import { writeFile } from 'fs';
 import types from '@noodle-graph/types';
 
 import { persist, relationships } from './noodle-utils';
+import {Relationship} from "../../types/src/index";
 
 const fs = require('fs');
 
@@ -44,9 +45,8 @@ export function scan(scan_config: types.ScanConfig, outputPath, token) {
                     url,
                     token: token,
                 });
-                const results = relationships(entry.path, content);
-                return { id: id, name: name, repo: url, type: type, path: entry.path, relationships: results };
-                // }
+
+                return relationships(entry.path, content);
             })
         );
 
@@ -56,8 +56,16 @@ export function scan(scan_config: types.ScanConfig, outputPath, token) {
             }
         });
 
-        return comments;
+        const outputResource: types.Resource = {
+            id: resource.id,
+            name: resource.name,
+            type: resource.type,
+            tags: resource.tags,
+            relationships: comments,
+        }
+        return outputResource;
     });
+
 
     Promise.all(promises)
         .then((comments) => {
@@ -80,7 +88,7 @@ const resourceList: types.Resource[] = [
         type: 'test_type',
         name: 'test_name',
         tags: ['tag1', 'tag2'],
-        relationships: [{ resourceId: 'test_resourceId', action: 'test_action', url: 'https://test.url/test', tags: ['tag3', 'tag4'] }],
+        relationships: [{ resourceId: 'test_resourceId', action: 'test_action', url: 'https://test.url/test', tags: ['tag3', 'tag4'], line: 4}],
     },
 ];
 
