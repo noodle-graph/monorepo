@@ -1,6 +1,6 @@
-import { Relationship, Resource, ScanConfig } from './types';
-
 import { persist, relationships } from './noodle-utils';
+
+import { Relationship, Resource, ScanConfig } from './types';
 
 const fs = require('fs');
 const os = require('os');
