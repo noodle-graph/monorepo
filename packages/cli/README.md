@@ -38,7 +38,7 @@ You can find example of a config file in the [basic example](../../examples/basi
 
 | Field | Pattern | Required | Default | Description |
 |-|-|-|-|-|
-| `typeEvaluation` | boolean | No | `true` | Whether to [evaluate the type of undeclared resources](../scanner/README.md#type-evaluation-of-undeclared-resources) or not. |
+| `typeEvaluation` | boolean | No | `true` | Whether to [evaluate the type of undeclared resources](../scanner/README.md#type-evaluation-of-undeclared-resources-todo) or not. |
 
 #### Resource object
 
