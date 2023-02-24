@@ -1,6 +1,16 @@
 # Contributing
 
-Check out the Noodle [ecosystem](docs/ecosystem.md) for more details on how Noodle works.
+- [Setup locally](#setup-locally)
+- [Useful commands](#useful-commands)
+  - [Common](#common)
+  - [Generating a new package](#generating-a-new-package)
+- [Testing packages locally](#testing-packages-locally)
+  - [With link](#with-link)
+  - [With local registry](#with-local-registry)
+    - [Publish locally](#publish-locally)
+    - [Installing a local package](#installing-a-local-package)
+  - [Testing the CLI locally](#testing-the-cli-locally)
+  - [Using link in the global CLI installation](#using-link-in-the-global-cli-installation)
 
 ## Setup locally
 
@@ -72,4 +82,30 @@ yarn:
 
 ```bash
 yarn add @noodle-graph/<package name>@local --registry=http://localhost:4873
+```
+
+### Testing the CLI locally
+
+```bash
+nx build cli
+nx install:local cli
+```
+
+That will build and install the CLI globally on your local machine. Then you can run the CLI, for example:
+
+```bash
+noodle run
+```
+
+### Using link in the global CLI installation
+
+You can also `npm link` packages in the global CLI by changing the directory of the global module.
+
+For me it is `cd /usr/local/lib/node_modules/@noodle-graph/cli`.
+
+For example:
+
+```bash
+cd /usr/local/lib/node_modules/@noodle-graph/cli
+npm link @noodle-graph/scanner
 ```
