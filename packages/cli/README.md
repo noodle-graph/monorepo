@@ -25,7 +25,7 @@ Using the [scanner](../scanner) to search resources relationships and bundles a 
 | `--githubToken` | `NOODLE_GITHUB_TOKEN` | - | GitHub access token. Required for GitHub resources. |
 | `--open` | - | `false` | Whether to open in the browser the bundled UI when finished. |
 
-#### Scan config file
+### Scan config file
 
 You can find example of a config file in the [basic example](../../examples/basic/noodle.json)
 
@@ -40,7 +40,7 @@ You can find example of a config file in the [basic example](../../examples/basi
 |-|-|-|-|-|
 | `typeEvaluation` | boolean | No | `true` | Whether to [evaluate the type of undeclared resources](../scanner/README.md#type-evaluation-of-undeclared-resources) or not. |
 
-##### Resource object
+#### Resource object
 
 | Field | Pattern | Required | Default | Description |
 |-|-|-|-|-|
