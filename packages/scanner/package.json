@@ -1,0 +1,25 @@
+{
+    "name": "@noodle-graph/scanner",
+    "version": "0.0.0",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/noodle-graph/monorepo/issues"
+    },
+    "homepage": "https://github.com/noodle-graph",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/noodle-graph/monorepo.git"
+    },
+    "scripts": {
+        "start": "ts-node src/index.ts",
+        "build": "tsc --project tsconfig.lib.json && cp package.json dist",
+        "lint": "eslint .",
+        "test": "jest"
+    },
+    "dependencies": {
+        "isomorphic-git": "^1.21.0"
+    },
+    "engines": {
+        "node": ">=16"
+    }
+}

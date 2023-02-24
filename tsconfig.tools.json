@@ -1,0 +1,18 @@
+{
+    "extends": "../tsconfig.base.json",
+    "compilerOptions": {
+        "outDir": "../dist/tools",
+        "rootDir": ".",
+        "types": [
+            "node",
+            "jest"
+        ],
+        "importHelpers": false
+    },
+    "include": [
+        "**/*.ts"
+    ],
+    "exclude": [
+        "generators/**/files/**/*"
+    ]
+}

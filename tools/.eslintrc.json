@@ -1,0 +1,22 @@
+{
+    "extends": [
+        "../.eslintrc.json"
+    ],
+    "overrides": [
+        {
+            "files": [
+                "**/*.mjs",
+                "**/new-package/index.ts"
+            ],
+            "parserOptions": {
+                "ecmaVersion": "latest"
+            },
+            "rules": {
+                "node/no-extraneous-import": "off",
+                "node/no-unpublished-import": "off",
+                "import/no-default-export": "off",
+                "@typescript-eslint/no-explicit-any": "off"
+            }
+        }
+    ]
+}
