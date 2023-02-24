@@ -2,8 +2,8 @@
 
 - [Scanning](#scanning)
   - [Noodle comment](#noodle-comment)
-  - [Undeclared resources](#undeclared-resources)
-    - [Type evaluation of undeclared resources](#type-evaluation-of-undeclared-resources)
+  - [Undeclared resources (TODO)](#undeclared-resources-todo)
+    - [Type evaluation of undeclared resources (TODO)](#type-evaluation-of-undeclared-resources-todo)
 - [Scan output](#scan-output)
   - [Relationship object](#relationship-object)
 
@@ -12,8 +12,7 @@
 - Login to GitHub user.
 - Clone repositories.
 - Scan the files in each repository and search [Noodle comments](#noodle-comment) based on the programming language.
-- [Evaluate undeclared resources types](#type-evaluation-of-undeclared-resources).
-- Generate and save an [output file](#scan-output).
+- [Evaluate undeclared resources types](#type-evaluation-of-undeclared-resources-todo) (TODO).
 
 ### Noodle comment
 
@@ -28,11 +27,11 @@ For example:
 
 Every time the scanner finds a Noodle comment it will add the relationship to the results.
 
-### Undeclared resources
+### Undeclared resources (TODO)
 
 Resources that were discovered during the scan and were not listed in the [scan config file](../cli/README.md#scan-config-file).
 
-#### Type evaluation of undeclared resources
+#### Type evaluation of undeclared resources (TODO)
 
 The type of undeclared resources will be evaluated by the relationship which discovered them.
 
@@ -48,47 +47,68 @@ The first match wins. <!--TODO: Link to the list of type evaluation rules-->
 
 ## Scan output
 
-The scanner will output a results file with the following structure:
+Here is a sample of scan output:
 
 ```json
 {
-  "resources": [
+  "resources":[
     {
-      "id": "my-api-service",
-      "name": "My API Service",
-      "description": "REST API for managing data of some feature.",
-      "type": "aws/ec2",
-      "tags": ["api", "nodejs", "rest", "feature1", "feature2"],
-      "url": "https://github.com/my-organization/my-api-service",
-      "source": "GitHub",
-      "relationships": [
+      "id":"some-service",
+      "url":"./someService",
+      "name":"Some Service",
+      "tags":[
+        "feature1",
+        "feature2",
+        "service"
+      ],
+      "type":"aws/ecs",
+      "source":"local",
+      "relationships":[
         {
-          "resourceId": "another-api-service",
-          "action": "requests from",
-          "tags": ["http", "feature1"],
-          "url": "https://github.com/my-organization/my-api-service/blob/master/src/index.ts#17"
-        },
-        {
-          "resourceId": "s3-my-bucket",
-          "action": "download",
-          "tags": ["s3", "feature2"],
-          "url": "https://github.com/my-organization/my-api-service/blob/master/src/downloadClient.ts#3"
+          "action":"requests from",
+          "resourceId":"another-service",
+          "tags":[
+            "feature",
+            "hello"
+          ],
+          "url":"./someService",
+          "from":false,
+          "to":true
         }
       ]
     },
     {
-      "id": "another-api-service",
-      "name": "Another API Service",
-      "description": "REST API for managing data of another feature.",
-      "type": "aws/ecs",
-      "tags": ["api", "java", "graphql", "feature1", "feature2"],
-      "url": "https://github.com/my-organization/another-api-service",
-      "source": "GitHub",
-      "relationships": []
+      "id":"another-service",
+      "url":"./anotherService",
+      "name":"Another Service",
+      "tags":[
+        "feature1",
+        "service"
+      ],
+      "type":"aws/ecs",
+      "source":"local",
+      "relationships":[
+        {
+          "action":"query",
+          "resourceId":"some-db",
+          "tags":[
+            "feature"
+          ],
+          "url":"./anotherService",
+          "from":false,
+          "to":true
+        }
+      ]
     },
     {
-      "id": "my-bucket",
-      "type": "aws/s3"
+      "id":"some-db",
+      "name":"Some DB",
+      "tags":[
+        "feature1",
+        "feature2",
+        "service"
+      ],
+      "type":"aws/aurora"
     }
   ]
 }
@@ -102,5 +122,7 @@ _Note that this is very similar to the [scan config file](../cli/README.md#scan-
 |-|-|
 | `resourceId` | The identifier of the related resource. |
 | `action` | The action declared in the relationship. |
-| `tags` | The tags of the relationship, mostly used for [type evaluation](#type-evaluation-of-undeclared-resources) and filtering. |
+| `tags` | The tags of the relationship, mostly used for [type evaluation](#type-evaluation-of-undeclared-resources-todo) and filtering. |
 | `url` | The link to the exact line of the [Noodle comment](#noodle-comment). |
+| `from` | Whether arrow should be in the "from" resource. |
+| `to` | Whether arrow should be in the "to" resource. |

@@ -8,13 +8,14 @@ The graph displayed using [vis.js](https://visjs.org/) under the hood.
 
 - Graph view
   - Resources (nodes) and relationships (edges)
-  - Nodes will have icon based on the `type`
+  - Nodes have icons based on the `type`
   - Open resource view by clicking on its node
   - Filter resource nodes by:
     - Tags
-    - Name
-    - Type
-    - Relationship tags
+    - Name (TODO)
+    - Type (TODO)
+    - Relationship tags (TODO)
+    - Distance from filtered nodes
 - Resource view
   - Name
   - Type
@@ -26,10 +27,10 @@ The graph displayed using [vis.js](https://visjs.org/) under the hood.
     - Action
     - Related resource name
     - Tags
-    - Link to source code line
+    - Link to source code line (TODO)
 
 ## Bundling
 
 The UI must be bundled together with the [scan output](../scanner/README.md#scan-output) to be functional.
 
-__See the [bundle command](../cli/README.md#bundle).__
+__See the [run command](../cli/README.md#run).__

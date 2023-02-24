@@ -1,29 +1,14 @@
 # CLI
 
 - [Commands](#commands)
-  - [`here`](#here)
-  - [`scan`](#scan)
+  - [`run`](#run)
     - [Parameters](#parameters)
     - [Scan config file](#scan-config-file)
-    - [Scan options object](#scan-options-object)
-  - [`bundle`](#bundle)
-    - [Parameters](#parameters-1)
+    - [Scan options object (TODO)](#scan-options-object-todo)
 
 ## Commands
 
-### `here`
-
-The quickest way to get started with Noodle 🍜
-
-```bash
-noodle here
-```
-
-Runs a [`scan`](#scan) on the current directory and [`bundle`](#bundle) the UI locally. When finished, it will automatically open it in the browser.
-
-No config file is needed.
-
-### `scan`
+### `run`
 
 ```bash
 noodle scan
@@ -35,37 +20,21 @@ Using the [scanner](../scanner) to search resources relationships.
 
 | Command Argument | Environment Variable | Default | Description |
 |-|-|-|-|
-| `--config`, `-c` | `NOODLE_SCAN_CONFIG` | `./noodle.json` | Path to the scan configuration file. |
-| `--output`, `-o` | `NOODLE_SCAN_OUTPUT` | `./noodleScanOutput.json` | Path of the output file. |
-| `--github-token` | `NOODLE_SCAN_GITHUB_TOKEN` | - | GitHub access token. Required for GitHub resources. |
+| `--config`, `-c` | `NOODLE_CONFIG` | `./noodle.json` | Path to the scan configuration file. |
+| `--output`, `-o` | `NOODLE_OUTPUT` | `./noodleScanOutput` | Path to the UI bundle output folder. |
+| `--githubToken` | `NOODLE_GITHUB_TOKEN` | - | GitHub access token. Required for GitHub resources. |
+| `--open` | - | `false` | Whether to open in the browser the bundled UI when finished. |
 
 #### Scan config file
 
-```json
-{
-  "options": {
-    "typeEvaluation": true,
-  },
-  "resources": [
-    {
-      "id": "my-api-service",
-      "name": "My API Service",
-      "description": "REST API for managing data of some feature.",
-      "type": "aws/ecs",
-      "tags": ["api", "nodejs", "rest", "feature1"],
-      "url": "https://github.com/my-organization/my-api-service",
-      "source": "github"
-    }
-  ]
-}
-```
+You can find example of a config file in the [basic example](../../examples/basic/noodle.json)
 
 | Field | Required | Description |
 |-|-|-|
-| `options` | No | See [scan options object](#scan-options-object) |
+| `options` | No | See [scan options object](#scan-options-object-todo) |
 | `resources` | Yes | List of [resources objects](#resource-object) to scan or declare. |
 
-#### Scan options object
+#### Scan options object (TODO)
 
 | Field | Pattern | Required | Default | Description |
 |-|-|-|-|-|
@@ -82,19 +51,3 @@ Using the [scanner](../scanner) to search resources relationships.
 | `tags` | a-z, number, forward slash, underscore, dash. RegEx: `[a-z\d-_/]+` | No | `[]` | Tags of the resource. For the UI view and filtering. |
 | `url` | `null` if `source` is `third-party`, otherwise a valid URL. | Yes, except if `source` is `third-party`. | `null` | The URL of the source to scan. |
 | `source` | `github`, `local`, `third-party` | No | `github` if starts with `https://github.com`, `third-party` if `url` is `null`, otherwise `local`. | The type of the source to scan. `third-party` sources won't get scanned. |
-
-### `bundle`
-
-Creates a UI bundle with the specified [scan output](../scanner/README.md#scan-output).
-
-```bash
-noodle bundle
-```
-
-#### Parameters
-
-| Command Argument | Environment Variable | Default | Description |
-|-|-|-|-|
-| `--scanOutput` | `NOODLE_SCAN_OUTPUT` | `./noodleScanOutput.json` | Path to the scan output file. |
-| `--output` | `NOODLE_BUNDLE_OUTPUT` | `./noodleDist` | Path the the bundle output directory. |
-| `--open` | - | `false` | Whether to open in the browser the bundled UI when finished. |

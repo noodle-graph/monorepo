@@ -25,9 +25,9 @@ npm install --location=global @noodle-graph/cli
 
 [Simple example](./examples/basic/noodle.json)
 
-### 4. Run `noodle scan`
+### 4. `noodle run --open true`
 
-See more in the [CLI package](https://github.com/noodle-graph/monorepo/tree/master/packages/cli).
+See more in the [CLI package](./packages/cli).
 
 ## Contributing
 
