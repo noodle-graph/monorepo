@@ -11,10 +11,10 @@
 ### `run`
 
 ```bash
-noodle scan
+noodle run
 ```
 
-Using the [scanner](../scanner) to search resources relationships.
+Using the [scanner](../scanner) to search resources relationships and bundles a UI with the results.
 
 #### Parameters
 
