@@ -14,5 +14,8 @@
                 "cwd": "packages/cli"
             }
         }
-    }
+    },
+    "implicitDependencies": [
+        "ui"
+    ]
 }

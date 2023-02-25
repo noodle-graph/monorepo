@@ -17,7 +17,9 @@ program.addCommand(
         .option('--config, -c <string>', 'Path to the scan configuration file.', process.env.NOODLE_CONFIG ?? 'noodle.json')
         .option('--output, -o <string>', 'Path the the bundle output directory.', process.env.NOODLE_OUTPUT ?? './noodleScanOutput')
         .option('--githubToken <string>', 'GitHub access token.', process.env.NOODLE_GITHUB_TOKEN)
-        .option('--open <boolean>', 'Whether to open in the browser the bundled UI when finished.', 'false')
+        .option('--open', 'Whether to open in the browser the bundled UI when finished.')
+        .option('--workers', 'Number of scanner workers')
+        .option('--verbose', 'Print debug logs')
         .action(run)
 );
 

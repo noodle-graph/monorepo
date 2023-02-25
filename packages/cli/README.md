@@ -24,6 +24,9 @@ Using the [scanner](../scanner) to search resources relationships and bundles a 
 | `--output`, `-o` | `NOODLE_OUTPUT` | `./noodleScanOutput` | Path to the UI bundle output folder. |
 | `--githubToken` | `NOODLE_GITHUB_TOKEN` | - | GitHub access token. Required for GitHub resources. |
 | `--open` | - | `false` | Whether to open in the browser the bundled UI when finished. |
+| `--workers` | - | TODO | TODO |
+| `--verbose` | - | TODO | TODO |
+| `--include` | - | TODO | TODO |
 
 ### Scan config file
 

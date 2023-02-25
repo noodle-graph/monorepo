@@ -7,5 +7,5 @@ export interface ListTypeOptions {
 }
 
 export interface FilesIterator {
-    listFiles(options: ListTypeOptions): Promise<string[]>;
+    iterate(options: ListTypeOptions): AsyncGenerator<string>;
 }

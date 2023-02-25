@@ -4,18 +4,18 @@ import { join } from 'path';
 import { FilesIterator, ListTypeOptions } from './filesIterator';
 
 export class FilesIteratorLocal implements FilesIterator {
-    async listFiles(options: ListTypeOptions): Promise<string[]> {
-        return (await deepReadDir(options.url)).flat(Number.POSITIVE_INFINITY);
+    iterate(options: ListTypeOptions): AsyncGenerator<string> {
+        return deepReadDir(options.url);
     }
 }
 
-async function deepReadDir(dirPath) {
-    return await Promise.all(
-        (
-            await readdir(dirPath, { withFileTypes: true })
-        ).map(async (dirent) => {
-            const path = join(dirPath, dirent.name);
-            return dirent.isDirectory() ? await deepReadDir(path) : path;
-        })
-    );
+async function* deepReadDir(dirPath: string): AsyncGenerator<string> {
+    for (const dirent of await readdir(dirPath, { withFileTypes: true })) {
+        const direntPath = join(dirPath, dirent.name);
+        if (dirent.isDirectory()) {
+            for await (const path of deepReadDir(direntPath)) yield path;
+        } else {
+            yield direntPath;
+        }
+    }
 }

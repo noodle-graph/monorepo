@@ -87,14 +87,21 @@ yarn add @noodle-graph/<package name>@local --registry=http://localhost:4873
 ### Testing the CLI locally
 
 ```bash
-nx build cli
-nx install:local cli
+nx build:global cli
 ```
 
 That will build and install the CLI globally on your local machine. Then you can run the CLI, for example:
 
 ```bash
 noodle run
+```
+
+Be aware that this will also `npm link @noodle-graph/scanner` the global CLI module. To avoid that, you can do:
+
+```bash
+nx build cli
+cd dist
+npm i -g .
 ```
 
 #### Using link in the global CLI installation

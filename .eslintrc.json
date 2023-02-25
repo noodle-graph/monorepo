@@ -57,15 +57,10 @@
             }
         ]
     },
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
     "overrides": [
-        {
-            "files": [
-                "**/*.mjs"
-            ],
-            "parserOptions": {
-                "ecmaVersion": "latest"
-            }
-        },
         {
             "files": "**/jest.config.js",
             "rules": {

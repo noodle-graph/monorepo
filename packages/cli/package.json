@@ -16,15 +16,17 @@
         "noodle": "./index.js"
     },
     "scripts": {
-        "build": "nx build ui && tsc --project tsconfig.lib.json && cp package.json dist && node scripts/copyUi.mjs",
+        "build": "tsc --project tsconfig.lib.json && cp package.json dist && node scripts/copyUi.mjs",
         "lint": "eslint .",
         "test": "jest --passWithNoTests",
-        "install:local": "cd dist && npm i -g ."
+        "build:global": "nx build && cd ../scanner/dist && npm link && cd ../../cli/dist && npm i -g . && cd $(npm root -g)/@noodle-graph/cli && npm link @noodle-graph/scanner"
     },
     "dependencies": {
         "@noodle-graph/scanner": "^0.0.5",
         "commander": "^10.0.0",
-        "figlet": "^1.5.2"
+        "figlet": "^1.5.2",
+        "pino": "^8.11.0",
+        "pino-pretty": "^9.4.0"
     },
     "engines": {
         "node": ">=16"

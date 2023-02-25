@@ -25,7 +25,7 @@ npm install --location=global @noodle-graph/cli
 
 [Simple example](./examples/basic/noodle.json)
 
-### 4. `noodle run --open true`
+### 4. `noodle run --open`
 
 See more in the [CLI package](./packages/cli).
 

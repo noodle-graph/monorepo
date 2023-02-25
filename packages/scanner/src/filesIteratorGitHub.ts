@@ -9,7 +9,7 @@ import { MissingGitHubOptions } from './errors';
 import { FilesIterator, ListTypeOptions } from './filesIterator';
 
 export class FilesIteratorGitHub implements FilesIterator {
-    async listFiles({ url, github }: ListTypeOptions): Promise<string[]> {
+    async *iterate({ url, github }: ListTypeOptions): AsyncGenerator<string> {
         if (github == null) throw new MissingGitHubOptions();
 
         const dir = fs.mkdtempSync(join(tmpdir(), 'noodle-'));
@@ -24,6 +24,8 @@ export class FilesIteratorGitHub implements FilesIterator {
             onAuth: () => ({ username: github.token, password: '' }),
         });
 
-        return (await listFiles({ fs, dir, ref: github.ref })).map((filePath) => join(dir, filePath));
+        for (const filePath of await listFiles({ fs, dir, ref: github.ref })) {
+            yield join(dir, filePath);
+        }
     }
 }

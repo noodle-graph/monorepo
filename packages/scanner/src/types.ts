@@ -4,6 +4,7 @@ export type Source = 'local' | 'github' | 'config';
 
 export interface ScanConfig {
     resources: Resource[];
+    include?: string | RegExp;
 }
 
 export type ScanResult = ScanConfig; // Expected be different in the future
@@ -20,6 +21,7 @@ export interface Resource {
     github: {
         ref: string;
     };
+    include?: string | RegExp;
 }
 
 export interface Relationship {
