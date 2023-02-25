@@ -19,7 +19,7 @@
         {
             "id": "some-db",
             "name": "Some DB",
-            "tags": ["feature1", "feature2", "service"],
+            "tags": ["feature1", "feature2", "db"],
             "type": "aws/aurora"
         }
     ]

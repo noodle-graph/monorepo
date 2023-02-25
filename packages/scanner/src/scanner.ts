@@ -1,4 +1,5 @@
-import fs from 'fs/promises';
+import { readFile } from 'fs/promises';
+import { join, isAbsolute } from 'path';
 
 import { Logger } from 'pino';
 
@@ -8,7 +9,7 @@ import { Relationship, Resource, ScanConfig, ScanResult, Source } from './types'
 
 const NOODLE_COMMENT_REGEX = /noodle\s+(-|<)-([a-z\s]+)-(>|-)\s+([a-z0-9-]+)\s+(?:\(([a-z0-9-,]+)+\)|)/;
 const DEFAULT_INCLUDE_REGEX = /(.ts|.tsx|.js|.jsx|.java|.py|.go|.tf)$/;
-const DEFAULT_FILES_WORKERS_NUM = 8;
+export const DEFAULT_FILES_WORKERS_NUM = 8;
 
 export interface ScanOptions {
     config: ScanConfig;
@@ -28,7 +29,6 @@ export class Scanner {
         const scannedResources: Resource[] = [];
 
         for (const resource of this.options.config.resources) {
-            this.logger.debug({ resourceId: resource.id }, 'Scanning resource...');
             scannedResources.push(await this.scanResource(resource));
         }
 
@@ -37,13 +37,16 @@ export class Scanner {
 
     private async scanResource(resource: Resource): Promise<Resource> {
         const source = inferSource(resource);
-        const url = resource.url;
 
         if (source === 'config') return resource;
-        if (!url) throw new MissingUrlError(resource.id);
+        if (!resource.url) throw new MissingUrlError(resource.id);
 
+        const url = source === 'local' && !isAbsolute(resource.url) ? join(process.cwd(), resource.url) : resource.url;
+
+        this.logger.debug({ resourceId: resource.id, url, source }, 'Scanning resource...');
         const filePathsGenerator = this.filesIteratorsRegistry.get(source).iterate({ url, github: { ...this.options.github, ...resource.github } });
 
+        let filesScanned = 0;
         const relationships: Relationship[] = [];
         await Promise.all(
             Array(this.options.scanWorkersNum)
@@ -51,14 +54,17 @@ export class Scanner {
                 .map(async (generator) => {
                     for await (const path of generator) {
                         if (getDefaultRegex(resource.include, this.defaultInclude).test(path)) {
-                            const content = (await fs.readFile(path)).toString();
+                            filesScanned++;
+                            const content = (await readFile(path)).toString();
                             relationships.push(...extractRelationships(url, content));
                         }
                     }
                 })
         );
 
-        return { ...resource, source, relationships };
+        this.logger.info({ resourceId: resource.id, filesScanned, relationships: relationships.length }, 'Resource scanned');
+
+        return { ...resource, source, url, relationships };
     }
 }
 

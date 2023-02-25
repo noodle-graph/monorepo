@@ -94,26 +94,28 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
     private extractEdges() {
         let i = 0;
 
-        const edges: any = {};
+        const edges: Record<string, any> = {};
         for (const resource of this.props.scanOutput.resources) {
             for (const relationship of resource.relationships ?? []) {
                 const key = [resource.id, relationship.resourceId].sort().join(',');
-                if (edges[key]) {
-                    edges[key].label += `\n${relationship.action}`;
-                    edges[key].tags = [...new Set(...edges[key].tags, ...(relationship.tags ?? []))];
-                    edges[key].arrowFrom ||= relationship.from;
-                    edges[key].arrowTo ||= relationship.to;
-                } else {
+                const oppositeArrow = resource.id > relationship.resourceId;
+                console.log(resource.id, relationship.resourceId, oppositeArrow);
+                if (!edges[key]) {
                     edges[key] = {
                         id: i++,
                         from: resource.id,
                         to: relationship.resourceId,
-                        arrowFrom: relationship.from,
-                        arrowTo: relationship.to,
-                        label: relationship.action,
-                        tags: relationship.tags,
+                        arrowFrom: false,
+                        arrowTo: false,
+                        label: '',
+                        tags: [],
                     };
                 }
+                edges[key].label += `${edges[key].label ? '\n' : ''}${relationship.action}`;
+                edges[key].tags = [...new Set(...edges[key].tags, ...(relationship.tags ?? []))];
+                edges[key].arrowFrom ||= oppositeArrow ? relationship.to : relationship.from;
+                edges[key].arrowTo ||= oppositeArrow ? relationship.from : relationship.to;
+
                 edges[key].arrows = [edges[key].arrowFrom && 'from', edges[key].arrowTo && 'to'].filter(Boolean).join(', ');
             }
         }

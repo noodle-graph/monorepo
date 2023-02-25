@@ -12,7 +12,7 @@ const INDEX_HTML_FILENAME = 'index.html';
 
 export async function run(scanAttributes): Promise<void> {
     const logger = createLogger(scanAttributes.verbose ? 'debug' : 'info');
-    logger.debug(scanAttributes, 'CLI attributes');
+    logger.debug(scanAttributes, 'Running command `run`');
     const configPath = isAbsolute(scanAttributes.C) ? scanAttributes.C : join(process.cwd(), scanAttributes.C);
     const outputDirPath = isAbsolute(scanAttributes.O) ? scanAttributes.O : join(process.cwd(), scanAttributes.O);
     const uiDirPath = join(outputDirPath, UI_BUILD_DIR_PATH);
@@ -23,7 +23,7 @@ export async function run(scanAttributes): Promise<void> {
         {
             config: JSON.parse((await readFile(configPath)).toString()),
             github: { token: scanAttributes.githubToken },
-            scanWorkersNum: scanAttributes.workers,
+            scanWorkersNum: Number(scanAttributes.workers),
         },
         logger
     );

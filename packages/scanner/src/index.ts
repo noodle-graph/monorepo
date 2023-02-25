@@ -1,3 +1,5 @@
+export { DEFAULT_FILES_WORKERS_NUM } from './scanner';
+
 import { Logger } from 'pino';
 
 import { Scanner, ScanOptions } from './scanner';
