@@ -26,7 +26,6 @@ Using the [scanner](../scanner) to search resources relationships and bundles a 
 | `--open` | - | `false` | Whether to open in the browser the bundled UI when finished. |
 | `--workers` | - | TODO | TODO |
 | `--verbose` | - | TODO | TODO |
-| `--include` | - | TODO | TODO |
 
 ### Scan config file
 
