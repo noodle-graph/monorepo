@@ -1,0 +1,26 @@
+{
+    "resources": [
+        {
+            "id": "some-service",
+            "url": ".",
+            "name": "Some Service",
+            "tags": ["feature1", "feature2", "service"],
+            "type": "aws/ecs",
+            "include": "someService/.*\\.js"
+        },
+        {
+            "id": "another-service",
+            "url": ".",
+            "name": "Another Service",
+            "tags": ["feature1", "service"],
+            "type": "aws/ecs",
+            "include": "anotherService/.*\\.js"
+        },
+        {
+            "id": "some-db",
+            "name": "Some DB",
+            "tags": ["feature1", "feature2", "db"],
+            "type": "aws/aurora"
+        }
+    ]
+}
