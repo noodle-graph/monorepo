@@ -16,5 +16,5 @@ export interface Resource {
     url?: string;
     relationships?: Relationship[];
     description?: string;
-    source?: string;
+    source: string;
 }

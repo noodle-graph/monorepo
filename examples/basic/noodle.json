@@ -4,7 +4,7 @@
             "id": "some-service",
             "url": "./someService",
             "name": "Some Service",
-            "tags": ["feature1", "feature2", "service"],
+            "tags": ["feature1"],
             "type": "aws/ecs",
             "source": "local"
         },
@@ -19,7 +19,7 @@
         {
             "id": "some-db",
             "name": "Some DB",
-            "tags": ["feature1", "feature2", "db"],
+            "tags": ["db"],
             "type": "aws/aurora"
         }
     ]

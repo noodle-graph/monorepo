@@ -1,17 +1,18 @@
-import fs from 'fs';
 import { mkdtemp } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
-import { clone, listFiles } from 'isomorphic-git';
-import http from 'isomorphic-git/http/node';
+import { simpleGit } from 'simple-git';
 
 import { MissingGitHubOptions, MissingGitHubOptionsError, MissingUrlError } from './errors';
 import { FilesIterator, FilesIteratorOptions } from './filesIterator';
+import { FilesIteratorLocal } from './filesIteratorLocal';
 import { ScanOptions } from './scanner';
 import { Resource } from './types';
 
 export class FilesIteratorGitHub implements FilesIterator {
+    private readonly filesIteratorLocal = new FilesIteratorLocal();
+
     async produceOptions(scanOptions: ScanOptions, resource: Resource): Promise<FilesIteratorOptions> {
         if (!resource.url) throw new MissingUrlError(resource.id);
         if (!scanOptions.github) throw new MissingGitHubOptionsError(resource.id);
@@ -19,32 +20,29 @@ export class FilesIteratorGitHub implements FilesIterator {
         return {
             resource,
             url: resource.url,
-            localDirUrl: await mkdtemp(join(tmpdir(), 'noodle-')),
+            localBaseUrl: await mkdtemp(join(tmpdir(), 'noodle-')),
             github: {
                 ...scanOptions.github,
                 ...resource.github,
-                ref: resource.github?.ref ?? 'master',
+                branch: resource.github?.branch ?? 'master',
             },
         };
     }
 
-    async *iterate({ url, localDirUrl: baseUrl, github }: FilesIteratorOptions): AsyncGenerator<string> {
-        if (github == null) throw new MissingGitHubOptions();
+    async *iterate(options: FilesIteratorOptions): AsyncGenerator<string> {
+        if (options.github == null) throw new MissingGitHubOptions();
 
-        const dir = baseUrl;
+        const url = new URL(options.url);
+        url.username = options.github.token;
 
-        await clone({
-            fs,
-            dir,
-            url,
-            ref: github.ref,
-            http,
-            singleBranch: true,
-            onAuth: () => ({ username: github.token, password: '' }),
+        await simpleGit().clone(url.toString(), options.localBaseUrl, {
+            '--depth': 1,
+            '--single-branch': null,
+            '--branch': options.github.branch,
         });
 
-        for (const filePath of await listFiles({ fs, dir, ref: github.ref })) {
-            yield filePath;
-        }
+        const localIterator = this.filesIteratorLocal.iterate({ ...options, url: options.localBaseUrl });
+
+        for await (const path of localIterator) yield path;
     }
 }

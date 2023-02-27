@@ -8,6 +8,7 @@ export class FilesIteratorsRegistry {
         github: new FilesIteratorGitHub(),
         local: new FilesIteratorLocal(),
         config: undefined as never,
+        scan: undefined as never,
     };
 
     public get(source: Source): FilesIterator {

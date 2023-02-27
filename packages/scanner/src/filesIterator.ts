@@ -4,10 +4,10 @@ import { Resource } from './types';
 export interface FilesIteratorOptions {
     resource: Resource;
     url: string;
-    localDirUrl: string;
+    localBaseUrl: string;
     github?: {
         token: string;
-        ref: string;
+        branch: string;
     };
 }
 

@@ -13,7 +13,7 @@ export class FilesIteratorLocal implements FilesIterator {
         return Promise.resolve({
             resource,
             url: resource.url,
-            localDirUrl: scanOptions.scanWorkingDirectory,
+            localBaseUrl: scanOptions.scanWorkingDirectory,
         });
     }
 

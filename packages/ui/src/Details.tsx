@@ -9,7 +9,7 @@ interface DetailProps {
     resourceSelected: (string) => void;
 }
 
-function detail(name: string, content?: ReactElement | string): JSX.Element | false {
+function detail(name: string, content?: ReactElement | string | boolean): JSX.Element | false {
     return (
         !!content && (
             <div className="flex justify-between flex-col gap-1">
@@ -23,36 +23,46 @@ function detail(name: string, content?: ReactElement | string): JSX.Element | fa
 export function Details(props: DetailProps) {
     const prettySource = prettifySource(props.resource.source);
 
-    function link(text: string, url: string, iconImgSrc?: string): JSX.Element {
-        return (
-            <a className="border-0 border-text-secondary hover:border-opacity-50 transition-colors" href={url} target="_blank">
+    function link(text: string, url?: string, iconImgSrc?: string): JSX.Element {
+        const content = (
+            <>
                 {iconImgSrc && <img src={iconImgSrc} className="max-h-4 inline-block mr-1" />}
                 <span className="border-b border-inherit">{text}</span>
+            </>
+        );
+        return url ? (
+            <a className="border-0 border-text-secondary hover:border-opacity-50 transition-colors" href={url} target="_blank">
+                {content}
             </a>
+        ) : (
+            <span className="border-[#00000000]">{content}</span>
         );
     }
 
     function relationshipLink(relationshipUrl: string): ReactElement {
-        return link(relationshipUrl.split('/').pop() ?? 'Link', relationshipUrl);
+        return link(relationshipUrl.split('/')?.pop() ?? 'Link', relationshipUrl);
     }
 
     function relationship(relationship: Relationship) {
         return (
-            <div className="flex flex-col bg-primary text-secondary p-4 rounded" onClick={() => props.resourceSelected(relationship.resourceId)}>
+            <div className="flex flex-col bg-primary text-secondary p-4 rounded">
                 <div>
-                    <div className="inline-block text-sm cursor-pointer hover:bg-opacity-50 p-2 rounded bg-secondary transition-colors">
+                    <div
+                        className="inline-block text-sm cursor-pointer hover:bg-opacity-50 p-2 rounded bg-secondary transition-colors"
+                        onClick={() => props.resourceSelected(relationship.resourceId)}
+                    >
                         {relationship.resource?.type && <img src={getTypeImagePath(relationship.resource.type)} className="max-h-5 inline-block mr-2" />}
                         <span className="bg-inherit">{relationship.resource?.name ?? relationship.resourceId}</span>
                     </div>
                 </div>
-                {relationship.tags && (
+                {!!relationship.tags?.length && (
                     <div className="flex flex-wrap gap-2 text-xs mt-2">
                         {relationship.tags?.map((tag) => (
                             <Pill label={tag} />
                         ))}
                     </div>
                 )}
-                <div className="mt-1">{relationshipLink(relationship.url)}</div>
+                {relationship.url && <div className="mt-1">{relationshipLink(relationship.url)}</div>}
             </div>
         );
     }
@@ -68,7 +78,7 @@ export function Details(props: DetailProps) {
                 {props.resource.description && <div className="text-secondary text-sm font-bold">{props.resource.description}</div>}
                 {detail('ID', props.resource.id)}
                 {detail('Type', props.resource.type)}
-                {detail('Source', props.resource.url ? link(prettySource, props.resource.url, props.resource.source && getTypeImagePath(props.resource.source)) : prettySource)}
+                {detail('Source', link(prettySource, props.resource.url, props.resource.source && getTypeImagePath(props.resource.source)))}
                 {detail(
                     'Relationships',
                     props.resource.relationships && (
@@ -81,7 +91,7 @@ export function Details(props: DetailProps) {
                 )}
                 {detail(
                     'Tags',
-                    props.resource.tags && (
+                    !!props.resource.tags?.length && (
                         <div className="flex flex-wrap gap-2 text-xs mt-2">
                             {props.resource.tags?.map((tag) => (
                                 <Pill label={tag} />

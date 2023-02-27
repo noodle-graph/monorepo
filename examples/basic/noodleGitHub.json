@@ -9,7 +9,7 @@
             "source": "github",
             "include": "examples/basic/someService/.*\\.js$",
             "github": {
-                "ref": "master"
+                "branch": "master"
             }
         },
         {

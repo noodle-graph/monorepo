@@ -17,8 +17,8 @@
         "test": "jest"
     },
     "dependencies": {
-        "isomorphic-git": "^1.21.0",
-        "pino": "^8.11.0"
+        "pino": "^8.11.0",
+        "simple-git": "^3.16.1"
     },
     "engines": {
         "node": ">=16"

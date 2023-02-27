@@ -81,7 +81,7 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                 this.props.scanOutput.resources.map((resource: Resource) => ({
                     id: resource.id,
                     label: resource.name ?? resource.id,
-                    group: resource.type,
+                    group: resource.type ?? resource.source,
                     tags: resource.tags as any,
                 }))
             ),
@@ -98,25 +98,23 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
         for (const resource of this.props.scanOutput.resources) {
             for (const relationship of resource.relationships ?? []) {
                 const key = [resource.id, relationship.resourceId].sort().join(',');
-                // const oppositeArrow = resource.id > relationship.resourceId;
                 if (!edges[key]) {
                     edges[key] = {
                         id: i++,
                         from: resource.id,
                         to: relationship.resourceId,
-                        // arrowFrom: false,
-                        // arrowTo: false,
+                        arrowFrom: false,
+                        arrowTo: false,
                         label: '',
                         tags: [],
-                        arrows: 'to',
                     };
                 }
-                edges[key].label += `${edges[key].label ? '\n' : ''}${relationship.action}`;
+                edges[key].label += relationship.action ? `${edges[key].label ? '\n' : ''}${relationship.action}` : '';
                 edges[key].tags = [...new Set(...edges[key].tags, ...(relationship.tags ?? []))];
-                // edges[key].arrowFrom ||= oppositeArrow ? relationship.to : relationship.from;
-                // edges[key].arrowTo ||= oppositeArrow ? relationship.from : relationship.to;
 
-                // edges[key].arrows = [edges[key].arrowFrom && 'from', edges[key].arrowTo && 'to'].filter(Boolean).join(', ');
+                edges[key].arrowFrom ||= relationship.from;
+                edges[key].arrowTo ||= relationship.to;
+                edges[key].arrows = [edges[key].arrowFrom && 'from', edges[key].arrowTo && 'to'].filter(Boolean).join(', ');
             }
         }
 

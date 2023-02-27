@@ -1,4 +1,7 @@
-// noodle --query-> some-db (feature1,feature2)
+// noodle --> some-db (feature2)
+// noodle --> some-undeclared-service
+// noodle --some label-- some-undeclared-service (feature3)
+// noodle <-- some-undeclared-service
 
 console.log('Querying the DB...');
 // some DB query here...

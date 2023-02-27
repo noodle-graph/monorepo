@@ -1,5 +1,7 @@
 # Contributing
 
+First, thanks for considering contributing to the project! 🤩
+
 - [Setup locally](#setup-locally)
 - [Useful commands](#useful-commands)
   - [Common](#common)

@@ -5,6 +5,13 @@ export function getTypeImagePath(type: string): string {
     return IMG_DIR + type + (TYPE_IMG_PNG.includes(type) ? '.png' : '.svg');
 }
 
-export function prettifySource(source?: string): string {
-    return !source ? 'Config' : source === 'github' ? 'GitHub' : source === 'local' ? 'Local' : source;
+export function prettifySource(source: string): string {
+    return (
+        {
+            github: 'GitHub',
+            local: 'Local',
+            scan: 'Scan',
+            config: 'Configuration',
+        }[source] ?? 'Unknown'
+    );
 }

@@ -1,6 +1,6 @@
 // TODO: Move to common types
 
-export type Source = 'local' | 'github' | 'config';
+export type Source = 'local' | 'github' | 'config' | 'scan';
 
 export interface ScanConfig {
     resources: Resource[];
@@ -19,7 +19,7 @@ export interface Resource {
     source: Source;
     relationships?: Relationship[];
     github?: {
-        ref: string;
+        branch: string;
     };
     include?: string | RegExp;
 }
