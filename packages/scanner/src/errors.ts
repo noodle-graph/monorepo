@@ -4,4 +4,10 @@ export class MissingUrlError extends Error {
     }
 }
 
+export class MissingGitHubOptionsError extends Error {
+    constructor(resourceId: string) {
+        super(`Missing GitHub options for resource ${resourceId}`);
+    }
+}
+
 export class MissingGitHubOptions extends Error {}

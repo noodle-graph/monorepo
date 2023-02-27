@@ -1,10 +1,23 @@
 import { readdir } from 'fs/promises';
 import { join } from 'path';
 
-import { FilesIterator, ListTypeOptions } from './filesIterator';
+import { MissingUrlError } from './errors';
+import { FilesIterator, FilesIteratorOptions } from './filesIterator';
+import { ScanOptions } from './scanner';
+import { Resource } from './types';
 
 export class FilesIteratorLocal implements FilesIterator {
-    iterate(options: ListTypeOptions): AsyncGenerator<string> {
+    produceOptions(scanOptions: ScanOptions, resource: Resource): Promise<FilesIteratorOptions> {
+        if (!resource.url) throw new MissingUrlError(resource.id);
+
+        return Promise.resolve({
+            resource,
+            url: resource.url,
+            localDirUrl: scanOptions.scanWorkingDirectory,
+        });
+    }
+
+    iterate(options: FilesIteratorOptions): AsyncGenerator<string> {
         return deepReadDir(options.url);
     }
 }

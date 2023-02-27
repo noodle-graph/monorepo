@@ -1,0 +1,30 @@
+{
+    "resources": [
+        {
+            "id": "some-service",
+            "url": "https://github.com/noodle-graph/monorepo",
+            "name": "Some Service",
+            "tags": ["feature1", "feature2", "service"],
+            "type": "aws/ecs",
+            "source": "github",
+            "include": "examples/basic/someService/.*\\.js$",
+            "github": {
+                "ref": "master"
+            }
+        },
+        {
+            "id": "another-service",
+            "url": "https://github.com/noodle-graph/monorepo",
+            "name": "Another Service",
+            "tags": ["feature1", "service"],
+            "type": "aws/ecs",
+            "include": "examples/basic/anotherService/.*\\.(js|py)$"
+        },
+        {
+            "id": "some-db",
+            "name": "Some DB",
+            "tags": ["feature1", "feature2", "db"],
+            "type": "aws/aurora"
+        }
+    ]
+}

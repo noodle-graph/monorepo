@@ -18,7 +18,7 @@ export interface Resource {
     url?: string;
     source: Source;
     relationships?: Relationship[];
-    github: {
+    github?: {
         ref: string;
     };
     include?: string | RegExp;

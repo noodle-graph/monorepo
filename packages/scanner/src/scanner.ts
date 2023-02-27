@@ -1,9 +1,9 @@
 import { readFile } from 'fs/promises';
-import { join, isAbsolute } from 'path';
+import { join } from 'path';
 
 import { Logger } from 'pino';
 
-import { MissingUrlError } from './errors';
+import { FilesIteratorOptions } from './filesIterator';
 import { FilesIteratorsRegistry } from './filesIteratorsRegistry';
 import { Relationship, Resource, ScanConfig, ScanResult, Source } from './types';
 
@@ -15,12 +15,13 @@ export interface ScanOptions {
     config: ScanConfig;
     github?: { token: string };
     scanWorkersNum?: number;
+    scanWorkingDirectory: string;
 }
 
 export class Scanner {
     private readonly defaultInclude: RegExp;
 
-    constructor(private readonly options: ScanOptions, private readonly logger: Logger, private readonly filesIteratorsRegistry = new FilesIteratorsRegistry()) {
+    constructor(private readonly options: ScanOptions, private readonly logger?: Logger, private readonly filesIteratorsRegistry = new FilesIteratorsRegistry()) {
         this.options.scanWorkersNum ??= DEFAULT_FILES_WORKERS_NUM;
         this.defaultInclude = getDefaultRegex(this.options.config.include, DEFAULT_INCLUDE_REGEX);
     }
@@ -39,12 +40,12 @@ export class Scanner {
         const source = inferSource(resource);
 
         if (source === 'config') return resource;
-        if (!resource.url) throw new MissingUrlError(resource.id);
 
-        const url = source === 'local' && !isAbsolute(resource.url) ? join(process.cwd(), resource.url) : resource.url;
+        this.logger?.debug({ resourceId: resource.id, url: resource.url, source }, 'Scanning resource...');
 
-        this.logger.debug({ resourceId: resource.id, url, source }, 'Scanning resource...');
-        const filePathsGenerator = this.filesIteratorsRegistry.get(source).iterate({ url, github: { ...this.options.github, ...resource.github } });
+        const filesIterator = this.filesIteratorsRegistry.get(source);
+        const filesIteratorOptions = await filesIterator.produceOptions(this.options, resource);
+        const filePathsGenerator = filesIterator.iterate(filesIteratorOptions);
 
         let filesScanned = 0;
         const relationships: Relationship[] = [];
@@ -55,16 +56,15 @@ export class Scanner {
                     for await (const path of generator) {
                         if (getDefaultRegex(resource.include, this.defaultInclude).test(path)) {
                             filesScanned++;
-                            const content = (await readFile(path)).toString();
-                            relationships.push(...extractRelationships(url, content));
+                            relationships.push(...(await extractRelationships(filesIteratorOptions, path)));
                         }
                     }
                 })
         );
 
-        this.logger.info({ resourceId: resource.id, filesScanned, relationships: relationships.length }, 'Resource scanned');
+        this.logger?.info({ resourceId: resource.id, filesScanned, relationships: relationships.length }, 'Resource scanned');
 
-        return { ...resource, source, url, relationships };
+        return { ...resource, source, url: filesIteratorOptions.url, relationships };
     }
 }
 
@@ -72,20 +72,37 @@ function getDefaultRegex(pattern: string | RegExp | undefined, defaultPattern: R
     return typeof pattern === 'string' ? new RegExp(pattern) : defaultPattern;
 }
 
-function extractRelationships(path: string, content: string): Relationship[] {
-    return content
+async function extractRelationships(options: FilesIteratorOptions, path: string): Promise<Relationship[]> {
+    let currentLine = 0;
+    return (await readFile(join(options.localDirUrl, path)))
+        .toString()
         .split('\n')
-        .map((line) => NOODLE_COMMENT_REGEX.exec(line))
-        .filter(Boolean)
-        .map((matches) => matches!) // TypeScript filter inference is not great
-        .map((matches) => ({
-            action: matches[2],
-            resourceId: matches[4],
-            tags: matches[5].split(','),
-            url: path, // FIXME: This is not a permalink
-            from: matches[1] === '<',
-            to: matches[3] === '>',
-        }));
+        .map((line) => {
+            currentLine++;
+            const matches = NOODLE_COMMENT_REGEX.exec(line);
+            if (!matches) return null;
+            return {
+                action: matches[2],
+                resourceId: matches[4],
+                tags: matches[5].split(','),
+                url: produceRelationshipUrl(options, path, currentLine++),
+                from: matches[1] === '<',
+                to: matches[3] === '>',
+            };
+        })
+        .filter(Boolean) as Relationship[];
+}
+
+function produceRelationshipUrl(options: FilesIteratorOptions, path: string, currentLine: number) {
+    return options.github ? produceRelationshipUrlGitHub(options, path, currentLine) : produceRelationshipUrlLocal(options, path);
+}
+
+function produceRelationshipUrlLocal(options: FilesIteratorOptions, path: string) {
+    return 'file://' + join(options.localDirUrl, path);
+}
+
+function produceRelationshipUrlGitHub(options: FilesIteratorOptions, path: string, line: number): string {
+    return join(options.url, 'blob', options.github!.ref, `${path}#L${line}`);
 }
 
 function inferSource(resource: Resource): Source {
