@@ -12,5 +12,6 @@
         }
     },
     "preset": "ts-jest",
+    "testRegex": "__tests__/(?!data).*\\.(ts|js|tsx|jsx)$",
     "rootDir": "src"
 }

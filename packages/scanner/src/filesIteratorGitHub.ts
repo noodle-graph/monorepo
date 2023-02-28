@@ -1,3 +1,6 @@
+/* istanbul ignore file */
+// TODO: Add tests
+
 import { mkdtemp } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';

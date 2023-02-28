@@ -17,8 +17,10 @@ export class FilesIteratorLocal implements FilesIterator {
         });
     }
 
-    iterate(options: FilesIteratorOptions): AsyncGenerator<string> {
-        return deepReadDir(options.url);
+    async *iterate(options: FilesIteratorOptions): AsyncGenerator<string> {
+        for await (const path of deepReadDir(join(options.localBaseUrl, options.url))) {
+            yield path.substring(options.localBaseUrl.length + 1);
+        }
     }
 }
 

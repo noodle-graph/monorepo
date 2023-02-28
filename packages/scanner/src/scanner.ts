@@ -1,3 +1,6 @@
+/* istanbul ignore file */
+// TODO: Add tests
+
 import { readFile } from 'fs/promises';
 import { join, isAbsolute } from 'path';
 

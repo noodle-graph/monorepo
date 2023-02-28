@@ -16,7 +16,7 @@ export interface Resource {
     type?: string;
     tags?: string[];
     url?: string;
-    source: Source;
+    source?: Source;
     relationships?: Relationship[];
     github?: {
         branch: string;
