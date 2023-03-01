@@ -15,9 +15,8 @@ export async function run(scanAttributes): Promise<void> {
 
     logger.debug(scanAttributes, 'Running command `run`');
 
-    const scanWorkingDirectory = process.cwd();
-    const configPath = isAbsolute(scanAttributes.C) ? scanAttributes.C : join(scanWorkingDirectory, scanAttributes.C);
-    const outputDirPath = isAbsolute(scanAttributes.O) ? scanAttributes.O : join(scanWorkingDirectory, scanAttributes.O);
+    const configPath = isAbsolute(scanAttributes.C) ? scanAttributes.C : join(process.cwd(), scanAttributes.C);
+    const outputDirPath = isAbsolute(scanAttributes.O) ? scanAttributes.O : join(process.cwd(), scanAttributes.O);
     const uiDirPath = join(outputDirPath, UI_BUILD_DIR_PATH);
     const uiIndexPath = join(uiDirPath, INDEX_HTML_FILENAME);
     const scanOutputJsPath = join(uiDirPath, SCAN_OUTPUT_JS_FILENAME);
@@ -27,7 +26,6 @@ export async function run(scanAttributes): Promise<void> {
             config: JSON.parse((await readFile(configPath)).toString()),
             github: { token: scanAttributes.githubToken },
             scanWorkersNum: Number(scanAttributes.workers),
-            scanWorkingDirectory,
         },
         logger
     );

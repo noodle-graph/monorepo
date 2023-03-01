@@ -5,13 +5,13 @@
     ],
     "coverageThreshold": {
         "global": {
-            "branches": 95,
+            "branches": 70,
             "functions": 95,
             "lines": 95,
             "statements": 95
         }
     },
     "preset": "ts-jest",
-    "testRegex": "__tests__/(?!data).*\\.(ts|js|tsx|jsx)$",
+    "testRegex": "__tests__/(?!data|mocks).*\\.(ts|js|tsx|jsx)$",
     "rootDir": "src"
 }

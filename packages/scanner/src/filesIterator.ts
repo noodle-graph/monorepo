@@ -12,6 +12,6 @@ export interface FilesIteratorOptions {
 }
 
 export interface FilesIterator {
-    produceOptions(scanOptions: ScanOptions, resource: Resource): Promise<FilesIteratorOptions>;
+    produceOptions(scanOptions: ScanOptions & { scanWorkingDirectory: string }, resource: Resource): FilesIteratorOptions;
     iterate(options: FilesIteratorOptions): AsyncGenerator<string>;
 }

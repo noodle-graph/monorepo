@@ -13,4 +13,8 @@ export class MissingGitHubOptionsError extends Error {
     }
 }
 
-export class MissingGitHubOptions extends Error {}
+export class ScanWorkingDirectoryError extends Error {
+    constructor(scanWorkingDirectory: string) {
+        super(`Scan working directory is incorrect '${scanWorkingDirectory}'`);
+    }
+}

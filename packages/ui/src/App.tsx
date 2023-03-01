@@ -91,7 +91,7 @@ export function App() {
                 </div>
                 {selectedNode && <Details resource={selectedNode} resourceSelected={setSelectedResourceId} />}
             </div>
-            <div>{scanOutput && <VisNetwork scanOutput={scanOutput} selectedTags={selectedTagValues} selectNode={setSelectedResourceId} />}</div>
+            <div>{scanOutput && <VisNetwork scanOutput={scanOutput} selectedTags={selectedTagValues} selectNode={setSelectedResourceId} selectedNode={selectedResourceId} />}</div>
         </div>
     );
 }

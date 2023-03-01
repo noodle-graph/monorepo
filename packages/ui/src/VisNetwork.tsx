@@ -11,12 +11,14 @@ export interface VisNetworkProps {
     };
     selectedTags: string[];
     selectNode: (nodeId: string) => void;
+    selectedNode: string | null;
 }
 
 export class VisNetwork extends React.Component<VisNetworkProps> {
     private container = React.createRef<HTMLDivElement>();
     private edges: any;
     private nodes: any;
+    private network?: Network;
 
     constructor(props: VisNetworkProps) {
         super(props);
@@ -39,7 +41,7 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
             ])
         );
 
-        new Network(
+        this.network = new Network(
             this.container.current!,
             { nodes: this.nodes, edges: this.edges },
             {
@@ -70,7 +72,8 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                 },
                 groups,
             }
-        ).on('click', (e) => {
+        );
+        this.network.on('click', (e) => {
             this.props.selectNode(e.nodes[0]);
         });
     }
@@ -125,7 +128,23 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
         this.produceNetwork();
     }
 
-    override componentDidUpdate(): void {
+    override componentDidUpdate(prevProps: VisNetworkProps): void {
+        if (this.network && prevProps.selectedNode) {
+            for (const edge of this.network.getConnectedEdges(prevProps.selectedNode)) {
+                this.network.updateEdge(edge, { width: 1 });
+            }
+        }
+        if (this.network && this.props.selectedNode != null && prevProps.selectedNode !== this.props.selectedNode) {
+            this.network.focus(this.props.selectedNode, {
+                scale: 1,
+                locked: false,
+                animation: true,
+            });
+            for (const edge of this.network.getConnectedEdges(this.props.selectedNode)) {
+                this.network.updateEdge(edge, { width: 3 });
+            }
+        }
+
         this.nodes.refresh();
     }
 

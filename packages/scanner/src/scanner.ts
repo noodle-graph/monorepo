@@ -1,7 +1,5 @@
-/* istanbul ignore file */
-// TODO: Add tests
-
-import { readFile } from 'fs/promises';
+import { readFile, mkdtemp } from 'fs/promises';
+import { tmpdir } from 'os';
 import { join, isAbsolute } from 'path';
 
 import { Logger } from 'pino';
@@ -18,14 +16,18 @@ export interface ScanOptions {
     config: ScanConfig;
     github?: { token: string };
     scanWorkersNum?: number;
-    scanWorkingDirectory: string;
+    scanWorkingDirectory?: string;
 }
 
 export class Scanner {
     private readonly defaultInclude: RegExp;
+    private readonly options: ScanOptions;
 
-    constructor(private readonly options: ScanOptions, private readonly logger?: Logger, private readonly filesIteratorsRegistry = new FilesIteratorsRegistry()) {
-        this.options.scanWorkersNum ??= DEFAULT_FILES_WORKERS_NUM;
+    constructor(options: ScanOptions, private readonly logger?: Logger, private readonly filesIteratorsRegistry = new FilesIteratorsRegistry()) {
+        this.options = {
+            scanWorkersNum: DEFAULT_FILES_WORKERS_NUM,
+            ...options,
+        };
         this.defaultInclude = getDefaultRegex(this.options.config.include, DEFAULT_INCLUDE_REGEX);
     }
 
@@ -45,10 +47,11 @@ export class Scanner {
         const source = inferSource(resource);
         if (source === 'config') return { ...resource, source };
 
-        this.logger?.debug({ resourceId: resource.id, url: resource.url, source }, 'Scanning resource...');
-
         const filesIterator = this.filesIteratorsRegistry.get(source);
-        const filesIteratorOptions = await filesIterator.produceOptions(this.options, resource);
+        const scanWorkingDirectory = this.options.scanWorkingDirectory ?? (source === 'local' ? process.cwd() : await mkdtemp(join(tmpdir(), 'noodle-')));
+        const filesIteratorOptions = filesIterator.produceOptions({ ...this.options, scanWorkingDirectory }, resource);
+
+        this.logger?.debug({ resourceId: resource.id, url: resource.url, source, scanWorkingDirectory }, 'Scanning resource...');
         const filePathsGenerator = filesIterator.iterate(filesIteratorOptions);
 
         let filesScanned = 0;
@@ -68,7 +71,7 @@ export class Scanner {
 
         this.logger?.info({ resourceId: resource.id, filesScanned, relationships: relationships.length }, 'Resource scanned');
 
-        return { ...resource, source, url: filesIteratorOptions.url, relationships };
+        return { ...resource, source, relationships };
     }
 }
 

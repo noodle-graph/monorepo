@@ -7,14 +7,14 @@ import { ScanOptions } from './scanner';
 import { Resource } from './types';
 
 export class FilesIteratorLocal implements FilesIterator {
-    produceOptions(scanOptions: ScanOptions, resource: Resource): Promise<FilesIteratorOptions> {
+    produceOptions(scanOptions: ScanOptions & { scanWorkingDirectory: string }, resource: Resource): FilesIteratorOptions {
         if (!resource.url) throw new MissingUrlError(resource.id);
 
-        return Promise.resolve({
+        return {
             resource,
             url: resource.url,
             localBaseUrl: scanOptions.scanWorkingDirectory,
-        });
+        };
     }
 
     async *iterate(options: FilesIteratorOptions): AsyncGenerator<string> {
