@@ -16,7 +16,7 @@
         "noodle": "./index.js"
     },
     "scripts": {
-        "build": "tsc --project tsconfig.lib.json && cp package.json dist && node scripts/copyUi.mjs",
+        "build": "tsc --project tsconfig.lib.json && cp package.json dist && cp README.md dist && node scripts/copyUi.mjs",
         "lint": "eslint .",
         "test": "jest --passWithNoTests",
         "build:global": "nx build && cd ../scanner/dist && npm link && cd ../../cli/dist && npm i -g . && cd $(npm root -g)/@noodle-graph/cli && npm link @noodle-graph/scanner"
