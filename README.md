@@ -1,5 +1,7 @@
 # Noodle 🍜 (UNDER CONSTRUCTION 🏗️)
 
+[![Node.js CI](https://github.com/noodle-graph/monorepo/actions/workflows/node.js.yml/badge.svg)](https://github.com/noodle-graph/monorepo/actions/workflows/node.js.yml)
+
 Architecture diagram that maintains itself.
 
 <img src="./docs/img/basicExampleGraph.png" width="400" alt="example"/>
