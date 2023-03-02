@@ -8,17 +8,7 @@ on:
     types: [created]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - run: npm ci
-
   publish-npm:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -27,9 +17,11 @@ jobs:
           node-version: 18
           registry-url: https://registry.npmjs.org/
       - run: npm ci
-      - run: echo "project_name=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f 1)" >> $GITHUB_OUTPUT
-      - run: echo "project_tag=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f 2)" >> $GITHUB_OUTPUT
-      - run: npx nx publish ${{ steps.vars.outputs.project_name }} --args="--ver=${{ steps.vars.outputs.project_tag }} --env=production" --skip-nx-cache
-        env:
+      - env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
           NOODLE_GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          PROJECT_NAME=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f 1)
+          PROJECT_TAG=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f 2)
+          npx nx publish $PROJECT_NAME --args="--ver=$PROJECT_TAG --env=production" --skip-nx-cache
+
