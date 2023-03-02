@@ -49,7 +49,6 @@ export class Scanner {
 
         const filesIterator = this.filesIteratorsRegistry.get(source);
 
-        /* istanbul ignore next: Too hard to test process.cwd() */
         const scanWorkingDirectory = this.options.scanWorkingDirectory ?? (source === 'local' ? process.cwd() : await mkdtemp(join(tmpdir(), 'noodle-')));
         const filesIteratorOptions = filesIterator.produceOptions({ ...this.options, scanWorkingDirectory }, resource);
 

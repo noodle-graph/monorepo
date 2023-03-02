@@ -12,7 +12,9 @@ First, thanks for considering contributing to the project! 🤩
     - [Publish locally](#publish-locally)
     - [Installing a local package](#installing-a-local-package)
   - [Testing the CLI locally](#testing-the-cli-locally)
-  - [Using link in the global CLI installation](#using-link-in-the-global-cli-installation)
+    - [Using link in the global CLI installation](#using-link-in-the-global-cli-installation)
+  - [Testing the UI locally](#testing-the-ui-locally)
+- [Automated tests](#automated-tests)
 
 ## Setup locally
 
@@ -26,7 +28,10 @@ npm install
 
 ```bash
 npx nx lint <project name>
+npx nx lint <project name>
 npx nx test <project name>
+npx nx test:unit <project name>
+npx nx test:integration <project name>
 npx nx build <project name>
 ```
 
@@ -127,3 +132,26 @@ npm link @noodle-graph/scanner
 4. Run `nx start ui`, you should see the scan results. Changes you do in the `src` files, will change the UI.
 
 _Make sure you don't push the `scanOutput.js` file_
+
+## Automated tests
+
+All projects have a `test` command that you can run with:
+
+```bash
+nx test <project name>
+```
+
+Where available, you can run only unit tests with:
+
+```bash
+nx test:unit <project name>
+```
+
+And only integration tests with:
+
+```bash
+nx test:integration <project name>
+```
+
+Code that requires integration should be separated from code that doesn't.
+That will help keeping the separation in tests as well.
