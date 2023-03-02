@@ -27,8 +27,8 @@ jobs:
           node-version: 18
           registry-url: https://registry.npmjs.org/
       - run: npm ci
-      - run: echo "project_name=$(echo "$GITHUB_REF_NAME" | cut -d "/" -f 1) >> $GITHUB_OUTPUT
-      - run: echo "project_tag=$(echo "$GITHUB_REF_NAME" | cut -d "/" -f 2) >> $GITHUB_OUTPUT
+      - run: echo "project_name=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f 1)" >> $GITHUB_OUTPUT
+      - run: echo "project_tag=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f 2)" >> $GITHUB_OUTPUT
       - run: npx nx ${{ steps.vars.outputs.project_name }} cli --args="--ver=${{ steps.vars.outputs.project_tag }} --env=production" --skip-nx-cache
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
