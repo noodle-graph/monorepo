@@ -27,7 +27,7 @@ export interface Resource {
 export interface Relationship {
     resourceId: string;
     action?: string;
-    tags?: string[];
+    tags: string[];
     url?: string;
     from?: boolean;
     to?: boolean;

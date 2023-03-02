@@ -1,6 +1,6 @@
 import { readFile, mkdtemp } from 'fs/promises';
 import { tmpdir } from 'os';
-import { join, isAbsolute } from 'path';
+import { join } from 'path';
 
 import { Logger } from 'pino';
 
@@ -48,6 +48,8 @@ export class Scanner {
         if (source === 'config') return { ...resource, source };
 
         const filesIterator = this.filesIteratorsRegistry.get(source);
+
+        /* istanbul ignore next: Too hard to test process.cwd() */
         const scanWorkingDirectory = this.options.scanWorkingDirectory ?? (source === 'local' ? process.cwd() : await mkdtemp(join(tmpdir(), 'noodle-')));
         const filesIteratorOptions = filesIterator.produceOptions({ ...this.options, scanWorkingDirectory }, resource);
 
@@ -85,7 +87,7 @@ function enrichResources(scannedResources: Resource[]) {
                 resourcesEnrichments.set(relationship.resourceId, { tags: new Set() });
             }
 
-            for (const tag of relationship.tags ?? []) {
+            for (const tag of relationship.tags) {
                 resourcesEnrichments.get(resource.id)!.tags.add(tag);
                 resourcesEnrichments.get(relationship.resourceId)!.tags.add(tag);
             }
@@ -99,7 +101,7 @@ function enrichResources(scannedResources: Resource[]) {
 
 async function extractRelationships(options: FilesIteratorOptions, path: string): Promise<Relationship[]> {
     let currentLine = 0;
-    return (await readFile(inferPath(options.localBaseUrl, path)))
+    return (await readFile(join(options.localBaseUrl, path)))
         .toString()
         .split('\n')
         .map((line) => {
@@ -107,7 +109,7 @@ async function extractRelationships(options: FilesIteratorOptions, path: string)
             const matches = NOODLE_COMMENT_REGEX.exec(line);
             if (!matches) return null;
             return {
-                action: matches[2] === '-' || matches[2] == null ? undefined : matches[2],
+                action: matches[2] == null ? undefined : matches[2],
                 resourceId: matches[4],
                 tags: matches[5]?.split(',') ?? [],
                 url: produceRelationshipUrl(options, path, currentLine++),
@@ -123,21 +125,19 @@ function produceRelationshipUrl(options: FilesIteratorOptions, path: string, cur
 }
 
 function produceRelationshipUrlLocal(baseUrl: string, path: string) {
-    return 'file://' + inferPath(baseUrl, path);
+    return 'file://' + join(baseUrl, path);
 }
 
 function produceRelationshipUrlGitHub(repoUrl: string, branch: string, path: string, line: number): string {
-    return join(repoUrl, 'blob', branch, `${path}#L${line}`);
+    const url = new URL(repoUrl);
+    url.pathname = join(url.pathname, 'blob', branch, `${path}#L${line}`);
+    return decodeURIComponent(url.toString());
 }
 
 function inferSource(resource: Resource): Source {
     if (!resource.url) return 'config';
     if (/^https?:\/\//.test(resource.url)) return 'github';
     return 'local';
-}
-
-function inferPath(baseUrl: string, path: string) {
-    return isAbsolute(path) ? path : join(baseUrl, path);
 }
 
 function getDefaultRegex(pattern: string | RegExp | undefined, defaultPattern: RegExp): RegExp {

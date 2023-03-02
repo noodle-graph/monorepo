@@ -1,5 +1,3 @@
-/* istanbul ignore file */
-
 import { simpleGit } from 'simple-git';
 
 interface GitCloneOptions {
