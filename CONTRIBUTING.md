@@ -2,6 +2,8 @@
 
 First, thanks for considering contributing to the project! 🤩
 
+If you have any question, feel free to [reach out](https://github.com/dormeiri).
+
 - [Setup locally](#setup-locally)
 - [Useful commands](#useful-commands)
   - [Common](#common)
@@ -21,6 +23,12 @@ First, thanks for considering contributing to the project! 🤩
 ```bash
 npm install
 ```
+
+To validate the setup, run the following commands:
+
+1. `nx run-many --target=test`
+2. `nx run-many --target=lint`
+3. `nx run-many --target=build`
 
 ## Useful commands
 
@@ -97,17 +105,13 @@ yarn add @noodle-graph/<package name>@local --registry=http://localhost:4873
 nx build:global cli
 ```
 
-That will build and install the CLI globally on your local machine. Then you can run the CLI, for example:
-
-```bash
-noodle run
-```
+That will build and install the CLI globally on your local machine. Then you can run the CLI.
 
 Be aware that this will also `npm link @noodle-graph/scanner` the global CLI module. To avoid that, you can do:
 
 ```bash
 nx build cli
-cd dist
+cd packages/cli/dist
 npm i -g .
 ```
 
@@ -115,13 +119,17 @@ npm i -g .
 
 You can also `npm link` packages in the global CLI by changing the directory of the global module.
 
-For me it is `cd /usr/local/lib/node_modules/@noodle-graph/cli`.
-
 For example:
 
 ```bash
-cd /usr/local/lib/node_modules/@noodle-graph/cli
+cd $(npm root -g)/@noodle-graph/cli
 npm link @noodle-graph/scanner
+```
+
+To print out linked packages you can run:
+
+```bash
+npm list -g --depth=0
 ```
 
 ### Testing the UI locally

@@ -5,7 +5,7 @@ import { join, isAbsolute } from 'path';
 import { scan } from '@noodle-graph/scanner';
 import loggerConstructor from 'pino';
 
-const UI_BUILD_DIR_PATH = 'ui/build';
+const UI_BUILD_DIR_PATH = '../ui/build';
 const SCAN_OUTPUT_JS_FILENAME = 'scanOutput.js';
 const SCAN_OUTPUT_JS_PLACEHOLDER = "'%SCAN_OUTPUT_PLACEHOLDER%'";
 const INDEX_HTML_FILENAME = 'index.html';
@@ -25,7 +25,7 @@ export async function run(scanAttributes): Promise<void> {
         {
             config: JSON.parse((await readFile(configPath)).toString()),
             github: { token: scanAttributes.githubToken },
-            scanWorkersNum: Number(scanAttributes.workers),
+            scanWorkersNum: scanAttributes.workers,
         },
         logger
     );
@@ -47,6 +47,9 @@ function createLogger(level: 'debug' | 'info') {
         level,
         transport: {
             target: 'pino-pretty',
+            options: {
+                ignore: 'pid,githubToken',
+            },
         },
     });
 }

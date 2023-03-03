@@ -19,7 +19,8 @@
         "pretty": true,
         "sourceMap": true,
         "strict": true,
-        "target": "ES2021"
+        "target": "ES2021",
+        "resolveJsonModule": true
     },
     "exclude": [
         "node_modules"
