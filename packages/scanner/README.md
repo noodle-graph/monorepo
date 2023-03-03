@@ -30,7 +30,7 @@ Every time the scanner finds a Noodle comment it will add the relationship to th
 
 ### Undeclared resources
 
-Resources that were discovered during the scan and were not listed in the [scan config file](https://github.com/noodle-graph/monorepo/packages/cli/README.md#scan-config-file).
+Resources that were discovered during the scan and were not listed in the [scan config file](https://github.com/noodle-graph/monorepo/blob/master/packages/cli/README.md#scan-config-file).
 
 ## Scan output
 
@@ -101,7 +101,7 @@ Here is a sample of scan output:
 }
 ```
 
-_Note that this is very similar to the [scan config file](../cli/README.md#scan-config-file), except the `relationships` field_
+_Note that this is very similar to the [scan config file](https://github.com/noodle-graph/monorepo/blob/master/packages/cli/README.md#scan-config-file), except the `relationships` field_
 
 ### Relationship object
 

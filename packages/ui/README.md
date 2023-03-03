@@ -29,6 +29,6 @@ The graph displayed using [vis.js](https://visjs.org/) under the hood.
 
 ## Bundling
 
-The UI must be bundled together with the [scan output](../scanner/README.md#scan-output) to be functional.
+The UI must be bundled together with the [scan output](https://github.com/noodle-graph/monorepo/blob/master/packages/scanner/README.md#scan-output) to be functional.
 
-__See the [run command](../cli/README.md#run).__
+__See the [run command](https://github.com/noodle-graph/monorepo/blob/master/packages/cli/README.md#run).__

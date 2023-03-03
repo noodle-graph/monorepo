@@ -33,13 +33,13 @@ Additionally, Noodle is reliant on the best source of truth, which is the code i
 npm install --location=global @noodle-graph/cli
 ```
 
-### 2. Add [Noodle comments](https://github.com/noodle-graph/monorepo/packages/scanner/README.md#noodle-comment)
+### 2. Add [Noodle comments](https://github.com/noodle-graph/monorepo/blob/master/packages/scanner/README.md#noodle-comment)
 
-[Simple example](https://github.com/noodle-graph/monorepo/examples/basic/someService/index.js)
+[Simple example](https://github.com/noodle-graph/monorepo/blob/master/examples/basic/someService/index.js)
 
-### 3. Create [config file](https://github.com/noodle-graph/monorepo/packages/cli/README.md#scan-config-file)
+### 3. Create [config file](https://github.com/noodle-graph/monorepo/blob/master/packages/cli/README.md#scan-config-file)
 
-[Simple example](https://github.com/noodle-graph/monorepo/examples/basic/noodle.json)
+[Simple example](https://github.com/noodle-graph/monorepo/blob/master/examples/basic/noodle.json)
 
 ### 4. `noodle run --open`
 
@@ -51,7 +51,7 @@ npm install --location=global @noodle-graph/cli
 noodle run
 ```
 
-Using the [scanner](https://github.com/noodle-graph/monorepo/packages/scanner) to search resources relationships and bundles a UI with the results.
+Using the [scanner](https://github.com/noodle-graph/monorepo/tree/master/packages/scanner) to search resources relationships and bundles a UI with the results.
 
 #### Parameters
 
@@ -66,7 +66,7 @@ Using the [scanner](https://github.com/noodle-graph/monorepo/packages/scanner) t
 
 ### Scan config file
 
-You can find example of a config file in the [basic example](https://github.com/noodle-graph/monorepo/examples/basic/noodle.json)
+You can find example of a config file in the [basic example](https://github.com/noodle-graph/monorepo/blob/master/examples/basic/noodle.json)
 
 | Field | Required | Description |
 |-|-|-|
@@ -79,11 +79,11 @@ You can find example of a config file in the [basic example](https://github.com/
 | `id` | a-z, number, forward slash, underscore, dash. RegEx: `[a-z\d-_/]+` | Yes | - | Identifier of the resource. |
 | `name` | Any string | No | The value of `id` | The name of the resource. |
 | `description` | Any string | No | `null` | Description of the resource. |
-| `type` | `null`, `aws/lambda`, `aws/ec2`, `aws/ecs`, `aws/s3`, `aws/sqs`, `aws/sns`, `aws/cloudwatch`, `aws/rds`, `aws/dynamodb`, `aws/elasticache` | No | `null` | The type of the resource is deployed on |
+| `type` | See [UI icons](https://github.com/noodle-graph/monorepo/tree/master/packages/ui/public/img) | No | `null` | The type of the resource is deployed on |
 | `tags` | a-z, number, forward slash, underscore, dash. RegEx: `[a-z\d-_/]+` | No | `[]` | Tags of the resource. For the UI view and filtering. |
-| `url` | `null` if `source` is `third-party`, otherwise a valid URL. | Yes, except if `source` is `third-party`. | `null` | The URL of the source to scan. |
-| `source` | `github`, `local`, `third-party` | No | `github` if starts with `https://github.com`, `third-party` if `url` is `null`, otherwise `local`. | The type of the source to scan. `third-party` sources won't get scanned. |
+| `url` | `null` if `source` is `config`, otherwise a valid URL. | Yes, except if `source` is `config`. | `null` | The URL of the source to scan. |
+| `source` | `github`, `local`, `config` | No | `github` if starts with `https://github.com`, otherwise `local`. | The type of the source to scan. `third-party` sources won't get scanned. |
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/noodle-graph/monorepo/CONTRIBUTING.md)
+See [CONTRIBUTING.md](https://github.com/noodle-graph/monorepo/blob/master/CONTRIBUTING.md)

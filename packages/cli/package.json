@@ -11,6 +11,17 @@
         "type": "git",
         "url": "git+https://github.com/noodle-graph/monorepo.git"
     },
+    "keywords": [
+        "noodle",
+        "graph",
+        "architecture",
+        "cli",
+        "automation",
+        "ui",
+        "open-source",
+        "github",
+        "scanner"
+    ],
     "main": "src/index.js",
     "bin": {
         "noodle": "src/index.js"
