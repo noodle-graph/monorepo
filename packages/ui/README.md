@@ -1,6 +1,7 @@
 # UI
 
 - [Features](#features)
+- [Bundling](#bundling)
 
 The graph displayed using [vis.js](https://visjs.org/) under the hood.
 
@@ -14,20 +15,17 @@ The graph displayed using [vis.js](https://visjs.org/) under the hood.
     - Tags
     - Name (TODO)
     - Type (TODO)
-    - Relationship tags (TODO)
     - Distance from filtered nodes
 - Resource view
   - Name
   - Type
   - Description
   - Tags
-  - Link to git repository (if GitHub source)
-  - Path (if local source)
+  - Link to file
   - Relationships
-    - Action
     - Related resource name
     - Tags
-    - Link to source code line (TODO)
+    - Link to source code line
 
 ## Bundling
 

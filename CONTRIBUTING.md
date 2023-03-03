@@ -2,6 +2,8 @@
 
 First, thanks for considering contributing to the project! 🤩
 
+If you have any question, feel free to [reach out](https://github.com/dormeiri).
+
 - [Setup locally](#setup-locally)
 - [Useful commands](#useful-commands)
   - [Common](#common)
@@ -20,6 +22,41 @@ First, thanks for considering contributing to the project! 🤩
 
 ```bash
 npm install
+```
+
+Make sure you can have the environment variables for running [automated tests](#automated-tests).
+
+To validate the setup, run the following commands:
+
+1. `nx run-many --target=test`
+2. `nx run-many --target=lint`
+3. `nx run-many --target=build`
+
+## Automated tests
+
+Where available, you can run only unit tests with:
+
+```bash
+nx test:unit <project name>
+```
+
+And only integration tests with:
+
+```bash
+nx test:integration <project name>
+```
+
+The integration tests need the following environment variables:
+
+- `NOODLE_GITHUB_TOKEN` -- Some GitHub token for cloning this repo when scanning.
+
+_NOTE:_ Code that requires integration should be separated from code that doesn't.
+That will help keeping the separation in tests as well.
+
+All projects have a `test` command that tests both unit and integration:
+
+```bash
+nx test <project name>
 ```
 
 ## Useful commands
@@ -97,17 +134,13 @@ yarn add @noodle-graph/<package name>@local --registry=http://localhost:4873
 nx build:global cli
 ```
 
-That will build and install the CLI globally on your local machine. Then you can run the CLI, for example:
-
-```bash
-noodle run
-```
+That will build and install the CLI globally on your local machine. Then you can run the CLI.
 
 Be aware that this will also `npm link @noodle-graph/scanner` the global CLI module. To avoid that, you can do:
 
 ```bash
 nx build cli
-cd dist
+cd packages/cli/dist
 npm i -g .
 ```
 
@@ -115,13 +148,17 @@ npm i -g .
 
 You can also `npm link` packages in the global CLI by changing the directory of the global module.
 
-For me it is `cd /usr/local/lib/node_modules/@noodle-graph/cli`.
-
 For example:
 
 ```bash
-cd /usr/local/lib/node_modules/@noodle-graph/cli
+cd $(npm root -g)/@noodle-graph/cli
 npm link @noodle-graph/scanner
+```
+
+To print out linked packages you can run:
+
+```bash
+npm list -g --depth=0
 ```
 
 ### Testing the UI locally
@@ -132,26 +169,3 @@ npm link @noodle-graph/scanner
 4. Run `nx start ui`, you should see the scan results. Changes you do in the `src` files, will change the UI.
 
 _Make sure you don't push the `scanOutput.js` file_
-
-## Automated tests
-
-All projects have a `test` command that you can run with:
-
-```bash
-nx test <project name>
-```
-
-Where available, you can run only unit tests with:
-
-```bash
-nx test:unit <project name>
-```
-
-And only integration tests with:
-
-```bash
-nx test:integration <project name>
-```
-
-Code that requires integration should be separated from code that doesn't.
-That will help keeping the separation in tests as well.
