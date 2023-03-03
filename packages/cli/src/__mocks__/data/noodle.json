@@ -1,0 +1,9 @@
+{
+    "resources": [
+        {
+            "id": "some-resource",
+            "url": "https://github.com/noodle-graph/monorepo",
+            "include": "scanner/src/__mocks__/data/.*\\.js$"
+        }
+    ]
+}
