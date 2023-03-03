@@ -17,7 +17,7 @@ describe('Scanner', () => {
                 url: 'someResource',
             };
             scanOptions = {
-                scanWorkingDirectory: join(__dirname, 'data'),
+                scanWorkingDirectory: join(__dirname, '../__mocks__/data'),
                 config: { resources: [resource] },
             };
 
@@ -91,15 +91,15 @@ describe('Scanner', () => {
         beforeEach(() => {
             jest.spyOn(GitClient.prototype, 'clone').mockImplementation(async (options) => {
                 // Pretend the repo is cloned, but only with the test data.
-                const dataFolderCopyPath = join(options.localUrl, 'packages/scanner/src/__tests__/data');
+                const dataFolderCopyPath = join(options.localUrl, 'packages/scanner/src/__mocks__/data');
                 await mkdir(dataFolderCopyPath, { recursive: true });
-                await cp(join(__dirname, 'data'), dataFolderCopyPath, { recursive: true });
+                await cp(join(__dirname, '../__mocks__/data'), dataFolderCopyPath, { recursive: true });
             });
 
             const resource = {
                 id: 'some-resource',
                 url: 'https://github.com/noodle-graph/monorepo',
-                include: 'scanner/src/__tests__/data/.*\\.js$',
+                include: 'scanner/src/__mocks__/data/.*\\.js$',
             };
             scanOptions = {
                 config: { resources: [resource] },
@@ -115,7 +115,7 @@ describe('Scanner', () => {
                     relationships: expect.arrayContaining([
                         {
                             resourceId: 'another-resource',
-                            url: 'https://github.com/noodle-graph/monorepo/blob/master/packages/scanner/src/__tests__/data/someResource/callingAnotherService.js#L3',
+                            url: 'https://github.com/noodle-graph/monorepo/blob/master/packages/scanner/src/__mocks__/data/someResource/callingAnotherService.js#L3',
                             action: 'calls',
                             from: false,
                             to: true,
@@ -123,7 +123,7 @@ describe('Scanner', () => {
                         },
                         {
                             resourceId: 'some-db',
-                            url: 'https://github.com/noodle-graph/monorepo/blob/master/packages/scanner/src/__tests__/data/someResource/callingDb.js#L3',
+                            url: 'https://github.com/noodle-graph/monorepo/blob/master/packages/scanner/src/__mocks__/data/someResource/callingDb.js#L3',
                             action: undefined,
                             from: false,
                             to: true,
@@ -131,7 +131,7 @@ describe('Scanner', () => {
                         },
                         {
                             resourceId: 'some-queue',
-                            url: 'https://github.com/noodle-graph/monorepo/blob/master/packages/scanner/src/__tests__/data/someResource/inner/folder/callingQueue.js#L3',
+                            url: 'https://github.com/noodle-graph/monorepo/blob/master/packages/scanner/src/__mocks__/data/someResource/inner/folder/callingQueue.js#L3',
                             action: undefined,
                             from: false,
                             to: true,

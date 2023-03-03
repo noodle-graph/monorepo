@@ -17,7 +17,7 @@ describe('FilesIteratorLocal', () => {
             url: 'someResource',
         };
         scanOptions = {
-            scanWorkingDirectory: join(__dirname, 'data'),
+            scanWorkingDirectory: join(__dirname, '../__mocks__/data'),
             config: { resources: [resource] },
         };
         filesIterator = new FilesIteratorLocal();

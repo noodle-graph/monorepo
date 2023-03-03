@@ -1,12 +1,11 @@
 import { join } from 'path';
 
+import { GitClientMock } from '../__mocks__/gitClientMock';
 import { MissingGitHubOptionsError, MissingUrlError } from '../errors';
 import { FilesIteratorOptions } from '../filesIterator';
 import { FilesIteratorGitHub } from '../filesIteratorGitHub';
 import type { ScanOptions } from '../scanner';
 import type { Resource } from '../types';
-
-import { GitClientMock } from './mocks/gitClientMock';
 
 describe('FilesIteratorGitHub', () => {
     let resource: Resource;
@@ -20,7 +19,7 @@ describe('FilesIteratorGitHub', () => {
             source: 'github',
         };
         scanOptions = {
-            scanWorkingDirectory: join(__dirname, 'data'),
+            scanWorkingDirectory: join(__dirname, '../__mocks__/data'),
             config: { resources: [resource] },
             github: {
                 token: 'some-token',
