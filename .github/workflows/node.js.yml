@@ -32,5 +32,3 @@ jobs:
       env:
         NOODLE_GITHUB_TOKEN: ${{ github.token }}
     - run: npx nx run-many --target=build
-      env:
-        CI: false

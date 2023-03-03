@@ -18,9 +18,8 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
           NOODLE_GITHUB_TOKEN: ${{ github.token }}
-          CI: false
         run: |
           PROJECT_NAME=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f 1)
           PROJECT_TAG=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f 2)
