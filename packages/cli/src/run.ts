@@ -17,7 +17,8 @@ export async function run(scanAttributes): Promise<void> {
 
     const configPath = isAbsolute(scanAttributes.C) ? scanAttributes.C : join(process.cwd(), scanAttributes.C);
     const outputDirPath = isAbsolute(scanAttributes.O) ? scanAttributes.O : join(process.cwd(), scanAttributes.O);
-    const uiDirPath = join(outputDirPath, UI_BUILD_DIR_PATH);
+    console.log('TEST', outputDirPath);
+    const uiDirPath = join(outputDirPath);
     const uiIndexPath = join(uiDirPath, INDEX_HTML_FILENAME);
     const scanOutputJsPath = join(uiDirPath, SCAN_OUTPUT_JS_FILENAME);
 

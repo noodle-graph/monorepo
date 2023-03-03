@@ -8,7 +8,7 @@ import packageJson from '../package.json';
 
 import { run } from './run';
 
-new Command()
+export const noodle = new Command()
     .name('noodle')
     .version(packageJson.version)
     .description(figlet.textSync('Noodle'))
