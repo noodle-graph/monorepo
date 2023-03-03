@@ -1,6 +1,5 @@
 import { exec } from 'child_process';
-import { mkdtemp, readFile } from 'fs/promises';
-import { tmpdir } from 'os';
+import { mkdir, mkdtemp, readFile, rm } from 'fs/promises';
 import { join } from 'path';
 
 const expectedResources = [
@@ -54,16 +53,39 @@ const expectedResources = [
     },
 ];
 
-it('noodle run', async () => {
-    const distDirPath = join(__dirname, '../../dist');
-    const configPath = join(__dirname, '../__mocks__/data/noodle.json');
-    const tempDirPath = await mkdtemp(join(tmpdir(), 'noodle-integration-test-'));
+const distDirPath = join(__dirname, '../../dist');
+const configPath = join(__dirname, '../__mocks__/data/noodle.json');
+const tmpDirPath = join(__dirname, '../../../../tmp');
 
-    const command = `node ${distDirPath} run --config ${configPath} --output ${tempDirPath}`;
+beforeAll(async () => {
+    try {
+        await mkdir(tmpDirPath);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+        if (err.code !== 'EEXIST') {
+            throw err;
+        }
+    }
+});
 
-    await new Promise<void>((resolve) => exec(command, () => resolve()));
-    const rawOutput = (await readFile(join(tempDirPath, 'scanOutput.js'))).toString();
-    const rawScanOutputVariable = /window\.scanOutput = ({.*});/.exec(rawOutput)![1];
-    const scanOutputVariable = JSON.parse(rawScanOutputVariable);
-    expect(scanOutputVariable.resources).toEqual(expect.arrayContaining(expectedResources));
+describe('cli', () => {
+    let tmpTestDirPath: string;
+
+    beforeEach(async () => {
+        tmpTestDirPath = await mkdtemp(join(tmpDirPath, 'noodle-integration-test-'));
+    });
+
+    afterEach(async () => {
+        await rm(tmpTestDirPath, { recursive: true });
+    });
+
+    it('noodle run', async () => {
+        const command = `node ${distDirPath} run --config ${configPath} --output ${tmpTestDirPath}`;
+
+        await new Promise<void>((resolve) => exec(command, () => resolve()));
+        const rawOutput = (await readFile(join(tmpTestDirPath, 'scanOutput.js'))).toString();
+        const rawScanOutputVariable = /window\.scanOutput = ({.*});/.exec(rawOutput)![1];
+        const scanOutputVariable = JSON.parse(rawScanOutputVariable);
+        expect(scanOutputVariable.resources).toEqual(expect.arrayContaining(expectedResources));
+    });
 });

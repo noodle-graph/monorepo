@@ -83,6 +83,8 @@ You can find example of a config file in the [basic example](https://github.com/
 | `tags` | a-z, number, forward slash, underscore, dash. RegEx: `[a-z\d-_/]+` | No | `[]` | Tags of the resource. For the UI view and filtering. |
 | `url` | `null` if `source` is `config`, otherwise a valid URL. | Yes, except if `source` is `config`. | `null` | The URL of the source to scan. |
 | `source` | `github`, `local`, `config` | No | `github` if `url` starts with `https://github.com`, `config` if `url` is `null`, otherwise `local`. | The type of the source to scan. `config` sources won't get scanned. |
+| `include` | Any RegEx | No | `/(.ts|.tsx|.js|.jsx|.java|.py|.go|.tf)$/` | RegEx for matching which files to scan. |
+| `relationships` | Array of [relationships](https://github.com/noodle-graph/monorepo/blob/master/packages/scanner/README.md#relationship-object) | No | `[]` | For declaring relationships that are not in the code. Useful for third-parties relationships. |
 
 ## Contributing
 
