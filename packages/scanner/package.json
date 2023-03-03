@@ -14,7 +14,7 @@
         "start": "ts-node src/index.ts",
         "build": "tsc --project tsconfig.lib.json && cp package.json dist && cp README.md dist",
         "lint": "eslint .",
-        "test": "jest --config jest.config.unit.js",
+        "test": "jest",
         "test:unit": "jest --config jest.config.unit.js",
         "test:integration": "jest --config jest.config.integration.js"
     },
