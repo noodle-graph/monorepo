@@ -59,10 +59,10 @@ Using the [scanner](https://github.com/noodle-graph/monorepo/tree/master/package
 |-|-|-|-|
 | `--config`, `-c` | `NOODLE_CONFIG` | `./noodle.json` | Path to the scan configuration file. |
 | `--output`, `-o` | `NOODLE_OUTPUT` | `./noodleScanOutput` | Path to the UI bundle output folder. |
-| `--githubToken` | `NOODLE_GITHUB_TOKEN` | - | GitHub access token. Required for GitHub resources. |
+| `--githubToken` | `NOODLE_GITHUB_TOKEN` | `null` | GitHub access token. Required for GitHub resources. |
 | `--open` | - | `false` | Whether to open in the browser the bundled UI when finished. |
-| `--workers` | - | TODO | TODO |
-| `--verbose` | - | TODO | TODO |
+| `--workers` | `NOODLE_WORKERS` | 8 | Amount of workers for scanning the files of a resource. |
+| `--verbose` | `NOODLE_VERBOSE` | `false` | Whether to print debug logs. |
 
 ### Scan config file
 
@@ -82,7 +82,7 @@ You can find example of a config file in the [basic example](https://github.com/
 | `type` | See [UI icons](https://github.com/noodle-graph/monorepo/tree/master/packages/ui/public/img) | No | `null` | The type of the resource is deployed on |
 | `tags` | a-z, number, forward slash, underscore, dash. RegEx: `[a-z\d-_/]+` | No | `[]` | Tags of the resource. For the UI view and filtering. |
 | `url` | `null` if `source` is `config`, otherwise a valid URL. | Yes, except if `source` is `config`. | `null` | The URL of the source to scan. |
-| `source` | `github`, `local`, `config` | No | `github` if starts with `https://github.com`, otherwise `local`. | The type of the source to scan. `third-party` sources won't get scanned. |
+| `source` | `github`, `local`, `config` | No | `github` if `url` starts with `https://github.com`, `config` if `url` is `null`, otherwise `local`. | The type of the source to scan. `config` sources won't get scanned. |
 
 ## Contributing
 
