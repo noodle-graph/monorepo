@@ -143,12 +143,6 @@ _Make sure you don't push the `scanOutput.js` file_
 
 ## Automated tests
 
-All projects have a `test` command that you can run with:
-
-```bash
-nx test <project name>
-```
-
 Where available, you can run only unit tests with:
 
 ```bash
@@ -161,5 +155,15 @@ And only integration tests with:
 nx test:integration <project name>
 ```
 
-Code that requires integration should be separated from code that doesn't.
+The integration tests need the following environment variables:
+
+- `NOODLE_GITHUB_TOKEN` -- Some GitHub token for cloning this repo when scanning.
+
+_NOTE:_ Code that requires integration should be separated from code that doesn't.
 That will help keeping the separation in tests as well.
+
+All projects have a `test` command that tests both unit and integration:
+
+```bash
+nx test <project name>
+```
