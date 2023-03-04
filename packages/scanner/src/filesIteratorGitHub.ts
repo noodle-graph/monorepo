@@ -1,43 +1,50 @@
+import { mkdtempSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
+
 import { MissingGitHubOptionsError, MissingUrlError } from './errors';
-import { FilesIterator, FilesIteratorOptions } from './filesIterator';
+import { FilesIterator } from './filesIterator';
 import { FilesIteratorLocal } from './filesIteratorLocal';
 import { GitClient } from './gitClient';
-import { ScanOptions } from './scanner';
-import { Resource } from './types';
+import type { FilesIteratorGitHubSettings, FilesIteratorSettings, ResourceScanContext } from './types';
 
 export class FilesIteratorGitHub implements FilesIterator {
-    constructor(private readonly filesIteratorLocal = new FilesIteratorLocal(), private readonly git = new GitClient()) {}
+    public readonly settings: FilesIteratorSettings & { readonly github: FilesIteratorGitHubSettings };
 
-    produceOptions(scanOptions: ScanOptions & { scanWorkingDirectory: string }, resource: Resource): FilesIteratorOptions {
-        if (!resource.url) throw new MissingUrlError(resource.id);
-        if (!scanOptions.github) throw new MissingGitHubOptionsError(resource.id);
+    private readonly filesIteratorLocal: FilesIteratorLocal;
+    private readonly git = new GitClient();
 
-        return {
-            resource,
-            url: resource.url,
-            localBaseUrl: scanOptions.scanWorkingDirectory,
+    constructor(options: ResourceScanContext) {
+        if (!options.resource.url) throw new MissingUrlError(options.resource.id);
+        if (!options.context.github) throw new MissingGitHubOptionsError(options.resource.id);
+
+        this.settings = {
+            resource: options.resource,
+            url: options.resource.url,
+            localBaseUrl: options.context.scanWorkingDirectory ?? mkdtempSync(join(tmpdir(), 'noodle-')),
+            include: options.context.config.include,
             github: {
-                ...scanOptions.github,
-                ...resource.github,
-                branch: resource.github?.branch ?? 'master',
+                ...options.context.github,
+                ...options.resource.github,
+                branch: options.resource.github?.branch ?? 'master',
             },
         };
+
+        this.filesIteratorLocal = new FilesIteratorLocal({
+            context: { ...options.context, scanWorkingDirectory: this.settings.localBaseUrl },
+            resource: { ...options.resource, url: '' },
+        });
     }
 
-    async *iterate(options: FilesIteratorOptions): AsyncGenerator<string> {
-        if (options.github == null) throw new MissingGitHubOptionsError(options.resource.id);
-
+    async *iterate(): AsyncGenerator<string> {
         await this.git.clone({
-            repoUrl: options.url,
-            localUrl: options.localBaseUrl,
-            branch: options.github.branch,
-            token: options.github.token,
+            repoUrl: this.settings.url,
+            localUrl: this.settings.localBaseUrl,
+            branch: this.settings.github.branch,
+            token: this.settings.github.token,
         });
 
-        const localIterator = this.filesIteratorLocal.iterate({
-            ...options,
-            url: '',
-        });
+        const localIterator = this.filesIteratorLocal.iterate();
 
         for await (const path of localIterator) yield path;
     }

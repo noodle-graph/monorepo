@@ -1,17 +1,10 @@
-import { ScanOptions } from './scanner';
-import { Resource } from './types';
+import type { FilesIteratorSettings, ResourceScanContext } from './types';
 
-export interface FilesIteratorOptions {
-    resource: Resource;
-    url: string;
-    localBaseUrl: string;
-    github?: {
-        token: string;
-        branch: string;
-    };
+export interface FilesIteratorConstructor {
+    new (options: ResourceScanContext): FilesIterator;
 }
 
 export interface FilesIterator {
-    produceOptions(scanOptions: ScanOptions & { scanWorkingDirectory: string }, resource: Resource): FilesIteratorOptions;
-    iterate(options: FilesIteratorOptions): AsyncGenerator<string>;
+    readonly settings: FilesIteratorSettings;
+    iterate(): AsyncGenerator<string>;
 }

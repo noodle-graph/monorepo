@@ -1,36 +1,36 @@
 import { readdir } from 'fs/promises';
 import { join } from 'path';
 
-import { MissingUrlError } from './errors';
-import { FilesIterator, FilesIteratorOptions } from './filesIterator';
-import { ScanOptions } from './scanner';
-import { Resource } from './types';
+import { FilesIterator } from './filesIterator';
+import type { FilesIteratorSettings, ResourceScanContext } from './types';
+import { getDefaultRegex } from './utils';
 
 export class FilesIteratorLocal implements FilesIterator {
-    produceOptions(scanOptions: ScanOptions & { scanWorkingDirectory: string }, resource: Resource): FilesIteratorOptions {
-        if (!resource.url) throw new MissingUrlError(resource.id);
+    public readonly settings: FilesIteratorSettings;
 
-        return {
-            resource,
-            url: resource.url,
-            localBaseUrl: scanOptions.scanWorkingDirectory,
+    constructor(options: ResourceScanContext) {
+        this.settings = {
+            resource: options.resource,
+            url: options.resource.url ?? '',
+            localBaseUrl: options.context.scanWorkingDirectory ?? process.cwd(),
+            include: getDefaultRegex(options.resource.include, options.context.config.include),
         };
     }
 
-    async *iterate(options: FilesIteratorOptions): AsyncGenerator<string> {
-        for await (const path of deepReadDir(join(options.localBaseUrl, options.url))) {
-            yield path.substring(options.localBaseUrl.length + 1);
+    async *iterate(): AsyncGenerator<string> {
+        for await (const path of this.deepReadDir(join(this.settings.localBaseUrl, this.settings.url))) {
+            yield path.substring(this.settings.localBaseUrl.length + 1);
         }
     }
-}
 
-async function* deepReadDir(dirPath: string): AsyncGenerator<string> {
-    for (const dirent of await readdir(dirPath, { withFileTypes: true })) {
-        const direntPath = join(dirPath, dirent.name);
-        if (dirent.isDirectory()) {
-            for await (const path of deepReadDir(direntPath)) yield path;
-        } else {
-            yield direntPath;
+    private async *deepReadDir(dirPath: string): AsyncGenerator<string> {
+        for (const dirent of await readdir(dirPath, { withFileTypes: true })) {
+            const direntPath = join(dirPath, dirent.name);
+            if (dirent.isDirectory()) {
+                for await (const path of this.deepReadDir(direntPath)) yield path;
+            } else if (this.settings.include.test(direntPath)) {
+                yield direntPath;
+            }
         }
     }
 }

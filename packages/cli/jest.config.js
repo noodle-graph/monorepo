@@ -1,1 +1,4 @@
-module.exports = require('../../jest.config.json');
+module.exports = {
+    ...require('../../jest.config.json'),
+    collectCoverage: false,
+};

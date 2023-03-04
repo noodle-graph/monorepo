@@ -1,10 +1,8 @@
-import { cp, mkdir } from 'fs/promises';
 import { join } from 'path';
 
 import { scan } from '..';
 import { GitClient } from '../gitClient';
-import { ScanOptions } from '../scanner';
-import { Resource } from '../types';
+import type { Resource, ScanOptions } from '../types';
 
 describe('Scanner', () => {
     let scanOptions: ScanOptions;
@@ -89,12 +87,7 @@ describe('Scanner', () => {
 
     describe('with 1 github resource', () => {
         beforeEach(() => {
-            jest.spyOn(GitClient.prototype, 'clone').mockImplementation(async (options) => {
-                // Pretend the repo is cloned, but only with the test data.
-                const dataFolderCopyPath = join(options.localUrl, 'packages/scanner/src/__mocks__/data');
-                await mkdir(dataFolderCopyPath, { recursive: true });
-                await cp(join(__dirname, '../__mocks__/data'), dataFolderCopyPath, { recursive: true });
-            });
+            jest.spyOn(GitClient.prototype, 'clone').mockImplementation(async () => {});
 
             const resource = {
                 id: 'some-resource',
@@ -103,6 +96,7 @@ describe('Scanner', () => {
             };
             scanOptions = {
                 config: { resources: [resource] },
+                scanWorkingDirectory: join(__dirname, '../../../..'),
                 github: {
                     token: 'some-token',
                 },

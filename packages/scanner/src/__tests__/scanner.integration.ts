@@ -1,6 +1,5 @@
 import { scan } from '..';
-import { ScanOptions } from '../scanner';
-import { Resource } from '../types';
+import type { Resource, ScanOptions } from '../types';
 
 describe('Scanner', () => {
     let scanOptions: ScanOptions;
