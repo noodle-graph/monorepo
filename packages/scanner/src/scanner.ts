@@ -1,78 +1,72 @@
-import { readFile, mkdtemp } from 'fs/promises';
-import { tmpdir } from 'os';
+import { readFile } from 'fs/promises';
 import { join } from 'path';
 
-import { Logger } from 'pino';
+import type { Logger } from 'pino';
 
-import { FilesIteratorOptions } from './filesIterator';
-import { FilesIteratorsRegistry } from './filesIteratorsRegistry';
-import { Relationship, Resource, ScanConfig, ScanResult, Source } from './types';
+import { FilesIteratorFactory } from './filesIteratorFactory';
+import type { FilesIteratorSettings, Relationship, Resource, ScanContext, ScanOptions, ScanResult, Source } from './types';
+import { getDefaultRegex } from './utils';
 
-const NOODLE_COMMENT_REGEX = /noodle\s+([<-])(?:-([a-z\s]+)-|-)([->])\s+([a-z0-9-]+)\s*(?:\(([a-z0-9-,]+)+\)|)/;
 const DEFAULT_INCLUDE_REGEX = /(.ts|.tsx|.js|.jsx|.java|.py|.go|.tf)$/;
+const NOODLE_COMMENT_REGEX = /noodle\s+([<-])(?:-([a-z\s]+)-|-)([->])\s+([a-z0-9-]+)\s*(?:\(([a-z0-9-,]+)+\)|)/;
 export const DEFAULT_FILES_WORKERS_NUM = 8;
 
-export interface ScanOptions {
-    config: ScanConfig;
-    github?: { token: string };
-    scanWorkersNum?: number;
-    scanWorkingDirectory?: string;
-}
-
 export class Scanner {
-    private readonly defaultInclude: RegExp;
-    private readonly options: ScanOptions;
+    private readonly context: ScanContext;
+    private readonly filesIteratorFactory = new FilesIteratorFactory();
 
-    constructor(options: ScanOptions, private readonly logger?: Logger, private readonly filesIteratorsRegistry = new FilesIteratorsRegistry()) {
-        this.options = {
-            scanWorkersNum: DEFAULT_FILES_WORKERS_NUM,
+    constructor(options: ScanOptions, logger?: Logger) {
+        this.context = {
             ...options,
+            config: {
+                ...options.config,
+                include: getDefaultRegex(options.config.include, DEFAULT_INCLUDE_REGEX),
+            },
+            scanWorkersNum: options.scanWorkersNum ?? DEFAULT_FILES_WORKERS_NUM,
+            logger,
         };
-        this.defaultInclude = getDefaultRegex(this.options.config.include, DEFAULT_INCLUDE_REGEX);
     }
 
     async scan(): Promise<ScanResult> {
         const scannedResources: Resource[] = [];
 
-        for (const resource of this.options.config.resources) {
+        for (const resource of this.context.config.resources) {
             scannedResources.push(await this.scanResource(resource));
         }
 
         enrichResources(scannedResources);
 
-        return { ...this.options.config, resources: scannedResources };
+        return { resources: scannedResources };
     }
 
     private async scanResource(resource: Resource): Promise<Resource> {
-        const source = inferSource(resource);
-        if (source === 'config') return { ...resource, source };
+        const resourceCopy = {
+            ...resource,
+            source: inferSource(resource),
+        };
 
-        const filesIterator = this.filesIteratorsRegistry.get(source);
+        if (resourceCopy.source === 'config') return resource;
 
-        const scanWorkingDirectory = this.options.scanWorkingDirectory ?? (source === 'local' ? process.cwd() : await mkdtemp(join(tmpdir(), 'noodle-')));
-        const filesIteratorOptions = filesIterator.produceOptions({ ...this.options, scanWorkingDirectory }, resource);
+        this.context.logger?.debug({ id: resourceCopy.id, url: resourceCopy.url, source: resourceCopy.source }, 'Scanning resource...');
 
-        this.logger?.debug({ resourceId: resource.id, url: resource.url, source, scanWorkingDirectory }, 'Scanning resource...');
-        const filePathsGenerator = filesIterator.iterate(filesIteratorOptions);
+        const filesIterator = this.filesIteratorFactory.produce({ context: this.context, resource: resourceCopy });
+        const filePathsGenerator = filesIterator.iterate();
 
         let filesScanned = 0;
-        const relationships: Relationship[] = [];
+        resourceCopy.relationships = [];
         await Promise.all(
-            Array(this.options.scanWorkersNum)
+            Array(this.context.scanWorkersNum)
                 .fill(filePathsGenerator)
                 .map(async (generator) => {
                     for await (const path of generator) {
-                        if (getDefaultRegex(resource.include, this.defaultInclude).test(path)) {
-                            filesScanned++;
-                            relationships.push(...(await extractRelationships(filesIteratorOptions, path)));
-                        }
+                        filesScanned++;
+                        resourceCopy.relationships!.push(...(await scanFile(filesIterator.settings, path)));
                     }
                 })
         );
 
-        this.logger?.info({ resourceId: resource.id, filesScanned, relationships: relationships.length }, 'Resource scanned');
-
-        return { ...resource, source, relationships };
+        this.context.logger?.info({ id: resourceCopy.id, filesScanned, relationships: resourceCopy.relationships.length }, 'Resource scanned');
+        return resourceCopy;
     }
 }
 
@@ -98,9 +92,9 @@ function enrichResources(scannedResources: Resource[]) {
     }
 }
 
-async function extractRelationships(options: FilesIteratorOptions, path: string): Promise<Relationship[]> {
+async function scanFile(iteratorSettings: FilesIteratorSettings, path: string): Promise<Relationship[]> {
     let currentLine = 0;
-    return (await readFile(join(options.localBaseUrl, path)))
+    return (await readFile(join(iteratorSettings.localBaseUrl, path)))
         .toString()
         .split('\n')
         .map((line) => {
@@ -111,7 +105,7 @@ async function extractRelationships(options: FilesIteratorOptions, path: string)
                 action: matches[2] == null ? undefined : matches[2],
                 resourceId: matches[4],
                 tags: matches[5]?.split(',') ?? [],
-                url: produceRelationshipUrl(options, path, currentLine++),
+                url: produceRelationshipUrl(iteratorSettings, path, currentLine++),
                 from: matches[1] === '<',
                 to: matches[3] === '>',
             };
@@ -119,8 +113,10 @@ async function extractRelationships(options: FilesIteratorOptions, path: string)
         .filter(Boolean) as Relationship[];
 }
 
-function produceRelationshipUrl(options: FilesIteratorOptions, path: string, currentLine: number) {
-    return options.github ? produceRelationshipUrlGitHub(options.url, options.github.branch, path, currentLine) : produceRelationshipUrlLocal(options.localBaseUrl, path);
+function produceRelationshipUrl(iteratorSettings: FilesIteratorSettings, path: string, line: number) {
+    return iteratorSettings.github
+        ? produceRelationshipUrlGitHub(iteratorSettings.url, iteratorSettings.github.branch, path, line)
+        : produceRelationshipUrlLocal(iteratorSettings.localBaseUrl, path);
 }
 
 function produceRelationshipUrlLocal(baseUrl: string, path: string) {
@@ -137,8 +133,4 @@ function inferSource(resource: Resource): Source {
     if (!resource.url) return 'config';
     if (/^https?:\/\//.test(resource.url)) return 'github';
     return 'local';
-}
-
-function getDefaultRegex(pattern: string | RegExp | undefined, defaultPattern: RegExp): RegExp {
-    return typeof pattern === 'string' ? new RegExp(pattern) : defaultPattern;
 }

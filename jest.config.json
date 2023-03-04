@@ -12,6 +12,6 @@
         }
     },
     "preset": "ts-jest",
-    "testRegex": "__tests__/(?!data|mocks).*\\.(ts|js|tsx|jsx)$",
+    "testRegex": "__tests__/(?!data|mocks).*(unit|integration)\\.(ts|js|tsx|jsx)$",
     "rootDir": "src"
 }

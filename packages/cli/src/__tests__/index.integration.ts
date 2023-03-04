@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import { mkdir, mkdtemp, readFile, rm, readdir } from 'fs/promises';
+import { mkdir, mkdtemp, readFile, rm } from 'fs/promises';
 import { join } from 'path';
 
 const expectedResources = [
@@ -80,8 +80,6 @@ describe('cli', () => {
     });
 
     it('noodle run', async () => {
-        console.log(JSON.stringify((await readdir(join(distDirPath, '..'), { withFileTypes: true })).map((dirent) => dirent.name)));
-
         await new Promise<void>((resolve, reject) =>
             exec(`node ${distDirPath} run --config ${configPath} --output ${tmpTestDirPath}`, (err) => {
                 if (err) reject(err);
