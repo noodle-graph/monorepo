@@ -86,7 +86,6 @@ describe('cli', () => {
         console.log(JSON.stringify(await readdir(tmpTestDirPath)));
         await new Promise<void>((resolve) => setTimeout(() => resolve(), 1000));
         console.log(JSON.stringify(await readdir(tmpTestDirPath)));
-        s;
         const rawOutput = (await readFile(join(tmpTestDirPath, 'scanOutput.js'))).toString();
         const rawScanOutputVariable = /window\.scanOutput = ({.*});/.exec(rawOutput)![1];
         const scanOutputVariable = JSON.parse(rawScanOutputVariable);
