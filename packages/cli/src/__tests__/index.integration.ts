@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import { mkdir, mkdtemp, readFile, rm } from 'fs/promises';
+import { mkdir, mkdtemp, readFile, readdir } from 'fs/promises';
 import { join } from 'path';
 
 const expectedResources = [
@@ -59,7 +59,7 @@ const tmpDirPath = join(__dirname, '../../../../tmp');
 
 beforeAll(async () => {
     try {
-        await mkdir(tmpDirPath, { recursive: true });
+        await mkdir(tmpDirPath);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
         if (err.code !== 'EEXIST') {
@@ -83,6 +83,10 @@ describe('cli', () => {
         const command = `node ${distDirPath} run --config ${configPath} --output ${tmpTestDirPath}`;
 
         await new Promise<void>((resolve) => exec(command, () => resolve()));
+        console.log(JSON.stringify(await readdir(tmpTestDirPath)));
+        await new Promise<void>((resolve) => setTimeout(() => resolve(), 1000));
+        console.log(JSON.stringify(await readdir(tmpTestDirPath)));
+        s;
         const rawOutput = (await readFile(join(tmpTestDirPath, 'scanOutput.js'))).toString();
         const rawScanOutputVariable = /window\.scanOutput = ({.*});/.exec(rawOutput)![1];
         const scanOutputVariable = JSON.parse(rawScanOutputVariable);
