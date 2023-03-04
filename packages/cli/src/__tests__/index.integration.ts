@@ -59,7 +59,7 @@ const tmpDirPath = join(__dirname, '../../../../tmp');
 
 beforeAll(async () => {
     try {
-        await mkdir(tmpDirPath);
+        await mkdir(tmpDirPath, { recursive: true });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
         if (err.code !== 'EEXIST') {
