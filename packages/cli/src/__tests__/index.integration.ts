@@ -80,17 +80,15 @@ describe('cli', () => {
     });
 
     it('noodle run', async () => {
-        const command = `node ${distDirPath} run --config ${configPath} --output ${tmpTestDirPath}`;
+        console.log(JSON.stringify((await readdir(join(distDirPath, '..'), { withFileTypes: true })).map((dirent) => dirent.name)));
 
         await new Promise<void>((resolve, reject) =>
-            exec(command, (err, stdout, stderr) => {
-                console.log(stdout);
-                console.error(stderr);
-                if (err) reject();
+            exec(`node ${distDirPath} run --config ${configPath} --output ${tmpTestDirPath}`, (err) => {
+                if (err) reject(err);
                 else resolve();
             })
         );
-        console.log(JSON.stringify((await readdir(tmpTestDirPath, { withFileTypes: true })).map((dirent) => dirent.name)));
+
         const rawOutput = (await readFile(join(tmpTestDirPath, 'scanOutput.js'))).toString();
         const rawScanOutputVariable = /window\.scanOutput = ({.*});/.exec(rawOutput)![1];
         const scanOutputVariable = JSON.parse(rawScanOutputVariable);
