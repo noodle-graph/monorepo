@@ -1,2 +1,5 @@
 **/dist
 tools/generators/**/files
+**/tmp
+**/node_modules
+**/build
