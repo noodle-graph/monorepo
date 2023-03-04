@@ -5,6 +5,7 @@ First, thanks for considering contributing to the project! 🤩
 If you have any question, feel free to [reach out](https://github.com/dormeiri).
 
 - [Setup locally](#setup-locally)
+- [Automated tests](#automated-tests)
 - [Useful commands](#useful-commands)
   - [Common](#common)
   - [Generating a new package](#generating-a-new-package)
@@ -16,7 +17,6 @@ If you have any question, feel free to [reach out](https://github.com/dormeiri).
   - [Testing the CLI locally](#testing-the-cli-locally)
     - [Using link in the global CLI installation](#using-link-in-the-global-cli-installation)
   - [Testing the UI locally](#testing-the-ui-locally)
-- [Automated tests](#automated-tests)
 
 ## Setup locally
 
@@ -28,35 +28,32 @@ Make sure you can have the environment variables for running [automated tests](#
 
 To validate the setup, run the following commands:
 
-1. `nx run-many --target=test`
-2. `nx run-many --target=lint`
-3. `nx run-many --target=build`
+1. `npx nx run-many --target=test`
+2. `npx nx run-many --target=lint`
+3. `npx nx run-many --target=build`
 
 ## Automated tests
 
 Where available, you can run only unit tests with:
 
 ```bash
-nx test:unit <project name>
+npx nx test:unit <project name>
 ```
 
 And only integration tests with:
 
 ```bash
-nx test:integration <project name>
+npx nx test:integration <project name>
 ```
 
 The integration tests need the following environment variables:
 
 - `NOODLE_GITHUB_TOKEN` -- Some GitHub token for cloning this repo when scanning.
 
-_NOTE:_ Code that requires integration should be separated from code that doesn't.
-That will help keeping the separation in tests as well.
-
-All projects have a `test` command that tests both unit and integration:
+All projects have a `test` command that run both unit and integration tests:
 
 ```bash
-nx test <project name>
+npx nx test <project name>
 ```
 
 ## Useful commands
@@ -64,7 +61,6 @@ nx test <project name>
 ### Common
 
 ```bash
-npx nx lint <project name>
 npx nx lint <project name>
 npx nx test <project name>
 npx nx test:unit <project name>
@@ -122,16 +118,10 @@ npm:
 npm install @noodle-graph/<package name>@local --registry=http://localhost:4873
 ```
 
-yarn:
-
-```bash
-yarn add @noodle-graph/<package name>@local --registry=http://localhost:4873
-```
-
 ### Testing the CLI locally
 
 ```bash
-nx build:global cli
+npx nx build:global cli
 ```
 
 That will build and install the CLI globally on your local machine. Then you can run the CLI.
@@ -139,7 +129,7 @@ That will build and install the CLI globally on your local machine. Then you can
 Be aware that this will also `npm link @noodle-graph/scanner` the global CLI module. To avoid that, you can do:
 
 ```bash
-nx build cli
+npx nx build cli
 cd packages/cli/dist
 npm i -g .
 ```
