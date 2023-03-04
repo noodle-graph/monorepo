@@ -17,11 +17,15 @@
             "dependsOn": ["^build"],
             "inputs": ["default"]
         },
+        "test:integration": {
+            "dependsOn": ["build"]
+        },
         "publish": {
             "dependsOn": [
                 "build",
                 "lint",
-                "test"
+                "test:integration",
+                "test:unit"
             ]
         }
     }
