@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import { mkdir, mkdtemp, readFile, readdir } from 'fs/promises';
+import { mkdir, mkdtemp, readFile, rm, readdir } from 'fs/promises';
 import { join } from 'path';
 
 const expectedResources = [
