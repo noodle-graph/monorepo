@@ -20,12 +20,14 @@
         "test:integration": {
             "dependsOn": ["build"]
         },
+        "test": {
+            "dependsOn": ["build"]
+        },
         "publish": {
             "dependsOn": [
                 "build",
                 "lint",
-                "test:integration",
-                "test:unit"
+                "test"
             ]
         }
     }
