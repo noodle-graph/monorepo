@@ -55,7 +55,7 @@ const expectedResources = [
 
 const distDirPath = join(__dirname, '../../dist');
 const configPath = join(__dirname, '../__mocks__/data/noodle.json');
-const tmpDirPath = join(__dirname, '../../../../tmp');
+const tmpDirPath = join(__dirname, 'tmp');
 
 beforeAll(async () => {
     try {
@@ -82,7 +82,14 @@ describe('cli', () => {
     it('noodle run', async () => {
         const command = `node ${distDirPath} run --config ${configPath} --output ${tmpTestDirPath}`;
 
-        await new Promise<void>((resolve) => exec(command, () => resolve()));
+        await new Promise<void>((resolve, reject) =>
+            exec(command, (err, stdout, stderr) => {
+                console.log(stdout);
+                console.error(stderr);
+                if (err) reject();
+                else resolve();
+            })
+        );
         console.log(JSON.stringify((await readdir(tmpTestDirPath, { withFileTypes: true })).map((dirent) => dirent.name)));
         const rawOutput = (await readFile(join(tmpTestDirPath, 'scanOutput.js'))).toString();
         const rawScanOutputVariable = /window\.scanOutput = ({.*});/.exec(rawOutput)![1];
