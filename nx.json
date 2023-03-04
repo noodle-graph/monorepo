@@ -19,9 +19,9 @@
         },
         "publish": {
             "dependsOn": [
+                "build",
                 "lint",
-                "test",
-                "build"
+                "test"
             ]
         }
     }
