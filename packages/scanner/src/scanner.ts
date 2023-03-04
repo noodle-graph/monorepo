@@ -53,7 +53,7 @@ export class Scanner {
         const filePathsGenerator = filesIterator.iterate();
 
         let filesScanned = 0;
-        resourceCopy.relationships = [];
+        resourceCopy.relationships ??= [];
         await Promise.all(
             Array(this.context.scanWorkersNum)
                 .fill(filePathsGenerator)
