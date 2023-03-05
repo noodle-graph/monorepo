@@ -1,0 +1,18 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../dist/tools",
+    "rootDir": ".",
+    "types": [
+      "node",
+      "jest"
+    ],
+    "importHelpers": false
+  },
+  "include": [
+    "/Users/dmeiri/github/noodle-graph/monorepo/tools/generators/**/*.ts"
+  ],
+  "exclude": [
+    "generators/**/files/**/*"
+  ]
+}
