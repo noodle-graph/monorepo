@@ -1,8 +1,9 @@
 import { join } from 'path';
 
+import type { Resource, ScanOptions } from '@noodle-graph/types';
+
 import { scan } from '..';
 import { GitClient } from '../gitClient';
-import type { Resource, ScanOptions } from '../types';
 
 describe('Scanner', () => {
     let scanOptions: ScanOptions;
@@ -77,6 +78,16 @@ describe('Scanner', () => {
             beforeEach(() => {
                 scanOptions.config.resources.push({ id: 'some-queue', source: 'config' });
                 expectedResources.find((resource) => resource.id === 'some-queue')!.source = 'config';
+            });
+
+            it('should scan correctly', async () => {
+                expect(await scan(scanOptions)).toEqual({ resources: expect.arrayContaining(expectedResources) });
+            });
+        });
+
+        describe('with type evaluator plugin', () => {
+            beforeEach(() => {
+                scanOptions.config.plugins = ['@noodle-graph/plugin-type-evaluator'];
             });
 
             it('should scan correctly', async () => {

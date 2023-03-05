@@ -1,10 +1,11 @@
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
+import type { NoodlePlugin, Relationship, Resource, ScanOptions, ScanResult, Source } from '@noodle-graph/types';
 import type { Logger } from 'pino';
 
 import { FilesIteratorFactory } from './filesIteratorFactory';
-import type { FilesIteratorSettings, Relationship, Resource, ScanContext, ScanOptions, ScanResult, Source } from './types';
+import type { FilesIteratorSettings, ScanContext } from './types';
 import { getDefaultRegex } from './utils';
 
 const DEFAULT_INCLUDE_REGEX = /(.ts|.tsx|.js|.jsx|.java|.py|.go|.tf)$/;
@@ -14,6 +15,7 @@ export const DEFAULT_FILES_WORKERS_NUM = 8;
 export class Scanner {
     private readonly context: ScanContext;
     private readonly filesIteratorFactory = new FilesIteratorFactory();
+    private readonly plugins: NoodlePlugin[];
 
     constructor(options: ScanOptions, logger?: Logger) {
         this.context = {
@@ -25,6 +27,12 @@ export class Scanner {
             scanWorkersNum: options.scanWorkersNum ?? DEFAULT_FILES_WORKERS_NUM,
             logger,
         };
+        this.plugins = options.config.plugins?.map((plugin) => require(plugin).default) ?? [];
+        console.log(this.plugins);
+    }
+
+    register(plugin: NoodlePlugin): void {
+        this.plugins.push(plugin);
     }
 
     async scan(): Promise<ScanResult> {
@@ -34,7 +42,7 @@ export class Scanner {
             scannedResources.push(await this.scanResource(resource));
         }
 
-        enrichResources(scannedResources);
+        this.enrichResources(scannedResources);
 
         return { resources: scannedResources };
     }
@@ -68,27 +76,36 @@ export class Scanner {
         this.context.logger?.info({ id: resourceCopy.id, filesScanned, relationships: resourceCopy.relationships.length }, 'Resource scanned');
         return resourceCopy;
     }
-}
 
-function enrichResources(scannedResources: Resource[]) {
-    const resourcesEnrichments = new Map(scannedResources.map((resource) => [resource.id, { tags: new Set(resource.tags) }]));
-
-    for (const resource of scannedResources) {
-        for (const relationship of resource.relationships ?? []) {
-            if (!resourcesEnrichments.has(relationship.resourceId)) {
-                scannedResources.push({ id: relationship.resourceId, source: 'scan' });
-                resourcesEnrichments.set(relationship.resourceId, { tags: new Set() });
-            }
-
-            for (const tag of relationship.tags) {
-                resourcesEnrichments.get(resource.id)!.tags.add(tag);
-                resourcesEnrichments.get(relationship.resourceId)!.tags.add(tag);
-            }
+    enrichResources(resources: Resource[]): void {
+        this.enrichTags(resources);
+        for (const plugin of this.plugins) {
+            console.log(plugin);
+            plugin.enrich(resources);
         }
     }
 
-    for (const resource of scannedResources) {
-        resource.tags = [...resourcesEnrichments.get(resource.id)!.tags];
+    // TBD: Should be a plugin?
+    enrichTags(resources: Resource[]): void {
+        const resourcesEnrichments = new Map(resources.map((resource) => [resource.id, { tags: new Set(resource.tags) }]));
+
+        for (const resource of resources) {
+            for (const relationship of resource.relationships ?? []) {
+                if (!resourcesEnrichments.has(relationship.resourceId)) {
+                    resources.push({ id: relationship.resourceId, source: 'scan' });
+                    resourcesEnrichments.set(relationship.resourceId, { tags: new Set() });
+                }
+
+                for (const tag of relationship.tags) {
+                    resourcesEnrichments.get(resource.id)!.tags.add(tag);
+                    resourcesEnrichments.get(relationship.resourceId)!.tags.add(tag);
+                }
+            }
+        }
+
+        for (const resource of resources) {
+            resource.tags = [...resourcesEnrichments.get(resource.id)!.tags];
+        }
     }
 }
 

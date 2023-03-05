@@ -1,5 +1,6 @@
+import type { Resource, ScanOptions } from '@noodle-graph/types';
+
 import { scan } from '..';
-import type { Resource, ScanOptions } from '../types';
 
 describe('Scanner', () => {
     let scanOptions: ScanOptions;

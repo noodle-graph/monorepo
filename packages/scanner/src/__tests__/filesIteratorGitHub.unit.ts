@@ -1,9 +1,11 @@
 import { join } from 'path';
 
+import type { Source, Resource } from '@noodle-graph/types';
+
 import { MissingGitHubOptionsError, MissingUrlError } from '../errors';
 import { FilesIteratorGitHub } from '../filesIteratorGitHub';
 import { DEFAULT_FILES_WORKERS_NUM } from '../scanner';
-import type { Resource, ScanContext, Source } from '../types';
+import type { ScanContext } from '../types';
 
 describe('FilesIteratorGitHub', () => {
     let resource: Resource & { source: Source };

@@ -1,7 +1,9 @@
+import type { Source, Resource } from '@noodle-graph/types';
+
 import { FilesIteratorFactory } from '../filesIteratorFactory';
 import { FilesIteratorGitHub } from '../filesIteratorGitHub';
 import { FilesIteratorLocal } from '../filesIteratorLocal';
-import type { Resource, ScanContext, Source } from '../types';
+import type { ScanContext } from '../types';
 
 describe('FilesIteratorRegistry', () => {
     const factory = new FilesIteratorFactory();
