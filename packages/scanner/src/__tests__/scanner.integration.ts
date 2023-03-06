@@ -2,8 +2,7 @@ import type { Resource, ScanOptions } from '@noodle-graph/types';
 
 import { scan } from '..';
 
-// TODO: After merge, un-skip
-describe.skip('Scanner', () => {
+describe('Scanner', () => {
     let scanOptions: ScanOptions;
     let expectedResources: Resource[];
 

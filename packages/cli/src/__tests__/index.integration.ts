@@ -68,10 +68,7 @@ beforeAll(async () => {
     }
 });
 
-// TODO: After merge, un-skip
-it('Just for passing tests', () => {});
-
-describe.skip('cli', () => {
+describe('cli', () => {
     let tmpTestDirPath: string;
 
     beforeEach(async () => {
