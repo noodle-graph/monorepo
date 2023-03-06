@@ -1,7 +1,6 @@
 import type { Source } from '@noodle-graph/types';
 
-import { FilesIterator } from './filesIterator';
-import type { FilesIteratorConstructor } from './filesIterator';
+import type { FilesIterator, FilesIteratorConstructor } from './filesIterator';
 import { FilesIteratorGitHub } from './filesIteratorGitHub';
 import { FilesIteratorLocal } from './filesIteratorLocal';
 import type { ResourceScanContext } from './types';

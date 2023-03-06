@@ -20,10 +20,13 @@
     "vis-data": "^7.1.4",
     "vis-network": "^9.1.2"
   },
+  "devDependencies": {
+    "@noodle-graph/types": "file:../types/dist"
+  },
   "homepage": ".",
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false react-scripts build",
+    "build": "react-scripts build",
     "lint": "eslint .",
     "test": "react-scripts test --watchAll=false"
   },

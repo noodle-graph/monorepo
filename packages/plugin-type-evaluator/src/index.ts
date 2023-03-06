@@ -6,7 +6,7 @@ const evaluatorPatterns: [string, RegExp][] = [
     ['aws/sqs', /.*-?sqs-?.*/],
     ['aws/ec2', /.*-?ec2-?.*/],
     ['aws/ecs', /.*-?ecs-?.*/],
-    ['aws/dynamodb', /.*-?dynamodb-?.*/],
+    ['aws/dynamodb', /.*-?dynamo-?db-?.*/],
     ['webex', /.*-?webex-?.*/],
     ['aws/eks', /.*-?eks-?.*/],
     ['aws/rds', /.*-?rds-?.*/],
@@ -15,7 +15,7 @@ const evaluatorPatterns: [string, RegExp][] = [
 ];
 
 export default class TypeEvaluator implements NoodlePlugin {
-    enrich(resources: Resource[]): Resource[] {
+    public enrich(resources: Resource[]): Resource[] {
         for (const resource of resources) {
             resource.type ??= evaluatorPatterns.find(([_, pattern]) => pattern.test(resource.id))?.[0];
         }

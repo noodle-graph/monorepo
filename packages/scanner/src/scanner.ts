@@ -17,7 +17,7 @@ export class Scanner {
     private readonly filesIteratorFactory = new FilesIteratorFactory();
     private readonly plugins: NoodlePlugin[];
 
-    constructor(options: ScanOptions, logger?: Logger) {
+    public constructor(options: ScanOptions, logger?: Logger) {
         this.context = {
             ...options,
             config: {
@@ -27,15 +27,14 @@ export class Scanner {
             scanWorkersNum: options.scanWorkersNum ?? DEFAULT_FILES_WORKERS_NUM,
             logger,
         };
-        this.plugins = options.config.plugins?.map((plugin) => require(plugin).default) ?? [];
-        console.log(this.plugins);
+        this.plugins = options.config.plugins?.map((plugin) => new (require(plugin).default)()) ?? [];
     }
 
-    register(plugin: NoodlePlugin): void {
+    public register(plugin: NoodlePlugin): void {
         this.plugins.push(plugin);
     }
 
-    async scan(): Promise<ScanResult> {
+    public async scan(): Promise<ScanResult> {
         const scannedResources: Resource[] = [];
 
         for (const resource of this.context.config.resources) {
@@ -77,16 +76,15 @@ export class Scanner {
         return resourceCopy;
     }
 
-    enrichResources(resources: Resource[]): void {
+    private enrichResources(resources: Resource[]): void {
         this.enrichTags(resources);
         for (const plugin of this.plugins) {
-            console.log(plugin);
             plugin.enrich(resources);
         }
     }
 
     // TBD: Should be a plugin?
-    enrichTags(resources: Resource[]): void {
+    private enrichTags(resources: Resource[]): void {
         const resourcesEnrichments = new Map(resources.map((resource) => [resource.id, { tags: new Set(resource.tags) }]));
 
         for (const resource of resources) {
@@ -96,7 +94,7 @@ export class Scanner {
                     resourcesEnrichments.set(relationship.resourceId, { tags: new Set() });
                 }
 
-                for (const tag of relationship.tags) {
+                for (const tag of relationship.tags ?? []) {
                     resourcesEnrichments.get(resource.id)!.tags.add(tag);
                     resourcesEnrichments.get(relationship.resourceId)!.tags.add(tag);
                 }

@@ -15,7 +15,7 @@
     "targetDefaults": {
         "build": {
             "dependsOn": ["^build"],
-            "inputs": ["default"]
+            "inputs": ["default", "^default"]
         },
         "test:integration": {
             "dependsOn": ["build"]

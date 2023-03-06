@@ -1,13 +1,5 @@
 {
     "extends": [
         "../../.eslintrc.json"
-    ],
-    "overrides": [
-        {
-            "files": "**/*.tsx",
-            "rules": {
-                "@typescript-eslint/no-explicit-any": "warn"
-            }
-        }
     ]
 }

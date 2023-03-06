@@ -1,20 +1,20 @@
-export interface Relationship {
-    resourceId: string;
-    action: string;
-    tags: string[];
-    url: string;
-    resource?: Omit<Resource, 'relationships'>;
-    from?: boolean;
-    to?: boolean;
+import type { Relationship, Resource, ScanResult } from '@noodle-graph/types';
+
+export interface ResourceExtended extends Resource {
+    relationships: RelationshipExtended[];
 }
 
-export interface Resource {
-    id: string;
-    name?: string;
-    type?: string;
-    tags?: string[];
-    url?: string;
-    relationships?: Relationship[];
-    description?: string;
-    source: string;
+export interface RelationshipExtended extends Relationship {
+    resource: Resource;
+}
+
+export interface ScanResultExtended extends ScanResult {
+    resources: ResourceExtended[];
+}
+
+export interface Tag {
+    key: string;
+    value: string;
+    display: string;
+    selected: boolean;
 }

@@ -27,7 +27,7 @@ const expectedResources = [
                 tags: ['tag1'],
             },
             {
-                resourceId: 'some-queue',
+                resourceId: 'some-sqs-queue',
                 url: 'https://github.com/noodle-graph/monorepo/blob/master/packages/scanner/src/__mocks__/data/someResource/inner/folder/callingQueue.js#L3',
                 action: undefined,
                 from: false,
@@ -47,7 +47,7 @@ const expectedResources = [
         tags: ['tag1'],
     },
     {
-        id: 'some-queue',
+        id: 'some-sqs-queue',
         source: 'scan',
         tags: [],
     },
