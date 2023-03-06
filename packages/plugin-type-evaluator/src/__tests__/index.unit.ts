@@ -1,4 +1,4 @@
-import { TypeEvaluator } from '..';
+import TypeEvaluator from '..';
 
 it('Simple test', () => {
     const evaluator = new TypeEvaluator();
