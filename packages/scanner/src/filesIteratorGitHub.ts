@@ -3,7 +3,7 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 
 import { MissingGitHubOptionsError, MissingUrlError } from './errors';
-import { FilesIterator } from './filesIterator';
+import type { FilesIterator } from './filesIterator';
 import { FilesIteratorLocal } from './filesIteratorLocal';
 import { GitClient } from './gitClient';
 import type { FilesIteratorGitHubSettings, FilesIteratorSettings, ResourceScanContext } from './types';
@@ -14,7 +14,7 @@ export class FilesIteratorGitHub implements FilesIterator {
     private readonly filesIteratorLocal: FilesIteratorLocal;
     private readonly git = new GitClient();
 
-    constructor(options: ResourceScanContext) {
+    public constructor(options: ResourceScanContext) {
         if (!options.resource.url) throw new MissingUrlError(options.resource.id);
         if (!options.context.github) throw new MissingGitHubOptionsError(options.resource.id);
 
@@ -36,7 +36,7 @@ export class FilesIteratorGitHub implements FilesIterator {
         });
     }
 
-    async *iterate(): AsyncGenerator<string> {
+    public async *iterate(): AsyncGenerator<string> {
         await this.git.clone({
             repoUrl: this.settings.url,
             localUrl: this.settings.localBaseUrl,

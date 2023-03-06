@@ -1,3 +1,4 @@
+import type { Resource } from '@noodle-graph/types';
 import React, { useEffect, useState } from 'react';
 
 import './App.css';
@@ -6,17 +7,17 @@ import { Details } from './Details';
 import { Filter } from './Filter';
 import { Pill } from './Pill';
 import { VisNetwork } from './VisNetwork';
-import { Resource } from './types';
+import type { ResourceExtended, ScanResultExtended, Tag } from './types';
 
 export function App() {
-    const [scanOutput, setScanOutput] = useState<any>();
-    const [tags, setTags] = useState<any[]>([]);
+    const [scanOutput, setScanOutput] = useState<ScanResultExtended>();
+    const [tags, setTags] = useState<Tag[]>([]);
 
     const selectedTags = tags.filter((tag) => tag.selected);
     const selectedTagValues = selectedTags.map((tag) => tag.value);
     const [selectedResourceId, setSelectedResourceId] = useState<string | null>(null);
 
-    const selectedNode = selectedResourceId && scanOutput.resources.find((r) => r.id === selectedResourceId)!;
+    const selectedNode = selectedResourceId && scanOutput?.resources.find((r) => r.id === selectedResourceId);
 
     useEffect(() => {
         // HACK: We had CORS problem fetching the static JSON, so we inserted it in a JS which updates the `window`.
@@ -39,9 +40,9 @@ export function App() {
             }
 
             setScanOutput(scanOutputNew);
-            const tagValues = [...new Set<string>(scanOutputNew.resources.flatMap((resource: any) => resource.tags ?? []))];
+            const tagValues = [...new Set<string>(scanOutputNew.resources.flatMap((resource: ResourceExtended) => resource.tags ?? []))];
             setTags(
-                tagValues.map((tag: any) => ({
+                tagValues.map((tag: string) => ({
                     key: tag,
                     value: tag,
                     display: tag,
@@ -56,7 +57,7 @@ export function App() {
         setSelectedResourceId(null);
     }, [tags]);
 
-    function handlePillClick(clickedTag) {
+    function handlePillClick(clickedTag: Tag): void {
         const newTags = JSON.parse(JSON.stringify(tags));
 
         for (const tag of newTags) {
@@ -68,7 +69,7 @@ export function App() {
         setTags(newTags);
     }
 
-    function handleFilterChange(values) {
+    function handleFilterChange(values: string[]): void {
         const newTags = JSON.parse(JSON.stringify(tags));
 
         for (const tag of newTags) {

@@ -68,6 +68,8 @@ npx nx test:integration <project name>
 npx nx build <project name>
 ```
 
+If Nx cache evaluated incorrectly, use the option `--skip-nx-cache`
+
 _Read more about [running tasks with Nx](https://nx.dev/core-features/run-tasks)_
 
 ### Generating a new package

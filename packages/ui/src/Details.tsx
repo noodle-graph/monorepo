@@ -1,12 +1,13 @@
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { Pill } from './Pill';
 import { getTypeImagePath, prettifySource } from './constants';
-import { Relationship, Resource } from './types';
+import type { RelationshipExtended, ResourceExtended } from './types';
 
 interface DetailProps {
-    resource: Resource;
-    resourceSelected: (string) => void;
+    resource: ResourceExtended;
+    resourceSelected: (resourceId: string) => void;
 }
 
 function detail(name: string, content?: ReactElement | string | boolean): JSX.Element | false {
@@ -43,7 +44,7 @@ export function Details(props: DetailProps) {
         return link(relationshipUrl.split('/')?.pop() ?? 'Link', relationshipUrl);
     }
 
-    function relationship(relationship: Relationship) {
+    function relationship(relationship: RelationshipExtended) {
         return (
             <div className="flex flex-col bg-primary text-secondary p-4 rounded">
                 <div>

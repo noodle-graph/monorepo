@@ -1,8 +1,9 @@
-import { FilesIterator } from './filesIterator';
-import type { FilesIteratorConstructor } from './filesIterator';
+import type { Source } from '@noodle-graph/types';
+
+import type { FilesIterator, FilesIteratorConstructor } from './filesIterator';
 import { FilesIteratorGitHub } from './filesIteratorGitHub';
 import { FilesIteratorLocal } from './filesIteratorLocal';
-import type { ResourceScanContext, Source } from './types';
+import type { ResourceScanContext } from './types';
 
 export class FilesIteratorFactory {
     private readonly filesIteratorsClass: { [P in Source]: FilesIteratorConstructor } = {

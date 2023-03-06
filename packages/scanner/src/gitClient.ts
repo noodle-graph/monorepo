@@ -10,7 +10,7 @@ interface GitCloneOptions {
 export class GitClient {
     private readonly git = simpleGit();
 
-    async clone(options: GitCloneOptions): Promise<void> {
+    public async clone(options: GitCloneOptions): Promise<void> {
         const repoUrl = new URL(options.repoUrl);
         repoUrl.username = options.token;
 

@@ -55,7 +55,17 @@
                     "order": "asc"
                 }
             }
-        ]
+        ],
+        "node/no-extraneous-import": "off",
+        "import/no-extraneous-dependencies": [
+            "error",
+            {
+                "includeTypes": false
+            }
+        ],
+        "node/no-unpublished-import": "off",
+        "@typescript-eslint/explicit-member-accessibility": "error",
+        "@typescript-eslint/consistent-type-imports": "error"
     },
     "parserOptions": {
         "ecmaVersion": "latest"

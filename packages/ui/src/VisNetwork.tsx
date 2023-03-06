@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React from 'react';
 import { DataSet, DataView } from 'vis-data';
 import { Network } from 'vis-network';
 
 import { getTypeImagePath } from './constants';
-import { Resource } from './types';
+import type { ResourceExtended } from './types';
 
 export interface VisNetworkProps {
     scanOutput: {
-        resources: Resource[];
+        resources: ResourceExtended[];
     };
     selectedTags: string[];
     selectNode: (nodeId: string) => void;
@@ -20,7 +22,7 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
     private nodes: any;
     private network?: Network;
 
-    constructor(props: VisNetworkProps) {
+    public constructor(props: VisNetworkProps) {
         super(props);
     }
 
@@ -81,7 +83,7 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
     private extractNodes() {
         return new DataView(
             new DataSet(
-                this.props.scanOutput.resources.map((resource: Resource) => ({
+                this.props.scanOutput.resources.map((resource: ResourceExtended) => ({
                     id: resource.id,
                     label: resource.name ?? resource.id,
                     group: resource.type ?? resource.source,
@@ -124,11 +126,11 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
         return new DataView(new DataSet(Object.values(edges), {}));
     }
 
-    override componentDidMount(): void {
+    public override componentDidMount(): void {
         this.produceNetwork();
     }
 
-    override componentDidUpdate(prevProps: VisNetworkProps): void {
+    public override componentDidUpdate(prevProps: VisNetworkProps): void {
         if (this.network && prevProps.selectedNode) {
             for (const edge of this.network.getConnectedEdges(prevProps.selectedNode)) {
                 this.network.updateEdge(edge, { width: 1 });
@@ -148,7 +150,7 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
         this.nodes.refresh();
     }
 
-    override render() {
+    public override render() {
         return <div ref={this.container} className="w-full h-full" />;
     }
 }

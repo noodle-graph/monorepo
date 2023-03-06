@@ -1,0 +1,13 @@
+{
+    "extends": [
+        "../../.eslintrc.json"
+    ],
+    "overrides": [
+        {
+            "files": "src/index.ts",
+            "rules": {
+                "import/no-default-export": "off"
+            }
+        }
+    ]
+}

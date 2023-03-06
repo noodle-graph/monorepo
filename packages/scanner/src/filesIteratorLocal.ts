@@ -1,14 +1,14 @@
 import { readdir } from 'fs/promises';
 import { join } from 'path';
 
-import { FilesIterator } from './filesIterator';
+import type { FilesIterator } from './filesIterator';
 import type { FilesIteratorSettings, ResourceScanContext } from './types';
 import { getDefaultRegex } from './utils';
 
 export class FilesIteratorLocal implements FilesIterator {
     public readonly settings: FilesIteratorSettings;
 
-    constructor(options: ResourceScanContext) {
+    public constructor(options: ResourceScanContext) {
         this.settings = {
             resource: options.resource,
             url: options.resource.url ?? '',
@@ -17,7 +17,7 @@ export class FilesIteratorLocal implements FilesIterator {
         };
     }
 
-    async *iterate(): AsyncGenerator<string> {
+    public async *iterate(): AsyncGenerator<string> {
         for await (const path of this.deepReadDir(join(this.settings.localBaseUrl, this.settings.url))) {
             yield path.substring(this.settings.localBaseUrl.length + 1);
         }
