@@ -1,17 +1,17 @@
 {
-    "name": "scanner",
+    "name": "plugin-type-google",
     "targets": {
         "publish": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "node tools/scripts/publish.mjs scanner {args.ver} {args.env} {args.tag}"
+                "command": "node tools/scripts/publish.mjs plugin-type-google {args.ver} {args.env} {args.tag}"
             }
         },
         "install": {
             "executor": "nx:run-commands",
             "options": {
                 "command": "npm install",
-                "cwd": "packages/scanner"
+                "cwd": "packages/plugin-type-google"
             }
         }
     }

@@ -100,6 +100,15 @@ export function Details(props: DetailProps) {
                         </div>
                     )
                 )}
+                {!!props.resource.additionalLinks &&
+                    detail(
+                        'Additional Links',
+                        <div>
+                            {props.resource.additionalLinks.map(({ label, url }) => (
+                                <div>{link(label, url)}</div>
+                            ))}
+                        </div>
+                    )}
             </div>
         </div>
     );

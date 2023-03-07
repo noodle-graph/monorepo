@@ -10,7 +10,7 @@
         "install": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "npm ci",
+                "command": "npm install",
                 "cwd": "packages/<%= name %>"
             }
         }

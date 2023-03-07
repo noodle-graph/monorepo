@@ -1,0 +1,29 @@
+{
+    "plugins": [
+        "@noodle-graph/plugin-type-google"
+    ],
+    "resources": [
+        {
+            "id": "some-service",
+            "url": "./someService",
+            "name": "Some Service",
+            "tags": ["feature1"],
+            "type": "aws/ecs",
+            "source": "local"
+        },
+        {
+            "id": "another-service",
+            "url": "./anotherService",
+            "name": "Another Service",
+            "tags": ["feature1", "service"],
+            "type": "aws/ecs",
+            "source": "local"
+        },
+        {
+            "id": "some-db",
+            "name": "Some DB",
+            "tags": ["db"],
+            "type": "aws/aurora"
+        }
+    ]
+}
