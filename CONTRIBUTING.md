@@ -9,6 +9,8 @@ If you have any question, feel free to [reach out](https://github.com/dormeiri).
 - [Useful commands](#useful-commands)
   - [Common](#common)
   - [Generating a new package](#generating-a-new-package)
+- [Plugins](#plugins)
+  - [Plugin Lifecycle](#plugin-lifecycle)
 - [Testing packages locally](#testing-packages-locally)
   - [With link](#with-link)
   - [With local registry](#with-local-registry)
@@ -77,6 +79,18 @@ _Read more about [running tasks with Nx](https://nx.dev/core-features/run-tasks)
 ```bash
 npm run generate:package <project name>
 ```
+
+## Plugins
+
+To add a plugin, you just need to implement the [NoodlePlugin](https://github.com/noodle-graph/monorepo/blob/master/packages/types/src/index.ts#L1) interface.
+
+Check [Type Evaluator Plugin](https://github.com/noodle-graph/monorepo/blob/master/packages/plugin-type-evaluator/src/index.ts) for example.
+
+For contributing a new plugin to the ecosystem, feel free to add it to this repository by [generating a new package](#generating-a-new-package).
+
+### Plugin Lifecycle
+
+For now there is only one phase in the lifecycle, which is `enrich`. That happens after the scan is finished and you have a list of resources with relationships.
 
 ## Testing packages locally
 

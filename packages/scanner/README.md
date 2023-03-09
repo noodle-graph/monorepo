@@ -62,7 +62,8 @@ Here is a sample of scan output:
           "from":false,
           "to":true
         }
-      ]
+      ],
+      "additionalLinks": []
     },
     {
       "id":"another-service",
@@ -85,7 +86,8 @@ Here is a sample of scan output:
           "from":false,
           "to":true
         }
-      ]
+      ],
+      "additionalLinks": []
     },
     {
       "id":"some-db",
@@ -95,7 +97,8 @@ Here is a sample of scan output:
         "feature2",
         "service"
       ],
-      "type":"aws/aurora"
+      "type":"aws/aurora",
+      "additionalLinks": []
     }
   ]
 }

@@ -17,7 +17,7 @@
             "include": "anotherService/.*\\.js"
         },
         {
-            "id": "some-db",
+            "id": "some-rds-db",
             "name": "Some DB",
             "tags": ["feature1", "feature2", "db"],
             "type": "aws/aurora"

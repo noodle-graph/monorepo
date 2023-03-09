@@ -1,6 +1,7 @@
 {
     "plugins": [
-        "@noodle-graph/plugin-type-google"
+        "@noodle-graph/plugin-type-evaluator",
+        "../../../packages/plugin-type-google/dist"
     ],
     "resources": [
         {
@@ -8,22 +9,19 @@
             "url": "./someService",
             "name": "Some Service",
             "tags": ["feature1"],
-            "type": "aws/ecs",
-            "source": "local"
+            "type": "aws/ecs"
         },
         {
             "id": "another-service",
             "url": "./anotherService",
             "name": "Another Service",
             "tags": ["feature1", "service"],
-            "type": "aws/ecs",
-            "source": "local"
+            "type": "aws/ecs"
         },
         {
-            "id": "some-db",
+            "id": "some-rds-db",
             "name": "Some DB",
-            "tags": ["db"],
-            "type": "aws/aurora"
+            "tags": ["db"]
         }
     ]
 }
