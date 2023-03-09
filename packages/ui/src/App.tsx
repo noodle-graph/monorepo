@@ -6,16 +6,18 @@ import './App.css';
 import { Details } from './Details';
 import { Filter } from './Filter';
 import { Pill } from './Pill';
+import { Select } from './Select';
 import { VisNetwork } from './VisNetwork';
-import type { ResourceExtended, ScanResultExtended, Tag } from './types';
+import type { ResourceExtended, ScanResultExtended, Selection, SelectionMultiple } from './types';
 
 export function App() {
     const [scanOutput, setScanOutput] = useState<ScanResultExtended>();
-    const [tags, setTags] = useState<Tag[]>([]);
+    const [tags, setTags] = useState<SelectionMultiple<string>[]>([]);
+    const [resources, setResources] = useState<Selection<string>[]>([]);
 
     const selectedTags = tags.filter((tag) => tag.selected);
     const selectedTagValues = selectedTags.map((tag) => tag.value);
-    const [selectedResourceId, setSelectedResourceId] = useState<string | null>(null);
+    const [selectedResourceId, setSelectedResourceId] = useState<string>();
 
     const selectedNode = selectedResourceId && scanOutput?.resources.find((r) => r.id === selectedResourceId);
 
@@ -49,15 +51,22 @@ export function App() {
                     selected: false,
                 }))
             );
+            setResources(
+                scanOutputNew.resources.map((resource) => ({
+                    key: resource.id,
+                    value: resource.id,
+                    display: resource.name ?? resource.id,
+                }))
+            );
         };
         document.body.appendChild(script);
     }, []);
 
     useEffect(() => {
-        setSelectedResourceId(null);
+        setSelectedResourceId(undefined);
     }, [tags]);
 
-    function handlePillClick(clickedTag: Tag): void {
+    function handlePillClick(clickedTag: Selection<string>): void {
         const newTags = JSON.parse(JSON.stringify(tags));
 
         for (const tag of newTags) {
@@ -85,6 +94,7 @@ export function App() {
         <div className="flex h-screen">
             <div className="w-96 bg-darker overflow-auto flex flex-col p-5 gap-5">
                 <Filter options={tags} onChange={handleFilterChange} title="Tags" />
+                <Select options={resources} onChange={setSelectedResourceId} title="Resource" />
                 <div className="flex flex-wrap text-xs gap-1 mt-1 rounded">
                     {selectedTags.map((tag, i) => (
                         <Pill key={`pill-${i}`} onClick={() => handlePillClick(tag)} label={tag.value} />

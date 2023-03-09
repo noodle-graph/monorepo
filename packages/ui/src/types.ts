@@ -12,9 +12,12 @@ export interface ScanResultExtended extends ScanResult {
     resources: ResourceExtended[];
 }
 
-export interface Tag {
+export interface Selection<T> {
     key: string;
-    value: string;
+    value: T;
     display: string;
+}
+
+export interface SelectionMultiple<T> extends Selection<T> {
     selected: boolean;
 }
