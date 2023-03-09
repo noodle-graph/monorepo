@@ -2,7 +2,7 @@
     "name": "@noodle-graph/plugin-type-evaluator",
     "version": "0.0.0",
     "scripts": {
-        "build": "tsc --project tsconfig.lib.json && cp package.json dist",
+        "build": "tsc --project tsconfig.lib.json && cp package.json dist && cp README.md dist",
         "lint": "eslint .",
         "test": "jest"
     },

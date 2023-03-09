@@ -49,10 +49,10 @@ export class Scanner {
     private async scanResource(resource: Resource): Promise<Resource> {
         const resourceCopy = {
             ...resource,
-            source: inferSource(resource),
+            source: resource.source ?? inferSource(resource),
         };
 
-        if (resourceCopy.source === 'config') return resource;
+        if (resourceCopy.source === 'config') return resourceCopy;
 
         this.context.logger?.debug({ id: resourceCopy.id, url: resourceCopy.url, source: resourceCopy.source }, 'Scanning resource...');
 

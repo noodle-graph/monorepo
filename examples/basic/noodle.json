@@ -17,7 +17,7 @@
             "source": "local"
         },
         {
-            "id": "some-db",
+            "id": "some-rds-db",
             "name": "Some DB",
             "tags": ["db"],
             "type": "aws/aurora"

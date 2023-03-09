@@ -20,9 +20,10 @@ Additionally, Noodle is reliant on the best source of truth, which is the code i
   - [4. `noodle run --open`](#4-noodle-run---open)
 - [Commands](#commands)
   - [`run`](#run)
-    - [Parameters](#parameters)
+    - [Options](#options)
   - [Scan config file](#scan-config-file)
     - [Resource object](#resource-object)
+- [Plugins](#plugins)
 - [Contributing](#contributing)
 
 ## Quick start
@@ -53,11 +54,11 @@ noodle run
 
 Using the [scanner](https://github.com/noodle-graph/monorepo/tree/master/packages/scanner) to search resources relationships and bundles a UI with the results.
 
-#### Parameters
+#### Options
 
-| Command Argument | Environment Variable | Default | Description |
+| Option | Environment Variable | Default | Description |
 |-|-|-|-|
-| `--config`, `-c` | `NOODLE_CONFIG` | `./noodle.json` | Path to the scan configuration file. |
+| `--config`, `-c` | `NOODLE_CONFIG` | `./noodle.json` | Path to the [scan configuration file](#scan-config-file). |
 | `--output`, `-o` | `NOODLE_OUTPUT` | `./noodleScanOutput` | Path to the UI bundle output folder. |
 | `--githubToken` | `NOODLE_GITHUB_TOKEN` | `null` | GitHub access token. Required for GitHub resources. |
 | `--open` | - | `false` | Whether to open in the browser the bundled UI when finished. |
@@ -70,6 +71,7 @@ You can find example of a config file in the [basic example](https://github.com/
 
 | Field | Required | Description |
 |-|-|-|
+| `plugins` | No | List of plugin import names. See [`examples/basic/noodleWithPlugin.json`](https://github.com/noodle-graph/monorepo/blob/master/examples/basic/noodleWithPlugin.json) |
 | `resources` | Yes | List of [resources objects](#resource-object) to scan or declare. |
 
 #### Resource object
@@ -82,9 +84,16 @@ You can find example of a config file in the [basic example](https://github.com/
 | `type` | See [UI icons](https://github.com/noodle-graph/monorepo/tree/master/packages/ui/public/img) | No | `null` | The type of the resource is deployed on |
 | `tags` | a-z, number, forward slash, underscore, dash. RegEx: `[a-z\d-_/]+` | No | `[]` | Tags of the resource. For the UI view and filtering. |
 | `url` | `null` if `source` is `config`, otherwise a valid URL. | Yes, except if `source` is `config`. | `null` | The URL of the source to scan. |
-| `source` | `github`, `local`, `config` | No | `github` if `url` starts with `https://github.com`, `config` if `url` is `null`, otherwise `local`. | The type of the source to scan. `config` sources won't get scanned. |
-| `include` | Any RegEx | No | `/(.ts|.tsx|.js|.jsx|.java|.py|.go|.tf)$/` | RegEx for matching which files to scan. |
-| `relationships` | Array of [relationships](https://github.com/noodle-graph/monorepo/blob/master/packages/scanner/README.md#relationship-object) | No | `[]` | For declaring relationships that are not in the code. Useful for third-parties relationships. |
+| `source` | `github`, `local`, `config` | No | `github` if `url` starts with `https://`, `config` if `url` is `null`, otherwise `local`. | The type of the source to scan. `config` sources won't get scanned. |
+| `relationships` | [Relationship](https://github.com/noodle-graph/monorepo/blob/master/packages/scanner/README.md#relationship-object) array | No | `null` | List of relationship to added regardless of scanning. |
+
+## Plugins
+
+You can enrich the resource object in the output with plugins.
+
+See [`examples/basic/noodleWithPlugin.json`](https://github.com/noodle-graph/monorepo/blob/master/examples/basic/noodleWithPlugin.json) for example.
+
+For implementing a plugin, see the [CONTRIBUTING.md](https://github.com/noodle-graph/monorepo/blob/master/CONTRIBUTING.md#plugins) file.
 
 ## Contributing
 
