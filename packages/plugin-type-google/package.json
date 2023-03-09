@@ -1,0 +1,15 @@
+{
+    "name": "@noodle-graph/plugin-type-google",
+    "version": "0.0.0",
+    "scripts": {
+        "build": "tsc --project tsconfig.lib.json && cp package.json dist",
+        "lint": "eslint .",
+        "test": "jest"
+    },
+    "devDependencies": {
+        "@noodle-graph/types": "file:../types/dist"
+    },
+    "engines": {
+        "node": ">=16"
+    }
+}

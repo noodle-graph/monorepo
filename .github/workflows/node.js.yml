@@ -25,8 +25,7 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
+    - run: npm install
     - run: npx nx run-many --target=lint
     - run: npx nx run-many --target=build
     - run: npx nx run-many --target=test

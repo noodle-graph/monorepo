@@ -33,7 +33,7 @@
         "typescript": "4.9.5",
         "verdaccio": "5.21.1"
     },
-    "workspaces": [
-        "packages/**/dist"
-    ]
+    "dependencies": {
+        "@noodle-graph/cli": "^0.0.15"
+    }
 }

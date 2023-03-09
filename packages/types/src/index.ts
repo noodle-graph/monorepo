@@ -34,6 +34,10 @@ export interface Resource {
     relationships?: Relationship[];
     github?: ResourceGithubOptions;
     include?: string | RegExp;
+    additionalLinks?: {
+        label: string;
+        url: string;
+    }[];
 }
 
 export interface Relationship {

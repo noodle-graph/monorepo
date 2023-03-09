@@ -13,7 +13,7 @@ export interface VisNetworkProps {
     };
     selectedTags: string[];
     selectNode: (nodeId: string) => void;
-    selectedNode: string | null;
+    selectedNode: string | undefined;
 }
 
 export class VisNetwork extends React.Component<VisNetworkProps> {
@@ -48,9 +48,10 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
             { nodes: this.nodes, edges: this.edges },
             {
                 physics: {
-                    barnesHut: {
-                        avoidOverlap: 1,
-                        springLength: 150,
+                    solver: 'hierarchicalRepulsion',
+                    hierarchicalRepulsion: {
+                        nodeDistance: 175,
+                        avoidOverlap: 0.5,
                     },
                 },
                 interaction: { hover: true },
