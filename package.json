@@ -1,8 +1,8 @@
 {
-    "name": "monorepo",
+    "name": "@noodle-graph/monorepo",
     "version": "0.0.0",
     "scripts": {
-        "postinstall": "husky install && nx run-many --target=install --skip-nx-cache",
+        "postinstall": "husky install && nx run-many --target=install",
         "generate:package": "nx workspace-generator new-package",
         "local-registry": "node tools/scripts/local-registry.mjs"
     },
