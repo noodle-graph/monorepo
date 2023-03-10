@@ -19,7 +19,7 @@ function help() {
     consoleHelp('npm run local-registry publish <project name>', `${bold`Publish`} locally`);
     consoleHelp('npm run local-registry clear', `${bold`Clear`} storage`);
     consoleHelp('npm install <package name>@local --registry=http://localhost:4873', `${bold`Install`} from the local registry`);
-    console.log(bold.blue`\nSee more in the ${underline`README.md`}\n`);
+    console.log(bold.blue`\nSee more in the ${underline`CONTRIBUTING.md`}\n`);
 }
 
 function start() {

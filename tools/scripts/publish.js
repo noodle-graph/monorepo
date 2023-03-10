@@ -1,11 +1,9 @@
-// TODO: Write documentation
+const { execSync } = require('child_process');
+const { readFileSync, writeFileSync } = require('fs');
+const { exit } = require('process');
 
-import { execSync } from 'child_process';
-import { readFileSync, writeFileSync } from 'fs';
-import { exit } from 'process';
-
-import { readCachedProjectGraph } from '@nrwl/devkit';
-import chalk from 'chalk';
+const { readCachedProjectGraph } = require('@nrwl/devkit');
+const chalk = require('chalk');
 
 const VERSION_PATTERN = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
 const DEFAULT_ENVIRONMENT = 'local';
@@ -19,7 +17,7 @@ const ENVIRONMENTS = {
     local: {
         registry: 'http://localhost:4873',
         defaultVersion: '0.0.0-local.1',
-        defaultTag: (_version) => 'local',
+        defaultTag: () => 'local',
         overwrite: true,
     },
 };
