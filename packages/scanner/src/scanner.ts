@@ -27,6 +27,7 @@ export class Scanner {
             scanWorkersNum: options.scanWorkersNum ?? DEFAULT_FILES_WORKERS_NUM,
             logger,
         };
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         this.plugins = options.config.plugins?.map((plugin) => new (require(plugin).default)()) ?? [];
     }
 

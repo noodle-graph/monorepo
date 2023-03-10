@@ -30,9 +30,8 @@ Make sure you can have the environment variables for running [automated tests](#
 
 To validate the setup, run the following commands:
 
-1. `npx nx run-many --target=test`
-2. `npx nx run-many --target=lint`
-3. `npx nx run-many --target=build`
+1. `npx nx run-many --target=lint`
+2. `npx nx run-many --target=build`
 
 ## Automated tests
 
@@ -100,9 +99,11 @@ In the package `dist` folder run `npm link`
 
 And then in your consumer run `npm link @noodle-graph@<project>`
 
-Run `npm unlink` in the package `dist` folder to remove the link.
+Run `npm unlink @noodle-graph@<project>` to unlink the package.
 
-Run `nx build <project>` to take changes you make into the consumer.
+Run `npx nx build <project>` to take changes you make into the consumer.
+
+You can check the existing links with `npm list -g --depth=0`
 
 ### With local registry
 
@@ -122,13 +123,11 @@ See more in [local-registry.mjs](tools/scripts/local-registry.mjs)
 npm run local-registry publish <project name>
 ```
 
-By default, the version is `0.0.0-local.1` with the tag `local` and the registry is `http://localhost:4873`, you can explore more in [publish.mjs](tools/scripts/publish.mjs) and [local-registry.mjs](tools/scripts/local-registry.mjs)
+By default, the version is `0.0.0-local.1` with the tag `local` and the registry is `http://localhost:4873`, you can explore more in [publish.js](tools/scripts/publish.js) and [local-registry.mjs](tools/scripts/local-registry.mjs)
 
 _In local environment, the version is being overwritten if it is already exist._
 
 #### Installing a local package
-
-npm:
 
 ```bash
 npm install @noodle-graph/<package name>@local --registry=http://localhost:4873
@@ -136,13 +135,24 @@ npm install @noodle-graph/<package name>@local --registry=http://localhost:4873
 
 ### Testing the CLI locally
 
+#### Without global installation
+
+```bash
+npx nx build cli
+node packages/cli/dist
+```
+
+If you want to test the scanner you can link it or use local registry.
+
+#### With global installation
+
 ```bash
 npx nx build:global cli
 ```
 
 That will build and install the CLI globally on your local machine. Then you can run the CLI.
 
-Be aware that this will also `npm link @noodle-graph/scanner` the global CLI module. To avoid that, you can do:
+Be aware that this will also `npm link @noodle-graph/scanner` to the global CLI module. To avoid that, you can do:
 
 ```bash
 npx nx build cli

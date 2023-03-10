@@ -118,7 +118,7 @@ describe('Scanner', () => {
 
     describe('with 1 github resource', () => {
         beforeEach(() => {
-            jest.spyOn(GitClient.prototype, 'clone').mockImplementation(async () => {});
+            jest.spyOn(GitClient.prototype, 'clone').mockResolvedValue();
 
             const resource = {
                 id: 'some-resource',
