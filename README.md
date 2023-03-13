@@ -23,6 +23,8 @@ Additionally, Noodle is reliant on the best source of truth, which is the code i
     - [Options](#options)
   - [Scan config file](#scan-config-file)
     - [Resource object](#resource-object)
+  - [`serve`](#serve)
+    - [Options](#options-1)
 - [Plugins](#plugins)
 - [Contributing](#contributing)
 
@@ -86,6 +88,23 @@ You can find example of a config file in the [basic example](https://github.com/
 | `url` | `null` if `source` is `config`, otherwise a valid URL. | Yes, except if `source` is `config`. | `null` | The URL of the source to scan. |
 | `source` | `github`, `local`, `config` | No | `github` if `url` starts with `https://`, `config` if `url` is `null`, otherwise `local`. | The type of the source to scan. `config` sources won't get scanned. |
 | `relationships` | [Relationship](https://github.com/noodle-graph/monorepo/blob/master/packages/scanner/README.md#relationship-object) array | No | `null` | List of relationship to added regardless of scanning. |
+
+### `serve`
+
+```bash
+noodle serve
+```
+
+Serves the result of [`noodle run`](#run).
+
+#### Options
+
+| Option | Environment Variable | Default | Description |
+|-|-|-|-|
+| `--production` | - | `false` | Use production options: `{ "port": 3000, "host": "0.0.0.0" }`. It will not open the browser and use default `pino` logger. |
+| `--port`, `-p` | `NOODLE_PORT` | `0` | The port the server will listen to. |
+| `--host`, `-p` | `NOODLE_HOST` | `127.0.0.1` | The host the server will listen to. |
+| `--scanOutputDir` | `NOODLE_OUTPUT` | `./noodleScanOutput` | The output directory of `noodle run`. |
 
 ## Plugins
 
