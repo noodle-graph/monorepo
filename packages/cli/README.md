@@ -21,8 +21,8 @@ Additionally, Noodle is reliant on the best source of truth, which is the code i
 - [Commands](#commands)
   - [`run`](#run)
     - [Options](#options)
-  - [Scan config file](#scan-config-file)
-    - [Resource object](#resource-object)
+    - [Scan config file](#scan-config-file)
+      - [Resource object](#resource-object)
   - [`serve`](#serve)
     - [Options](#options-1)
 - [Plugins](#plugins)
@@ -67,7 +67,7 @@ Using the [scanner](https://github.com/noodle-graph/monorepo/tree/master/package
 | `--workers` | `NOODLE_WORKERS` | 8 | Amount of workers for scanning the files of a resource. |
 | `--verbose` | `NOODLE_VERBOSE` | `false` | Whether to print debug logs. |
 
-### Scan config file
+#### Scan config file
 
 You can find example of a config file in the [basic example](https://github.com/noodle-graph/monorepo/blob/master/examples/basic/noodle.json)
 
@@ -76,7 +76,7 @@ You can find example of a config file in the [basic example](https://github.com/
 | `plugins` | No | List of plugin import names. See [`examples/basic/noodleWithPlugin.json`](https://github.com/noodle-graph/monorepo/blob/master/examples/basic/noodleWithPlugin.json) |
 | `resources` | Yes | List of [resources objects](#resource-object) to scan or declare. |
 
-#### Resource object
+##### Resource object
 
 | Field | Pattern | Required | Default | Description |
 |-|-|-|-|-|
