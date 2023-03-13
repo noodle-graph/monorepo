@@ -22,7 +22,6 @@ Additionally, Noodle is reliant on the best source of truth, which is the code i
   - [`run`](#run)
     - [Options](#options)
     - [Scan config file](#scan-config-file)
-      - [Resource object](#resource-object)
   - [`serve`](#serve)
     - [Options](#options-1)
 - [Plugins](#plugins)
