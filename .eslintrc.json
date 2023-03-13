@@ -60,7 +60,8 @@
         "import/no-extraneous-dependencies": [
             "error",
             {
-                "includeTypes": false
+                "includeTypes": false,
+                "devDependencies": ["**/__tests__/**/*"]
             }
         ],
         "node/no-unpublished-import": "off",
@@ -99,13 +100,7 @@
                         "varsIgnorePattern": "^_"
                     }
                 ],
-                "node/no-extraneous-import": "off",
-                "import/no-extraneous-dependencies": [
-                    "error",
-                    {
-                        "includeTypes": false
-                    }
-                ]
+                "node/no-extraneous-import": "off"
             }
         }
     ]

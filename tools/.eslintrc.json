@@ -9,9 +9,6 @@
                 "**/*.js",
                 "**/*.ts"
             ],
-            "parserOptions": {
-                "ecmaVersion": "latest"
-            },
             "rules": {
                 "node/no-extraneous-import": "off",
                 "node/no-unpublished-import": "off",

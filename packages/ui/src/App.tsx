@@ -22,14 +22,8 @@ export function App() {
     const selectedNode = selectedResourceId && scanOutput?.resources.find((r) => r.id === selectedResourceId);
 
     useEffect(() => {
-        // HACK: We had CORS problem fetching the static JSON, so we inserted it in a JS which updates the `window`.
-        const script = document.createElement('script');
-        script.src = 'scanOutput.js';
-        script.async = true;
-        script.onload = function () {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            const scanOutputNew = window.scanOutput;
+        fetch('scanOutput.json').then(async (response) => {
+            const scanOutputNew = await response.json();
 
             // TODO: This should not be in the UI, but for now it is good enough...
             for (const resource of scanOutputNew.resources) {
@@ -42,6 +36,7 @@ export function App() {
             }
 
             setScanOutput(scanOutputNew);
+
             const tagValues = [...new Set<string>(scanOutputNew.resources.flatMap((resource: ResourceExtended) => resource.tags ?? []))];
             setTags(
                 tagValues.map((tag: string) => ({
@@ -51,6 +46,7 @@ export function App() {
                     selected: false,
                 }))
             );
+
             setResources(
                 scanOutputNew.resources.map((resource) => ({
                     key: resource.id,
@@ -58,8 +54,7 @@ export function App() {
                     display: resource.name ?? resource.id,
                 }))
             );
-        };
-        document.body.appendChild(script);
+        });
     }, []);
 
     useEffect(() => {
