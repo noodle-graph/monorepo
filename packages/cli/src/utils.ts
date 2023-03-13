@@ -1,14 +1,18 @@
 import loggerConstructor from 'pino';
 
-export function createLogger(level: 'debug' | 'info') {
+export function createLogger(options: { level: 'debug' | 'info'; production?: true }) {
     return loggerConstructor({
-        level,
+        level: options.level,
 
-        transport: {
-            target: 'pino-pretty',
-            options: {
-                ignore: 'pid,githubToken',
-            },
-        },
+        ...(options.production
+            ? {}
+            : {
+                  transport: {
+                      target: 'pino-pretty',
+                      options: {
+                          ignore: 'pid,githubToken',
+                      },
+                  },
+              }),
     });
 }

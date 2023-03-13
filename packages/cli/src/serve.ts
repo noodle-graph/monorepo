@@ -3,18 +3,43 @@ import { isAbsolute, join } from 'path';
 
 import { fastifyStatic } from '@fastify/static';
 import { fastify } from 'fastify';
+import type { Logger } from 'pino';
 
 import { createLogger } from './utils';
 
-export function serve(attributes) {
-    const server = fastify({ logger: createLogger('info'), disableRequestLogging: true });
-    server.register(fastifyStatic, {
-        root: isAbsolute(attributes.scanOutputDir) ? attributes.scanOutputDir : join(process.cwd(), attributes.scanOutputDir),
+interface Attributes {
+    scanOutputDir: string;
+    host: string;
+    port: number;
+    logger?: Logger;
+    production?: true;
+    open?: boolean;
+}
+
+const PRODUCTION_DEFAULTS: Partial<Attributes> = {
+    open: false,
+    host: '0.0.0.0',
+    port: 3000,
+};
+
+export function serve(attributes: Attributes) {
+    const options = {
+        open: true,
+        ...attributes,
+        ...(attributes.production ? PRODUCTION_DEFAULTS : {}),
+    };
+
+    const server = fastify({
+        logger: options.logger ?? createLogger({ level: 'info', production: options.production }),
+        disableRequestLogging: true,
     });
-    server.listen({ port: attributes.port, host: attributes.host }, (err, address) => {
+
+    server.register(fastifyStatic, {
+        root: isAbsolute(options.scanOutputDir) ? options.scanOutputDir : join(process.cwd(), options.scanOutputDir),
+    });
+
+    server.listen({ port: options.port, host: options.host }, (err, address) => {
         if (err) throw err;
-        if (attributes.open) {
-            exec(`open ${address}`);
-        }
+        if (options.open) exec(`open ${address}`);
     });
 }

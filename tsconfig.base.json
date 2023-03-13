@@ -10,7 +10,7 @@
         "declaration": true,
         "forceConsistentCasingInFileNames": true,
         "lib": [
-            "ES2021"
+            "ESNext"
         ],
         "module": "commonjs",
         "noEmitOnError": true,
@@ -19,7 +19,7 @@
         "pretty": true,
         "sourceMap": true,
         "strict": true,
-        "target": "ES2021",
+        "target": "ESNext",
         "resolveJsonModule": true
     },
     "exclude": [

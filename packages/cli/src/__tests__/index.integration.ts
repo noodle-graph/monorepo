@@ -1,6 +1,11 @@
-import { exec } from 'child_process';
+import type { ChildProcess } from 'child_process';
+import { exec, spawn } from 'child_process';
 import { mkdir, mkdtemp, readFile, rm } from 'fs/promises';
 import { join } from 'path';
+
+import { fetch } from 'undici';
+
+import { SCAN_OUTPUT_JSON_FILENAME } from '../run';
 
 const expectedResources = [
     {
@@ -69,27 +74,49 @@ beforeAll(async () => {
 });
 
 describe('cli', () => {
-    let tmpTestDirPath: string;
+    describe('noodle run', () => {
+        let tmpTestDirPath: string;
+        let processes: ChildProcess[] = [];
 
-    beforeEach(async () => {
-        tmpTestDirPath = await mkdtemp(join(tmpDirPath, 'noodle-integration-test-'));
-    });
+        beforeAll(async () => {
+            tmpTestDirPath = await mkdtemp(join(tmpDirPath, 'noodle-integration-test-'));
+            await new Promise<void>((resolve, reject) =>
+                exec(`node ${distDirPath} run --config ${configPath} --output ${tmpTestDirPath}`, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                })
+            );
+        });
 
-    afterEach(async () => {
-        await rm(tmpTestDirPath, { recursive: true });
-    });
+        afterEach(async () => {
+            for (const process of processes) {
+                process.kill();
+            }
+            await Promise.all(processes.map((process) => new Promise((resolve) => process.on('close', resolve))));
+            processes = [];
+        });
 
-    it('noodle run', async () => {
-        await new Promise<void>((resolve, reject) =>
-            exec(`node ${distDirPath} run --config ${configPath} --output ${tmpTestDirPath}`, (err) => {
-                if (err) reject(err);
-                else resolve();
-            })
-        );
+        afterAll(async () => {
+            await rm(tmpTestDirPath, { recursive: true });
+        });
 
-        const rawOutput = (await readFile(join(tmpTestDirPath, 'scanOutput.js'))).toString();
-        const rawScanOutputVariable = /window\.scanOutput = ({.*});/.exec(rawOutput)![1];
-        const scanOutputVariable = JSON.parse(rawScanOutputVariable);
-        expect(scanOutputVariable.resources).toEqual(expect.arrayContaining(expectedResources));
+        it('has the correct resources', async () => {
+            const scanOutputVariable = JSON.parse((await readFile(join(tmpTestDirPath, SCAN_OUTPUT_JSON_FILENAME))).toString());
+            expect(scanOutputVariable.resources).toEqual(expect.arrayContaining(expectedResources));
+        });
+
+        it('can be served', async () => {
+            const child = spawn('node', [distDirPath, 'serve', '--scanOutputDir', tmpTestDirPath, '--production']);
+            processes.push(child);
+
+            const address = await new Promise<string>((resolve) =>
+                child.stdout.on('data', (data) => {
+                    const address = /Server listening at (http:\/\/[\w\d.]+:\d+)/.exec(data.toString())?.[1];
+                    if (address) resolve(address);
+                })
+            );
+
+            expect((await fetch(address)).ok).toBe(true);
+        });
     });
 });
