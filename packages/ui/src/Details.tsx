@@ -58,8 +58,8 @@ export function Details(props: DetailProps) {
                 </div>
                 {!!relationship.tags?.length && (
                     <div className="flex flex-wrap gap-2 text-xs mt-2">
-                        {relationship.tags?.map((tag) => (
-                            <Pill label={tag} />
+                        {relationship.tags?.map((tag, i) => (
+                            <Pill key={`relationship-${i}-${tag}`} label={tag} />
                         ))}
                     </div>
                 )}
@@ -95,7 +95,7 @@ export function Details(props: DetailProps) {
                     !!props.resource.tags?.length && (
                         <div className="flex flex-wrap gap-2 text-xs mt-2">
                             {props.resource.tags?.map((tag) => (
-                                <Pill label={tag} />
+                                <Pill key={`resource-${tag}`} label={tag} />
                             ))}
                         </div>
                     )

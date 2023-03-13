@@ -2,7 +2,7 @@ import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { Fragment, useState } from 'react';
 
-export type FilterOption<T> = { key: string; value: T; display: string; selected: boolean };
+import type { FilterOption } from './types';
 
 export interface FilterProps<T> {
     title: string;

@@ -2,11 +2,11 @@ import { Combobox, Transition } from '@headlessui/react';
 import { ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { Fragment, useState } from 'react';
 
-import type { Selection } from './types';
+import type { SelectOption } from './types';
 
 export interface SelectProps<T> {
     title: string;
-    options: Selection<T>[];
+    options: SelectOption<T>[];
     onChange: (value: T) => void;
 }
 
@@ -25,7 +25,7 @@ export function Select<T>(props: SelectProps<T>) {
                     <Combobox.Input
                         className="p-2 bg-[#00000000] outline-none border-none flex-1"
                         onChange={(event) => setQuery(event.target.value)}
-                        displayValue={(selected: Selection<string>) => selected.display}
+                        displayValue={(selected: SelectOption<string>) => selected.display}
                     />
                     <Combobox.Button className="flex-0 pr-1">
                         <ChevronUpDownIcon className="h-5 w-5 text-disabled" aria-hidden="true" />

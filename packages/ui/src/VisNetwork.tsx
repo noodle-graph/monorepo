@@ -12,8 +12,8 @@ export interface VisNetworkProps {
         resources: ResourceExtended[];
     };
     selectedTags: string[];
-    selectNode: (nodeId: string) => void;
-    selectedNode: string | undefined;
+    selectedResourceId: string | undefined;
+    resourceSelected: (nodeId: string) => void;
 }
 
 export class VisNetwork extends React.Component<VisNetworkProps> {
@@ -50,8 +50,8 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                 physics: {
                     solver: 'hierarchicalRepulsion',
                     hierarchicalRepulsion: {
-                        nodeDistance: 175,
-                        avoidOverlap: 0.5,
+                        nodeDistance: 200,
+                        damping: 0.15,
                     },
                 },
                 interaction: { hover: true },
@@ -77,7 +77,7 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
             }
         );
         this.network.on('click', (e) => {
-            this.props.selectNode(e.nodes[0]);
+            this.props.resourceSelected(e.nodes[0]);
         });
     }
 
@@ -132,19 +132,29 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
     }
 
     public override componentDidUpdate(prevProps: VisNetworkProps): void {
-        if (this.network && prevProps.selectedNode) {
-            for (const edge of this.network.getConnectedEdges(prevProps.selectedNode)) {
-                this.network.updateEdge(edge, { width: 1 });
-            }
+        if (prevProps.scanOutput !== this.props.scanOutput) {
+            this.produceNetwork();
+            return;
         }
-        if (this.network && this.props.selectedNode != null && prevProps.selectedNode !== this.props.selectedNode) {
-            this.network.focus(this.props.selectedNode, {
-                scale: 1,
-                locked: false,
-                animation: true,
-            });
-            for (const edge of this.network.getConnectedEdges(this.props.selectedNode)) {
-                this.network.updateEdge(edge, { width: 3 });
+
+        if (!this.network) return;
+
+        if (prevProps.selectedResourceId !== this.props.selectedResourceId) {
+            if (prevProps.selectedResourceId != null) {
+                for (const edge of this.network.getConnectedEdges(prevProps.selectedResourceId)) {
+                    this.network.updateEdge(edge, { width: 1 });
+                }
+            }
+
+            if (this.props.selectedResourceId != null) {
+                for (const edge of this.network.getConnectedEdges(this.props.selectedResourceId)) {
+                    this.network.updateEdge(edge, { width: 3 });
+                }
+                this.network.focus(this.props.selectedResourceId, {
+                    scale: 1,
+                    locked: false,
+                    animation: true,
+                });
             }
         }
 
