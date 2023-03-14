@@ -1,3 +1,6 @@
+#! /usr/bin/env node
+/* eslint-disable node/shebang */
+
 import { DEFAULT_FILES_WORKERS_NUM } from '@noodle-graph/scanner';
 import { Command, Option } from 'commander';
 import figlet from 'figlet';
