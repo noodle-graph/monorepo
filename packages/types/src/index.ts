@@ -53,4 +53,4 @@ export interface ResourceGithubOptions {
     branch: string;
 }
 
-export type Source = 'local' | 'github' | 'config' | 'scan';
+export type Source = 'local' | 'github' | 'config' | 'scan' | 'ui';

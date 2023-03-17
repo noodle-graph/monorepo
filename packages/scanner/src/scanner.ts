@@ -9,6 +9,7 @@ import type { FilesIteratorSettings, ScanContext } from './types';
 import { getDefaultRegex } from './utils';
 
 const DEFAULT_INCLUDE_REGEX = /(.ts|.tsx|.js|.jsx|.java|.py|.go|.tf)$/;
+// TODO: Extract to shared component with the UI.
 const NOODLE_COMMENT_REGEX = /noodle\s+([<-])(?:-([a-z\s]+)-|-)([->])\s+([a-z0-9-]+)\s*(?:\(([a-z0-9-,]+)+\)|)/;
 export const DEFAULT_FILES_WORKERS_NUM = 8;
 

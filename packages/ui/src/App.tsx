@@ -1,4 +1,5 @@
-import { ArrowDownTrayIcon, FolderArrowDownIcon } from '@heroicons/react/20/solid';
+import { ArrowDownTrayIcon, FolderArrowDownIcon, PlusIcon } from '@heroicons/react/20/solid';
+import type { Resource } from '@noodle-graph/types';
 import React, { useEffect, useState } from 'react';
 
 import './App.css';
@@ -7,6 +8,7 @@ import { Button } from './Button';
 import { Details } from './Details';
 import { Filter } from './Filter';
 import { Pill } from './Pill';
+import { ResourceEditModal } from './ResourceEditModal';
 import { Select } from './Select';
 import { VisNetwork } from './VisNetwork';
 import { scanOutputStore } from './scanOutputStore';
@@ -17,6 +19,7 @@ export function App() {
     const [tags, setTags] = useState<FilterOption<string>[]>([]);
     const [resources, setResources] = useState<SelectOption<string>[]>([]);
     const [selectedResourceId, setSelectedResourceId] = useState<string>();
+    const [isResourceEditOpen, setIsResourceEditOpen] = useState<boolean>(false);
 
     const selectedTags = tags.filter((tag) => tag.selected);
     const selectedTagValues = selectedTags.map((tag) => tag.value);
@@ -50,14 +53,31 @@ export function App() {
         setTags(newTags);
     }
 
+    function closeResourceEditModal() {
+        setIsResourceEditOpen(false);
+    }
+
+    function handleNewResource(resource: Resource): void {
+        scanOutputStore.addResource(resource);
+        syncWithStore();
+        closeResourceEditModal();
+    }
+
     return scanOutput == null ? (
         <div>Loading...</div>
     ) : (
         <div className="flex h-screen">
             <div className="w-96 bg-darker overflow-auto flex flex-col p-5 gap-5">
+                <div className="flex justify-between items-center gap-1 mb-7">
+                    <h1 className="text-xl font-black opacity-70">Noodle</h1>
+                    <a href="https://github.com/noodle-graph/monorepo" className="h-5 w-5 opacity-70 hover:opacity-100 transition-opacity">
+                        <img src="img/github.svg" />
+                    </a>
+                </div>
                 <div className="flex gap-1">
                     <Button label="Download" onClick={() => scanOutputStore.download()} icon={FolderArrowDownIcon} />
                     <Button label="Import" onClick={() => scanOutputStore.import().then(syncWithStore)} icon={ArrowDownTrayIcon} />
+                    <Button label="Add Resource" onClick={() => setIsResourceEditOpen(true)} icon={PlusIcon} />
                 </div>
                 <Filter options={tags} onChange={handleTagsSelectionChange} title="Tags" />
                 <Select options={resources} onChange={setSelectedResourceId} title="Resource" />
@@ -73,6 +93,7 @@ export function App() {
                     <VisNetwork scanOutput={scanOutput} selectedTags={selectedTagValues} resourceSelected={setSelectedResourceId} selectedResourceId={selectedResourceId} />
                 )}
             </div>
+            <ResourceEditModal isOpen={isResourceEditOpen} close={closeResourceEditModal} save={handleNewResource} />
         </div>
     );
 }
