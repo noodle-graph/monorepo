@@ -88,11 +88,11 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                     id: resource.id,
                     label: resource.name ?? resource.id,
                     group: resource.type ?? resource.source,
-                    tags: resource.tags as any,
+                    tags: new Set(resource.tags ?? []) as any,
                 }))
             ),
             {
-                filter: (node) => this.props.selectedTags.length === 0 || this.props.selectedTags.every((tag) => node.tags?.includes(tag)),
+                filter: (node) => this.props.selectedTags.every((tag) => node.tags.has(tag)),
             }
         );
     }
@@ -111,17 +111,17 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                         to: relationship.resourceId,
                         arrowFrom: false,
                         arrowTo: false,
-                        label: '',
-                        tags: [],
+                        labels: new Set(),
                     };
                 }
-                edges[key].label += relationship.action ? `${edges[key].label ? '\n' : ''}${relationship.action}` : '';
-                edges[key].tags = [...new Set(...edges[key].tags, ...(relationship.tags ?? []))];
-
+                if (relationship.action) edges[key].labels.add(relationship.action);
                 edges[key].arrowFrom ||= relationship.from;
                 edges[key].arrowTo ||= relationship.to;
-                edges[key].arrows = [edges[key].arrowFrom && 'from', edges[key].arrowTo && 'to'].filter(Boolean).join(', ');
             }
+        }
+        for (const edge of Object.values(edges)) {
+            edge.label = [...edge.labels].join('\n');
+            edge.arrows = [edge.arrowFrom && 'from', edge.arrowTo && 'to'].filter(Boolean).join(', ');
         }
 
         return new DataView(new DataSet(Object.values(edges), {}));

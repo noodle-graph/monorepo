@@ -56,9 +56,13 @@ class ScanOutputStore {
     public addResource(resource: Resource) {
         if (this._scanOutput.resources.some((r) => r.id === resource.id)) throw new ResourceAlreadyExistError();
 
-        const newResource: ResourceExtended = { ...resource, relationships: [], source: 'ui' };
+        const newResource: ResourceExtended = { ...resource, source: 'ui' };
         this.enrichResource(newResource, this._scanOutput);
         this._scanOutput.resources.push(newResource);
+    }
+
+    public removeResource(resourceId: string) {
+        this._scanOutput.resources = this._scanOutput.resources.filter((r) => r.id !== resourceId);
     }
 
     private setScanOutput(scanOutputNew: ScanResultExtended) {

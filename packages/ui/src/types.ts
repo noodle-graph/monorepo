@@ -5,7 +5,7 @@ export interface ResourceExtended extends Resource {
 }
 
 export interface RelationshipExtended extends Relationship {
-    resource: Resource;
+    resource?: Resource;
 }
 
 export interface ScanResultExtended extends ScanResult {

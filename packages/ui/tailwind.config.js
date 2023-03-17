@@ -18,6 +18,7 @@ module.exports = {
             darker: '#080d17',
             primary: '#0f172a',
             secondary: '#1e293b',
+            danger: '#b91c1c',
         },
     },
     plugins: [],

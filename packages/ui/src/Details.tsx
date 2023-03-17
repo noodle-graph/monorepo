@@ -1,13 +1,20 @@
+import { TrashIcon } from '@heroicons/react/20/solid';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { Button } from './Button';
 import { Pill } from './Pill';
+import { Select } from './Select';
 import { getTypeImagePath, prettifySource } from './constants';
-import type { RelationshipExtended, ResourceExtended } from './types';
+import { scanOutputStore } from './scanOutputStore';
+import type { RelationshipExtended, ResourceExtended, SelectOption } from './types';
 
 interface DetailProps {
     resource: ResourceExtended;
     resourceSelected: (resourceId: string) => void;
+    removeResource: (resourceId: string) => void;
+    addRelationship: (resourceId: string, relationshipResourceId: string) => void;
+    removeRelationship: (resourceId: string, relationshipResourceId: string) => void;
 }
 
 function detail(name: string, content?: ReactElement | string | boolean): JSX.Element | false {
@@ -23,6 +30,12 @@ function detail(name: string, content?: ReactElement | string | boolean): JSX.El
 
 export function Details(props: DetailProps) {
     const prettySource = prettifySource(props.resource.source);
+
+    const resourceIdOptions: SelectOption<string>[] = scanOutputStore.scanOutput.resources.map((resource) => ({
+        key: resource.id,
+        value: resource.id,
+        display: resource.name ?? resource.id,
+    }));
 
     function link(text: string, url?: string, iconImgSrc?: string): JSX.Element {
         const content = (
@@ -47,7 +60,7 @@ export function Details(props: DetailProps) {
     function relationship(relationship: RelationshipExtended) {
         return (
             <div className="flex flex-col bg-primary text-secondary p-4 rounded">
-                <div>
+                <div className="flex justify-between">
                     <div
                         className="inline-block text-sm cursor-pointer hover:bg-opacity-50 p-2 rounded bg-secondary transition-colors"
                         onClick={() => props.resourceSelected(relationship.resourceId)}
@@ -55,6 +68,7 @@ export function Details(props: DetailProps) {
                         {relationship.resource?.type && <img src={getTypeImagePath(relationship.resource.type)} className="max-h-5 inline-block mr-2" />}
                         <span className="bg-inherit">{relationship.resource?.name ?? relationship.resourceId}</span>
                     </div>
+                    <Button icon={TrashIcon} onClick={() => props.removeRelationship(props.resource.id, relationship.resourceId)} danger={true} />
                 </div>
                 {!!relationship.tags?.length && (
                     <div className="flex flex-wrap gap-2 text-xs mt-2">
@@ -75,6 +89,7 @@ export function Details(props: DetailProps) {
                     {props.resource.type && <img src={getTypeImagePath(props.resource.type)} className="max-h-7" />}
                     <div className="text-xl font-bold">{props.resource.name}</div>
                     <div className="h-0.5 bg-secondary flex-1"></div>
+                    <Button icon={TrashIcon} onClick={() => props.removeResource(props.resource.id)} danger={true} />
                 </div>
                 {props.resource.description && <div className="text-secondary text-sm font-bold">{props.resource.description}</div>}
                 {detail('ID', props.resource.id)}
@@ -90,6 +105,7 @@ export function Details(props: DetailProps) {
                         </div>
                     )
                 )}
+                <Select title="Add relationship" options={resourceIdOptions} onChange={(resourceId) => props.addRelationship(props.resource.id, resourceId)} />
                 {detail(
                     'Tags',
                     !!props.resource.tags?.length && (

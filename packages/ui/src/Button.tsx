@@ -1,17 +1,25 @@
 interface ButtonProps {
     onClick: () => void;
-    label: string;
+    label?: string;
     icon?: React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement> & { title?: string; titleId?: string }>;
+    background?: boolean;
+    danger?: boolean;
 }
 
 export function Button(props: ButtonProps) {
     return (
         <button
             onClick={() => props.onClick!()}
-            className="text-secondary font-extrabold hover:text-primary transition-colors bg-secondary p-2 pr-3 text-xs flex items-center rounded gap-1"
+            className={`h-9 text-secondary font-extrabold hover:text-primary transition-colors ${
+                props.background ? 'bg-secondary' : ''
+            } p-2 text-xs flex items-center rounded gap-1 ${props.danger ? 'hover:bg-danger' : ''}`}
         >
             {props.icon && <props.icon width={15} />}
-            <div>{props.label}</div>
+            {props.label && <div>{props.label}</div>}
         </button>
     );
 }
+
+Button.defaultProps = {
+    background: true,
+};

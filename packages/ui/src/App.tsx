@@ -63,6 +63,30 @@ export function App() {
         closeResourceEditModal();
     }
 
+    function handleRemoveResource(resourceId: string): void {
+        scanOutputStore.removeResource(resourceId);
+        syncWithStore();
+    }
+
+    function handlAddRelationship(resourceId: string, relationshipResourceId: string): void {
+        const resource = scanOutputStore.scanOutput.resources.find((r) => r.id === resourceId);
+        if (!resource) throw new Error('Invalid resource');
+        resource.relationships ??= [];
+        resource.relationships.push({
+            resourceId: relationshipResourceId,
+            from: false,
+            to: true,
+        });
+        syncWithStore();
+    }
+
+    function handleRemoveRelationship(resourceId: string, relationshipResourceId: string): void {
+        const resource = scanOutputStore.scanOutput.resources.find((r) => r.id === resourceId);
+        if (!resource) throw new Error('Invalid resource');
+        resource.relationships = resource.relationships?.filter((r) => r.resourceId !== relationshipResourceId);
+        syncWithStore();
+    }
+
     return scanOutput == null ? (
         <div>Loading...</div>
     ) : (
@@ -70,7 +94,7 @@ export function App() {
             <div className="w-96 bg-darker overflow-auto flex flex-col p-5 gap-5">
                 <div className="flex justify-between items-center gap-1 mb-7">
                     <h1 className="text-xl font-black opacity-70">Noodle</h1>
-                    <a href="https://github.com/noodle-graph/monorepo" className="h-5 w-5 opacity-70 hover:opacity-100 transition-opacity">
+                    <a href="https://github.com/noodle-graph/monorepo" className="h-5 w-5 opacity-70 hover:opacity-100 transition-opacity" target="_blank">
                         <img src="img/github.svg" />
                     </a>
                 </div>
@@ -86,7 +110,15 @@ export function App() {
                         <Pill key={`pill-${i}`} onClick={() => handleTagPillClick(tag)} label={tag.value} />
                     ))}
                 </div>
-                {selectedResource && <Details resource={selectedResource} resourceSelected={setSelectedResourceId} />}
+                {selectedResource && (
+                    <Details
+                        resource={selectedResource}
+                        resourceSelected={setSelectedResourceId}
+                        removeResource={handleRemoveResource}
+                        addRelationship={handlAddRelationship}
+                        removeRelationship={handleRemoveRelationship}
+                    />
+                )}
             </div>
             <div>
                 {scanOutput && (
