@@ -4,10 +4,12 @@ import { ResourceAlreadyExistError } from './errors';
 import type { ResourceExtended, ScanResultExtended, SelectOption, FilterOption } from './types';
 
 class ScanOutputStore {
+    // If there is any performance issue, we can store the resources as object instead of array.
+    private firstScanOutput: ScanResultExtended = { resources: [] };
     private _scanOutput: ScanResultExtended = { resources: [] };
 
     public get scanOutput(): ScanResultExtended {
-        return { ...this._scanOutput };
+        return this._scanOutput;
     }
 
     public download(): void {
@@ -34,6 +36,7 @@ class ScanOutputStore {
                 reader.onload = (e) => {
                     if (e.target?.result == null) return;
                     this.setScanOutput(JSON.parse(e.target.result.toString()));
+                    this.enrichDiff();
                     resolve();
                 };
                 reader.readAsText(file);
@@ -42,11 +45,38 @@ class ScanOutputStore {
         });
     }
 
+    private enrichDiff(): void {
+        for (const resource of this._scanOutput.resources) {
+            const originalResource = this.firstScanOutput.resources.find((r) => r.id === resource.id);
+            if (!originalResource) resource.diff = '+';
+            for (const relationship of resource.relationships ?? []) {
+                // XXX: The result is not exact when there are more than one relationship per resource.
+                if (originalResource?.relationships?.every((r) => r.resourceId !== relationship.resourceId)) {
+                    relationship.diff = '+';
+                }
+            }
+        }
+
+        for (const originalResource of this.firstScanOutput.resources) {
+            const resource = this._scanOutput.resources.find((r) => r.id === originalResource.id);
+            if (!resource) {
+                this._scanOutput.resources.push({ ...originalResource, diff: '-' });
+            }
+            for (const originalRelationship of originalResource.relationships ?? []) {
+                // XXX: The result is not exact when there are more than one relationship per resource.
+                if (resource?.relationships?.every((r) => r.resourceId !== originalRelationship.resourceId)) {
+                    resource.relationships.push({ ...originalRelationship, diff: '-' });
+                }
+            }
+        }
+    }
+
     public async importBundledScanOutput() {
         const response = await fetch('scanOutput.json');
 
         try {
             this.setScanOutput(await response.json());
+            this.firstScanOutput = JSON.parse(JSON.stringify(this._scanOutput));
         } catch {
             console.warn('Using unbundled UI');
             return;
@@ -56,13 +86,14 @@ class ScanOutputStore {
     public addResource(resource: Resource) {
         if (this._scanOutput.resources.some((r) => r.id === resource.id)) throw new ResourceAlreadyExistError();
 
-        const newResource: ResourceExtended = { ...resource, source: 'ui' };
+        const newResource: ResourceExtended = { ...resource, source: 'ui', diff: '+' };
         this.enrichResource(newResource, this._scanOutput);
         this._scanOutput.resources.push(newResource);
     }
 
     public removeResource(resourceId: string) {
-        this._scanOutput.resources = this._scanOutput.resources.filter((r) => r.id !== resourceId);
+        const resource = this._scanOutput.resources.find((r) => r.id === resourceId);
+        if (resource) resource.diff = '-';
     }
 
     private setScanOutput(scanOutputNew: ScanResultExtended) {

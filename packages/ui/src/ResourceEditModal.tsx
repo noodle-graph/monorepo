@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 
 import { Button } from './Button';
+import { Filter } from './Filter';
 import { Input } from './Input';
 import { Modal } from './Modal';
 import { Pill } from './Pill';
-import { Select } from './Select';
 import { scanOutputStore } from './scanOutputStore';
-import type { ResourceExtended, SelectOption } from './types';
-import { produceRelationship } from './utils';
+import type { FilterOption, ResourceExtended } from './types';
+import { produceNewRelationship } from './utils';
 
 interface ResourceEditModalProps {
     resource?: ResourceExtended;
@@ -24,10 +24,11 @@ function isValidResource(resource: Partial<ResourceExtended>): resource is Resou
 export function ResourceEditModal(props: ResourceEditModalProps) {
     const [resource, setResource] = useState<Partial<ResourceExtended>>({ ...(props.resource ?? {}) });
 
-    const resourceIdOptions: SelectOption<string>[] = scanOutputStore.scanOutput.resources.map((resource) => ({
-        key: resource.id,
-        value: resource.id,
-        display: resource.name ?? resource.id,
+    const resourceIdOptions: FilterOption<string>[] = scanOutputStore.scanOutput.resources.map((r) => ({
+        key: r.id,
+        value: r.id,
+        display: r.name ?? r.id,
+        selected: resource.relationships?.some((relationship) => relationship.resourceId === r.id) ?? false,
     }));
 
     useEffect(() => {
@@ -38,13 +39,14 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
         if (isValidResource(resource)) props.save(resource);
     }
 
-    function addRelationship(resourceId: string) {
-        resource.relationships ??= [];
-        resource.relationships.push({
-            ...produceRelationship({ resourceId }),
-            resource: scanOutputStore.scanOutput.resources.find((r) => r.id === resourceId),
+    function handleRelationshipsChanged(values: string[]) {
+        setResource({
+            ...resource,
+            relationships: values.map((v) => ({
+                ...produceNewRelationship({ resourceId: v }),
+                resource: scanOutputStore.scanOutput.resources.find((r) => r.id === v),
+            })),
         });
-        setResource({ ...resource });
     }
 
     function removeRelationship(resourceId: string) {
@@ -72,7 +74,7 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
                             <Pill key={`edit-relationship-${r.resourceId}`} label={r.resource?.name ?? r.resourceId} onClick={() => removeRelationship(r.resourceId)} />
                         ))}
                     </div>
-                    <Select title="Add relationship" options={resourceIdOptions} onChange={addRelationship} />
+                    <Filter title="Add relationship" options={resourceIdOptions} onChange={handleRelationshipsChanged} />
                 </div>
                 <div>
                     <Button label={props.resource ? 'Save' : 'Add'} onClick={handleSave} />

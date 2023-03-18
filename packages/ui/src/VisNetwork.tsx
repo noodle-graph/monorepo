@@ -8,6 +8,16 @@ import { getTypeImagePath } from './constants';
 import type { ResourceExtended } from './types';
 import { everyIncludes } from './utils';
 
+const color = {
+    primary: '#f1f5f9',
+    secondary: '#94a3b8',
+    background: '#1e293b',
+    diff: {
+        '-': '#b91c1c',
+        '+': '#15803d',
+    },
+};
+
 export interface VisNetworkProps {
     scanOutput: {
         resources: ResourceExtended[];
@@ -15,13 +25,8 @@ export interface VisNetworkProps {
     selectedTags: string[];
     selectedResourceId: string | undefined;
     resourceSelected: (nodeId: string) => void;
+    withDiff: boolean;
 }
-
-const color = {
-    primary: '#f1f5f9',
-    secondary: '#94a3b8',
-    background: '#1e293b',
-};
 
 export class VisNetwork extends React.Component<VisNetworkProps> {
     private container = React.createRef<HTMLDivElement>();
@@ -94,10 +99,14 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                     label: resource.name ?? resource.id,
                     group: resource.type ?? resource.source,
                     tags: (resource.tags ?? []) as any,
+                    diff: resource.diff,
+                    font: {
+                        background: resource.diff ? color.diff[resource.diff] : undefined,
+                    } as any,
                 }))
             ),
             {
-                filter: (node) => everyIncludes(this.props.selectedTags, node.tags),
+                filter: (node) => (this.props.withDiff || node.diff == null) && everyIncludes(this.props.selectedTags, node.tags),
             }
         );
     }
@@ -117,6 +126,8 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                         arrowFrom: false,
                         arrowTo: false,
                         labels: new Set(),
+                        diff: relationship.diff ?? resource.diff,
+                        color: relationship.diff ?? resource.diff ? color.diff[relationship.diff ?? resource.diff!] : undefined,
                     };
                 }
                 if (relationship.action) edges[key].labels.add(relationship.action);
@@ -129,7 +140,9 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
             edge.arrows = [edge.arrowFrom && 'from', edge.arrowTo && 'to'].filter(Boolean).join(', ');
         }
 
-        return new DataView(new DataSet(Object.values(edges), {}));
+        return new DataView(new DataSet(Object.values(edges), {}), {
+            filter: (edge) => this.props.withDiff || edge.diff == null,
+        });
     }
 
     public override componentDidMount(): void {
@@ -145,13 +158,13 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
         if (isNewNetwork || prevProps.selectedResourceId !== this.props.selectedResourceId) {
             if (!isNewNetwork && prevProps.selectedResourceId != null && this.nodes.get(prevProps.selectedResourceId)) {
                 for (const edge of this.network.getConnectedEdges(prevProps.selectedResourceId)) {
-                    this.network.updateEdge(edge, { width: 1, color: color.secondary });
+                    this.network.updateEdge(edge, { width: 1 });
                 }
             }
 
             if (this.props.selectedResourceId != null) {
                 for (const edge of this.network.getConnectedEdges(this.props.selectedResourceId)) {
-                    this.network.updateEdge(edge, { width: 3, color: color.primary });
+                    this.network.updateEdge(edge, { width: 3 });
                 }
                 this.network.focus(this.props.selectedResourceId, {
                     animation: true,
@@ -161,6 +174,7 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
         }
 
         this.nodes.refresh();
+        this.edges.refresh();
     }
 
     public override render() {
