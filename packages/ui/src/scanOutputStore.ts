@@ -1,5 +1,6 @@
 import type { Resource } from '@noodle-graph/types';
 
+import { ResourceAlreadyExistError } from './errors';
 import type { ResourceExtended, ScanResultExtended, SelectOption, FilterOption } from './types';
 
 class ScanOutputStore {
@@ -52,18 +53,32 @@ class ScanOutputStore {
         }
     }
 
-    private setScanOutput(scanOutputNew: ScanResultExtended) {
-        // TODO: This should not be in the UI, but for now it is good enough...
-        for (const resource of scanOutputNew.resources) {
-            for (const relationship of resource.relationships ?? []) {
-                relationship.resource = {
-                    ...scanOutputNew.resources.find((r: Resource) => r.id === relationship.resourceId)!,
-                    relationships: undefined,
-                };
-            }
-        }
+    public addResource(resource: Resource) {
+        if (this._scanOutput.resources.some((r) => r.id === resource.id)) throw new ResourceAlreadyExistError();
 
+        const newResource: ResourceExtended = { ...resource, source: 'ui' };
+        this.enrichResource(newResource, this._scanOutput);
+        this._scanOutput.resources.push(newResource);
+    }
+
+    public removeResource(resourceId: string) {
+        this._scanOutput.resources = this._scanOutput.resources.filter((r) => r.id !== resourceId);
+    }
+
+    private setScanOutput(scanOutputNew: ScanResultExtended) {
+        for (const resource of scanOutputNew.resources) {
+            this.enrichResource(resource, scanOutputNew);
+        }
         this._scanOutput = scanOutputNew;
+    }
+
+    private enrichResource(resource: ResourceExtended, scanResultExtended: ScanResultExtended) {
+        for (const relationship of resource.relationships ?? []) {
+            relationship.resource = {
+                ...scanResultExtended.resources.find((r: Resource) => r.id === relationship.resourceId)!,
+                relationships: undefined,
+            };
+        }
     }
 
     public extractTagOptions(): FilterOption<string>[] {

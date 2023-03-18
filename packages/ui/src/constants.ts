@@ -12,6 +12,7 @@ export function prettifySource(source?: string): string {
             local: 'Local',
             scan: 'Scan',
             config: 'Configuration',
+            ui: 'UI',
         }[source ?? ''] ?? 'Unknown'
     );
 }

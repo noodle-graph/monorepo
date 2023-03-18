@@ -1,11 +1,11 @@
 import type { Relationship, Resource, ScanResult } from '@noodle-graph/types';
 
 export interface ResourceExtended extends Resource {
-    relationships: RelationshipExtended[];
+    relationships?: RelationshipExtended[];
 }
 
 export interface RelationshipExtended extends Relationship {
-    resource: Resource;
+    resource?: Resource;
 }
 
 export interface ScanResultExtended extends ScanResult {

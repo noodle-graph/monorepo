@@ -11,6 +11,7 @@ export class FilesIteratorFactory {
         local: FilesIteratorLocal,
         config: undefined as never,
         scan: undefined as never,
+        ui: undefined as never,
     };
 
     public produce(context: ResourceScanContext): FilesIterator {
