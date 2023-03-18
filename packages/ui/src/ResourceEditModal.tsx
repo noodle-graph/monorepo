@@ -7,6 +7,7 @@ import { Pill } from './Pill';
 import { Select } from './Select';
 import { scanOutputStore } from './scanOutputStore';
 import type { ResourceExtended, SelectOption } from './types';
+import { produceRelationship } from './utils';
 
 interface ResourceEditModalProps {
     resource?: ResourceExtended;
@@ -40,9 +41,7 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
     function addRelationship(resourceId: string) {
         resource.relationships ??= [];
         resource.relationships.push({
-            resourceId,
-            from: false,
-            to: true,
+            ...produceRelationship({ resourceId }),
             resource: scanOutputStore.scanOutput.resources.find((r) => r.id === resourceId),
         });
         setResource({ ...resource });
@@ -70,7 +69,7 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
                     <h2 className="text-xs font-black text-secondary">Relationships</h2>
                     <div className="flex flex-wrap gap-2">
                         {resource.relationships?.map((r) => (
-                            <Pill label={r.resource?.name ?? r.resourceId} onClick={() => removeRelationship(r.resourceId)} />
+                            <Pill key={`edit-relationship-${r.resourceId}`} label={r.resource?.name ?? r.resourceId} onClick={() => removeRelationship(r.resourceId)} />
                         ))}
                     </div>
                     <Select title="Add relationship" options={resourceIdOptions} onChange={addRelationship} />

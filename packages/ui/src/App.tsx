@@ -13,6 +13,7 @@ import { Select } from './Select';
 import { VisNetwork } from './VisNetwork';
 import { scanOutputStore } from './scanOutputStore';
 import type { ScanResultExtended, SelectOption, FilterOption } from './types';
+import { everyIncludes, produceRelationship } from './utils';
 
 export function App() {
     const [scanOutput, setScanOutput] = useState<ScanResultExtended>();
@@ -23,14 +24,16 @@ export function App() {
 
     const selectedTags = tags.filter((tag) => tag.selected);
     const selectedTagValues = selectedTags.map((tag) => tag.value);
-    const selectedResource = selectedResourceId && scanOutput?.resources.find((r) => r.id === selectedResourceId);
+    const selectedResource = selectedResourceId ? scanOutput?.resources.find((r) => r.id === selectedResourceId) : undefined;
 
     useEffect(() => {
         scanOutputStore.importBundledScanOutput().then(syncWithStore);
     }, []);
 
     useEffect(() => {
-        setSelectedResourceId(undefined);
+        if (!everyIncludes(selectedTagValues, selectedResource?.tags ?? [])) {
+            setSelectedResourceId(undefined);
+        }
     }, [tags]);
 
     function syncWithStore() {
@@ -68,15 +71,11 @@ export function App() {
         syncWithStore();
     }
 
-    function handlAddRelationship(resourceId: string, relationshipResourceId: string): void {
+    function handleAddRelationship(resourceId: string, relationshipResourceId: string): void {
         const resource = scanOutputStore.scanOutput.resources.find((r) => r.id === resourceId);
         if (!resource) throw new Error('Invalid resource');
         resource.relationships ??= [];
-        resource.relationships.push({
-            resourceId: relationshipResourceId,
-            from: false,
-            to: true,
-        });
+        resource.relationships.push(produceRelationship({ resourceId: relationshipResourceId }));
         syncWithStore();
     }
 
@@ -115,7 +114,7 @@ export function App() {
                         resource={selectedResource}
                         resourceSelected={setSelectedResourceId}
                         removeResource={handleRemoveResource}
-                        addRelationship={handlAddRelationship}
+                        addRelationship={handleAddRelationship}
                         removeRelationship={handleRemoveRelationship}
                     />
                 )}

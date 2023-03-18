@@ -62,7 +62,7 @@ export function Details(props: DetailProps) {
             <div className="flex flex-col bg-primary text-secondary p-4 rounded">
                 <div className="flex justify-between">
                     <div
-                        className="inline-block text-sm cursor-pointer hover:bg-opacity-50 p-2 rounded bg-secondary transition-colors"
+                        className="inline-block text-sm cursor-pointer hover:bg-opacity-50 p-2 rounded bg-secondary transition-colors hover:text-primary"
                         onClick={() => props.resourceSelected(relationship.resourceId)}
                     >
                         {relationship.resource?.type && <img src={getTypeImagePath(relationship.resource.type)} className="max-h-5 inline-block mr-2" />}

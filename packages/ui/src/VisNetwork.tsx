@@ -6,6 +6,7 @@ import { Network } from 'vis-network';
 
 import { getTypeImagePath } from './constants';
 import type { ResourceExtended } from './types';
+import { everyIncludes } from './utils';
 
 export interface VisNetworkProps {
     scanOutput: {
@@ -15,6 +16,12 @@ export interface VisNetworkProps {
     selectedResourceId: string | undefined;
     resourceSelected: (nodeId: string) => void;
 }
+
+const color = {
+    primary: '#f1f5f9',
+    secondary: '#94a3b8',
+    background: '#1e293b',
+};
 
 export class VisNetwork extends React.Component<VisNetworkProps> {
     private container = React.createRef<HTMLDivElement>();
@@ -57,28 +64,26 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                 interaction: { hover: true },
                 edges: {
                     smooth: false,
-                    color: '#f1f5f9',
+                    color: color.secondary,
                     chosen: false,
                     font: {
-                        color: '#94a3b8',
-                        background: '#1e293b',
+                        color: color.secondary,
+                        background: color.background,
                         strokeWidth: 0,
                     },
                     arrowStrikethrough: false,
                 },
                 nodes: {
-                    color: '#94a3b8',
+                    color: color.secondary,
                     font: {
-                        color: '#f1f5f9',
-                        background: '#1e293b',
+                        color: color.primary,
+                        background: color.background,
                     },
                 },
                 groups,
             }
         );
-        this.network.on('click', (e) => {
-            this.props.resourceSelected(e.nodes[0]);
-        });
+        this.network.on('click', (e) => this.props.resourceSelected(e.nodes[0]));
     }
 
     private extractNodes() {
@@ -88,11 +93,11 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                     id: resource.id,
                     label: resource.name ?? resource.id,
                     group: resource.type ?? resource.source,
-                    tags: new Set(resource.tags ?? []) as any,
+                    tags: (resource.tags ?? []) as any,
                 }))
             ),
             {
-                filter: (node) => this.props.selectedTags.every((tag) => node.tags.has(tag)),
+                filter: (node) => everyIncludes(this.props.selectedTags, node.tags),
             }
         );
     }
@@ -132,28 +137,25 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
     }
 
     public override componentDidUpdate(prevProps: VisNetworkProps): void {
-        if (prevProps.scanOutput !== this.props.scanOutput) {
-            this.produceNetwork();
-            return;
-        }
-
         if (!this.network) return;
 
-        if (prevProps.selectedResourceId !== this.props.selectedResourceId) {
-            if (prevProps.selectedResourceId != null) {
+        const isNewNetwork = prevProps.scanOutput !== this.props.scanOutput;
+        if (isNewNetwork) this.produceNetwork();
+
+        if (isNewNetwork || prevProps.selectedResourceId !== this.props.selectedResourceId) {
+            if (!isNewNetwork && prevProps.selectedResourceId != null && this.nodes.get(prevProps.selectedResourceId)) {
                 for (const edge of this.network.getConnectedEdges(prevProps.selectedResourceId)) {
-                    this.network.updateEdge(edge, { width: 1 });
+                    this.network.updateEdge(edge, { width: 1, color: color.secondary });
                 }
             }
 
             if (this.props.selectedResourceId != null) {
                 for (const edge of this.network.getConnectedEdges(this.props.selectedResourceId)) {
-                    this.network.updateEdge(edge, { width: 3 });
+                    this.network.updateEdge(edge, { width: 3, color: color.primary });
                 }
                 this.network.focus(this.props.selectedResourceId, {
-                    scale: 1,
-                    locked: false,
                     animation: true,
+                    scale: 1,
                 });
             }
         }
