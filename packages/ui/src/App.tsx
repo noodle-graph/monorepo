@@ -10,12 +10,15 @@ import { Filter } from './Filter';
 import { Pill } from './Pill';
 import { ResourceEditModal } from './ResourceEditModal';
 import { Select } from './Select';
+import { Toggle } from './Toggle';
 import { VisNetwork } from './VisNetwork';
 import { scanOutputStore } from './scanOutputStore';
 import type { ScanResultExtended, SelectOption, FilterOption } from './types';
-import { everyIncludes, produceRelationship } from './utils';
+import { everyIncludes, produceNewRelationship } from './utils';
 
 export function App() {
+    const [withDiff, setWithDiff] = useState(true);
+
     const [scanOutput, setScanOutput] = useState<ScanResultExtended>();
     const [tags, setTags] = useState<FilterOption<string>[]>([]);
     const [resources, setResources] = useState<SelectOption<string>[]>([]);
@@ -37,7 +40,7 @@ export function App() {
     }, [tags]);
 
     function syncWithStore() {
-        setScanOutput(scanOutputStore.scanOutput);
+        setScanOutput(JSON.parse(JSON.stringify(scanOutputStore.scanOutput)));
         setTags(scanOutputStore.extractTagOptions());
         setResources(scanOutputStore.extractResourceOptions());
     }
@@ -75,14 +78,21 @@ export function App() {
         const resource = scanOutputStore.scanOutput.resources.find((r) => r.id === resourceId);
         if (!resource) throw new Error('Invalid resource');
         resource.relationships ??= [];
-        resource.relationships.push(produceRelationship({ resourceId: relationshipResourceId }));
+        resource.relationships.push(produceNewRelationship({ resourceId: relationshipResourceId }));
         syncWithStore();
     }
 
     function handleRemoveRelationship(resourceId: string, relationshipResourceId: string): void {
         const resource = scanOutputStore.scanOutput.resources.find((r) => r.id === resourceId);
         if (!resource) throw new Error('Invalid resource');
-        resource.relationships = resource.relationships?.filter((r) => r.resourceId !== relationshipResourceId);
+        // XXX: This might be incorrect if there are more than one relationship to that resource
+        const relationship = resource.relationships?.find((r) => r.diff !== '-' && r.resourceId === relationshipResourceId);
+        if (!relationship) throw new Error('Invalid relationship');
+        if ((relationship.diff ?? resource.diff) === '+') {
+            resource.relationships = resource.relationships?.filter((r) => r.resourceId !== relationshipResourceId);
+        } else {
+            relationship.diff = '-';
+        }
         syncWithStore();
     }
 
@@ -97,10 +107,11 @@ export function App() {
                         <img src="img/github.svg" />
                     </a>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-1 flex-wrap">
                     <Button label="Download" onClick={() => scanOutputStore.download()} icon={FolderArrowDownIcon} />
                     <Button label="Import" onClick={() => scanOutputStore.import().then(syncWithStore)} icon={ArrowDownTrayIcon} />
                     <Button label="Add Resource" onClick={() => setIsResourceEditOpen(true)} icon={PlusIcon} />
+                    <Toggle label="Show diff" checked={withDiff} onChange={setWithDiff} />
                 </div>
                 <Filter options={tags} onChange={handleTagsSelectionChange} title="Tags" />
                 <Select options={resources} onChange={setSelectedResourceId} title="Resource" />
@@ -121,7 +132,13 @@ export function App() {
             </div>
             <div>
                 {scanOutput && (
-                    <VisNetwork scanOutput={scanOutput} selectedTags={selectedTagValues} resourceSelected={setSelectedResourceId} selectedResourceId={selectedResourceId} />
+                    <VisNetwork
+                        scanOutput={scanOutput}
+                        selectedTags={selectedTagValues}
+                        resourceSelected={setSelectedResourceId}
+                        selectedResourceId={selectedResourceId}
+                        withDiff={withDiff}
+                    />
                 )}
             </div>
             <ResourceEditModal isOpen={isResourceEditOpen} close={closeResourceEditModal} save={handleNewResource} />

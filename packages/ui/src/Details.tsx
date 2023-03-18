@@ -59,8 +59,8 @@ export function Details(props: DetailProps) {
 
     function relationship(relationship: RelationshipExtended) {
         return (
-            <div className="flex flex-col bg-primary text-secondary p-4 rounded">
-                <div className="flex justify-between">
+            <div className="group flex bg-primary text-secondary rounded items-end">
+                <div className="flex flex-col p-3 flex-1 items-start">
                     <div
                         className="inline-block text-sm cursor-pointer hover:bg-opacity-50 p-2 rounded bg-secondary transition-colors hover:text-primary"
                         onClick={() => props.resourceSelected(relationship.resourceId)}
@@ -68,16 +68,18 @@ export function Details(props: DetailProps) {
                         {relationship.resource?.type && <img src={getTypeImagePath(relationship.resource.type)} className="max-h-5 inline-block mr-2" />}
                         <span className="bg-inherit">{relationship.resource?.name ?? relationship.resourceId}</span>
                     </div>
-                    <Button icon={TrashIcon} onClick={() => props.removeRelationship(props.resource.id, relationship.resourceId)} danger={true} />
+                    {!!relationship.tags?.length && (
+                        <div className="flex flex-wrap gap-2 text-xs mt-2">
+                            {relationship.tags?.map((tag, i) => (
+                                <Pill key={`relationship-${i}-${tag}`} label={tag} />
+                            ))}
+                        </div>
+                    )}
+                    {relationship.url && <div className="mt-1">{relationshipLink(relationship.url)}</div>}
                 </div>
-                {!!relationship.tags?.length && (
-                    <div className="flex flex-wrap gap-2 text-xs mt-2">
-                        {relationship.tags?.map((tag, i) => (
-                            <Pill key={`relationship-${i}-${tag}`} label={tag} />
-                        ))}
-                    </div>
-                )}
-                {relationship.url && <div className="mt-1">{relationshipLink(relationship.url)}</div>}
+                <div className="group-hover:opacity-100 opacity-0 transition-opacity">
+                    <Button icon={TrashIcon} onClick={() => props.removeRelationship(props.resource.id, relationship.resourceId)} danger={true} background={false} />
+                </div>
             </div>
         );
     }
@@ -89,7 +91,7 @@ export function Details(props: DetailProps) {
                     {props.resource.type && <img src={getTypeImagePath(props.resource.type)} className="max-h-7" />}
                     <div className="text-xl font-bold">{props.resource.name}</div>
                     <div className="h-0.5 bg-secondary flex-1"></div>
-                    <Button icon={TrashIcon} onClick={() => props.removeResource(props.resource.id)} danger={true} />
+                    <Button icon={TrashIcon} onClick={() => props.removeResource(props.resource.id)} danger={true} background={false} />
                 </div>
                 {props.resource.description && <div className="text-secondary text-sm font-bold">{props.resource.description}</div>}
                 {detail('ID', props.resource.id)}
@@ -99,9 +101,11 @@ export function Details(props: DetailProps) {
                     'Relationships',
                     props.resource.relationships && (
                         <div className="flex flex-col gap-2">
-                            {props.resource.relationships?.map((r, i) => (
-                                <div key={`details-relationship-${i}`}>{relationship(r)}</div>
-                            ))}
+                            {props.resource.relationships
+                                ?.filter((r) => r.diff !== '-')
+                                .map((r, i) => (
+                                    <div key={`details-relationship-${i}`}>{relationship(r)}</div>
+                                ))}
                         </div>
                     )
                 )}
