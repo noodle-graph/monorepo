@@ -83,17 +83,25 @@ class ScanOutputStore {
         }
     }
 
-    public addResource(resource: Resource) {
+    public addResource(resource: Resource): ResourceExtended {
         if (this._scanOutput.resources.some((r) => r.id === resource.id)) throw new ResourceAlreadyExistError();
 
         const newResource: ResourceExtended = { ...resource, source: 'ui', diff: '+' };
         this.enrichResource(newResource, this._scanOutput);
         this._scanOutput.resources.push(newResource);
+
+        return newResource;
     }
 
-    public removeResource(resourceId: string) {
+    public removeResource(resourceId: string): ResourceExtended | undefined {
         const resource = this._scanOutput.resources.find((r) => r.id === resourceId);
-        if (resource) resource.diff = '-';
+        if (!resource) throw new Error('Resource does not exist');
+        if (resource.diff === '+') {
+            this._scanOutput.resources.filter((r) => r.id !== resource.id);
+            return;
+        }
+        resource.diff = '-';
+        return resource;
     }
 
     private setScanOutput(scanOutputNew: ScanResultExtended) {

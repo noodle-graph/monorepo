@@ -7,8 +7,8 @@ import './App.css';
 import { Button } from './Button';
 import { Details } from './Details';
 import { Filter } from './Filter';
+import { NewResourceModal } from './NewResourceModal';
 import { Pill } from './Pill';
-import { ResourceEditModal } from './ResourceEditModal';
 import { Select } from './Select';
 import { Toggle } from './Toggle';
 import { VisNetwork } from './VisNetwork';
@@ -64,21 +64,35 @@ export function App() {
     }
 
     function handleNewResource(resource: Resource): void {
-        scanOutputStore.addResource(resource);
+        const extendedResource = scanOutputStore.addResource(resource);
+        VisNetwork.addResource(extendedResource);
         syncWithStore();
         closeResourceEditModal();
     }
 
     function handleRemoveResource(resourceId: string): void {
-        scanOutputStore.removeResource(resourceId);
+        const resource = scanOutputStore.removeResource(resourceId);
+        if (resource) {
+            VisNetwork.updateResource(resource);
+            for (const relationship of resource.relationships ?? []) {
+                if ((relationship.diff ?? resource.diff) === '+') {
+                    resource.relationships = resource.relationships?.filter((r) => r.resourceId !== relationship.resourceId);
+                    VisNetwork.removeRelationship(resourceId, relationship.resourceId);
+                } else {
+                    VisNetwork.updateRelationship(resource, relationship);
+                }
+            }
+        } else VisNetwork.removeResource(resourceId);
         syncWithStore();
     }
 
     function handleAddRelationship(resourceId: string, relationshipResourceId: string): void {
         const resource = scanOutputStore.scanOutput.resources.find((r) => r.id === resourceId);
         if (!resource) throw new Error('Invalid resource');
+        const relationship = produceNewRelationship({ resourceId: relationshipResourceId });
         resource.relationships ??= [];
-        resource.relationships.push(produceNewRelationship({ resourceId: relationshipResourceId }));
+        resource.relationships.push(relationship);
+        VisNetwork.addRelationship(resource, relationship);
         syncWithStore();
     }
 
@@ -90,8 +104,10 @@ export function App() {
         if (!relationship) throw new Error('Invalid relationship');
         if ((relationship.diff ?? resource.diff) === '+') {
             resource.relationships = resource.relationships?.filter((r) => r.resourceId !== relationshipResourceId);
+            VisNetwork.removeRelationship(resourceId, relationshipResourceId);
         } else {
             relationship.diff = '-';
+            VisNetwork.updateRelationship(resource, relationship);
         }
         syncWithStore();
     }
@@ -141,7 +157,7 @@ export function App() {
                     />
                 )}
             </div>
-            <ResourceEditModal isOpen={isResourceEditOpen} close={closeResourceEditModal} save={handleNewResource} />
+            <NewResourceModal isOpen={isResourceEditOpen} close={closeResourceEditModal} save={handleNewResource} />
         </div>
     );
 }

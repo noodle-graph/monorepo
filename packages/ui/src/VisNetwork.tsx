@@ -5,7 +5,7 @@ import { DataSet, DataView } from 'vis-data';
 import { Network } from 'vis-network';
 
 import { getTypeImagePath } from './constants';
-import type { ResourceExtended } from './types';
+import type { Diff, RelationshipExtended, ResourceExtended } from './types';
 import { everyIncludes } from './utils';
 
 const color = {
@@ -18,46 +18,113 @@ const color = {
     },
 };
 
+const edgeWidth = {
+    selected: 3,
+    default: 1,
+};
+
+interface Node {
+    id: string;
+    label: string;
+    group: string | undefined;
+    tags: any;
+    diff: ('+' | '-') | undefined;
+    font: any;
+    shape?: 'image';
+    image?: string;
+}
+
+interface Edge {
+    id: string;
+    from: string;
+    to: string;
+    arrowFrom: boolean;
+    arrowTo: boolean;
+    labels: Set<string>;
+    diff: ('+' | '-') | undefined;
+    color: string | undefined;
+    label?: string;
+    arrows?: string;
+    width?: number;
+}
+
+interface Group {
+    id: string;
+    shape: string;
+    image: string;
+}
+
 export interface VisNetworkProps {
     scanOutput: {
         resources: ResourceExtended[];
     };
     selectedTags: string[];
     selectedResourceId: string | undefined;
-    resourceSelected: (nodeId: string) => void;
+    resourceSelected: (nodeId: string | undefined) => void;
     withDiff: boolean;
 }
 
 export class VisNetwork extends React.Component<VisNetworkProps> {
     private container = React.createRef<HTMLDivElement>();
-    private edges: any;
-    private nodes: any;
-    private network?: Network;
+
+    private static groups: Record<string, Group>;
+    private static edges: DataView<Edge>;
+    private static nodes: DataView<any>;
+    private static network?: Network;
+
+    public static addResource(resource: ResourceExtended) {
+        const node = produceNode(resource);
+        if (node.group && !VisNetwork.groups[node.group]) {
+            node.shape = 'image';
+            node.image = getTypeImagePath(node.group);
+        }
+        VisNetwork.nodes.getDataSet().add(node);
+        for (const relationship of resource.relationships ?? []) {
+            this.addRelationship(resource, relationship);
+        }
+    }
+
+    public static updateResource(resource: ResourceExtended) {
+        VisNetwork.nodes.getDataSet().update(produceNode(resource));
+    }
+
+    public static removeResource(resourceId: string) {
+        VisNetwork.nodes.getDataSet().remove(resourceId);
+    }
+
+    public static addRelationship(resource: ResourceExtended, relationship: RelationshipExtended) {
+        const edge = VisNetwork.edges.get(produceEdgeId(resource.id, relationship.resourceId)) ?? produceEdge(resource, relationship);
+        enrichEdgeForVis(edge);
+        if (VisNetwork.network?.getSelectedNodes().includes(resource.id)) {
+            edge.width = edgeWidth.selected;
+        }
+        VisNetwork.edges.getDataSet().add(edge);
+    }
+
+    public static updateRelationship(resource: ResourceExtended, relationship: RelationshipExtended) {
+        if (resource.diff ?? relationship.diff) {
+            const existingEdge = VisNetwork.edges.get(produceEdgeId(resource.id, relationship.resourceId));
+            VisNetwork.edges.getDataSet().update({ ...existingEdge, color: produceEdgeColor(resource.diff, relationship.diff) });
+        }
+    }
+
+    public static removeRelationship(resourceId: string, relationshipResourceId: string) {
+        VisNetwork.edges.getDataSet().remove(produceEdgeId(resourceId, relationshipResourceId));
+    }
 
     public constructor(props: VisNetworkProps) {
         super(props);
     }
 
     private produceNetwork(): void {
-        this.nodes = this.extractNodes();
-        this.edges = this.extractEdges();
+        VisNetwork.nodes = this.extractNodes();
+        VisNetwork.edges = this.extractEdges();
 
-        let i = 0;
-        // eslint-disable-next-line node/no-unsupported-features/es-builtins
-        const groups = Object.fromEntries(
-            [...new Set<string>(this.nodes.map((node: any) => node.group)).values()].map((group) => [
-                group,
-                {
-                    id: i++,
-                    shape: 'image',
-                    image: getTypeImagePath(group),
-                },
-            ])
-        );
+        VisNetwork.groups = Object.fromEntries([...new Set<string>(VisNetwork.nodes.map((node: any) => node.group)).values()].map((group) => [group, produceGroup(group)]));
 
-        this.network = new Network(
+        VisNetwork.network = new Network(
             this.container.current!,
-            { nodes: this.nodes, edges: this.edges },
+            { nodes: VisNetwork.nodes, edges: VisNetwork.edges },
             {
                 physics: {
                     solver: 'hierarchicalRepulsion',
@@ -85,60 +152,28 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                         background: color.background,
                     },
                 },
-                groups,
+                groups: VisNetwork.groups,
             }
         );
-        this.network.on('click', (e) => this.props.resourceSelected(e.nodes[0]));
+        VisNetwork.network.on('click', (e) => this.props.resourceSelected(e.nodes[0]));
     }
 
-    private extractNodes() {
-        return new DataView(
-            new DataSet(
-                this.props.scanOutput.resources.map((resource: ResourceExtended) => ({
-                    id: resource.id,
-                    label: resource.name ?? resource.id,
-                    group: resource.type ?? resource.source,
-                    tags: (resource.tags ?? []) as any,
-                    diff: resource.diff,
-                    font: {
-                        background: resource.diff ? color.diff[resource.diff] : undefined,
-                    } as any,
-                }))
-            ),
-            {
-                filter: (node) => (this.props.withDiff || node.diff == null) && everyIncludes(this.props.selectedTags, node.tags),
-            }
-        );
+    private extractNodes(): DataView<any> {
+        return new DataView(new DataSet(this.props.scanOutput.resources.map(produceNode)), {
+            filter: (node) => (this.props.withDiff || node.diff == null) && everyIncludes(this.props.selectedTags, node.tags),
+        });
     }
 
-    private extractEdges() {
-        let i = 0;
-
+    private extractEdges(): DataView<any> {
         const edges: Record<string, any> = {};
         for (const resource of this.props.scanOutput.resources) {
             for (const relationship of resource.relationships ?? []) {
-                const key = [resource.id, relationship.resourceId].sort().join(',');
-                if (!edges[key]) {
-                    edges[key] = {
-                        id: i++,
-                        from: resource.id,
-                        to: relationship.resourceId,
-                        arrowFrom: false,
-                        arrowTo: false,
-                        labels: new Set(),
-                        diff: relationship.diff ?? resource.diff,
-                        color: relationship.diff ?? resource.diff ? color.diff[relationship.diff ?? resource.diff!] : undefined,
-                    };
-                }
-                if (relationship.action) edges[key].labels.add(relationship.action);
-                edges[key].arrowFrom ||= relationship.from;
-                edges[key].arrowTo ||= relationship.to;
+                const id = produceEdgeId(resource.id, relationship.resourceId);
+                edges[id] ??= produceEdge(resource, relationship);
+                enrichEdgeWithRelationship(edges[id], relationship);
             }
         }
-        for (const edge of Object.values(edges)) {
-            edge.label = [...edge.labels].join('\n');
-            edge.arrows = [edge.arrowFrom && 'from', edge.arrowTo && 'to'].filter(Boolean).join(', ');
-        }
+        Object.values(edges).forEach(enrichEdgeForVis);
 
         return new DataView(new DataSet(Object.values(edges), {}), {
             filter: (edge) => this.props.withDiff || edge.diff == null,
@@ -150,34 +185,84 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
     }
 
     public override componentDidUpdate(prevProps: VisNetworkProps): void {
-        if (!this.network) return;
+        if (!VisNetwork.network) return;
 
-        const isNewNetwork = prevProps.scanOutput !== this.props.scanOutput;
-        if (isNewNetwork) this.produceNetwork();
-
-        if (isNewNetwork || prevProps.selectedResourceId !== this.props.selectedResourceId) {
-            if (!isNewNetwork && prevProps.selectedResourceId != null && this.nodes.get(prevProps.selectedResourceId)) {
-                for (const edge of this.network.getConnectedEdges(prevProps.selectedResourceId)) {
-                    this.network.updateEdge(edge, { width: 1 });
+        if (prevProps.selectedResourceId !== this.props.selectedResourceId) {
+            if (prevProps.selectedResourceId != null && VisNetwork.nodes.get(prevProps.selectedResourceId)) {
+                for (const edge of VisNetwork.network.getConnectedEdges(prevProps.selectedResourceId)) {
+                    VisNetwork.network.updateEdge(edge, { width: edgeWidth.default });
                 }
             }
 
             if (this.props.selectedResourceId != null) {
-                for (const edge of this.network.getConnectedEdges(this.props.selectedResourceId)) {
-                    this.network.updateEdge(edge, { width: 3 });
+                for (const edge of VisNetwork.network.getConnectedEdges(this.props.selectedResourceId)) {
+                    VisNetwork.network.updateEdge(edge, { width: edgeWidth.selected });
                 }
-                this.network.focus(this.props.selectedResourceId, {
+                VisNetwork.network.focus(this.props.selectedResourceId, {
                     animation: true,
                     scale: 1,
                 });
             }
         }
 
-        this.nodes.refresh();
-        this.edges.refresh();
+        VisNetwork.nodes.refresh();
+        VisNetwork.edges.refresh();
     }
 
     public override render() {
         return <div ref={this.container} className="w-full h-full" />;
     }
+}
+
+function produceNode(resource: ResourceExtended): Node {
+    return {
+        id: resource.id,
+        label: resource.name ?? resource.id,
+        group: resource.type ?? resource.source,
+        tags: (resource.tags ?? []) as any,
+        diff: resource.diff,
+        font: {
+            background: resource.diff ? color.diff[resource.diff] : undefined,
+        } as any,
+    };
+}
+
+function produceEdge(resource: ResourceExtended, relationship: RelationshipExtended): Edge {
+    return {
+        id: produceEdgeId(resource.id, relationship.resourceId),
+        from: resource.id,
+        to: relationship.resourceId,
+        arrowFrom: !!relationship.from,
+        arrowTo: !!relationship.to,
+        labels: relationship.action ? new Set<string>([relationship.action]) : new Set<string>(),
+        diff: relationship.diff ?? resource.diff,
+        color: produceEdgeColor(resource.diff, relationship.diff),
+    };
+}
+
+function produceEdgeId(resourceId: string, relationshipResourceId: string) {
+    return [resourceId, relationshipResourceId].sort().join(',');
+}
+
+function enrichEdgeWithRelationship(edge: Edge, relationship: RelationshipExtended) {
+    if (relationship.action) edge.labels.add(relationship.action);
+    edge.arrowFrom ||= !!relationship.from;
+    edge.arrowTo ||= !!relationship.to;
+}
+
+function enrichEdgeForVis(edge: Edge) {
+    edge.label = [...edge.labels].join('\n');
+    edge.arrows = [edge.arrowFrom && 'from', edge.arrowTo && 'to'].filter(Boolean).join(', ');
+}
+
+function produceGroup(group: string): { id: string; shape: string; image: string } {
+    return {
+        id: group,
+        shape: 'image',
+        image: getTypeImagePath(group),
+    };
+}
+
+function produceEdgeColor(resourceDiff: Diff | undefined, relationshipDiff: Diff | undefined) {
+    return resourceDiff ?? relationshipDiff ? color.diff[resourceDiff ?? relationshipDiff!] : undefined;
 }
