@@ -1,6 +1,6 @@
 import type { Relationship, Resource, ScanResult } from '@noodle-graph/types';
 
-type Diff = '+' | '-';
+export type Diff = '+' | '-';
 
 export interface ResourceExtended extends Resource {
     relationships?: RelationshipExtended[];

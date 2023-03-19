@@ -9,8 +9,7 @@ import { scanOutputStore } from './scanOutputStore';
 import type { FilterOption, ResourceExtended } from './types';
 import { produceNewRelationship } from './utils';
 
-interface ResourceEditModalProps {
-    resource?: ResourceExtended;
+interface NewResourceModalProps {
     isOpen: boolean;
     close: () => void;
     save: (resource: ResourceExtended) => void;
@@ -21,8 +20,8 @@ function isValidResource(resource: Partial<ResourceExtended>): resource is Resou
     return !!(resource.id && /[a-z0-9-]+/.test(resource.id));
 }
 
-export function ResourceEditModal(props: ResourceEditModalProps) {
-    const [resource, setResource] = useState<Partial<ResourceExtended>>({ ...(props.resource ?? {}) });
+export function NewResourceModal(props: NewResourceModalProps) {
+    const [resource, setResource] = useState<Partial<ResourceExtended>>({});
 
     const resourceIdOptions: FilterOption<string>[] = scanOutputStore.scanOutput.resources.map((r) => ({
         key: r.id,
@@ -32,8 +31,8 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
     }));
 
     useEffect(() => {
-        setResource({ ...(props.resource ?? {}) });
-    }, [props.resource]);
+        setResource({});
+    }, [props.isOpen]);
 
     function handleSave() {
         if (isValidResource(resource)) props.save(resource);
@@ -59,7 +58,7 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
     }
 
     return (
-        <Modal isOpen={props.isOpen} close={handleClose} title={props.resource?.name ?? props.resource?.id ?? 'New resource'}>
+        <Modal isOpen={props.isOpen} close={handleClose} title={'New resource'}>
             <div className="flex gap-6 flex-col">
                 <div className="flex gap-2 flex-wrap">
                     <Input label="ID" id="edit-resource-id" value={resource.id} onChange={(value) => setResource({ ...resource, id: value })} />
@@ -77,7 +76,7 @@ export function ResourceEditModal(props: ResourceEditModalProps) {
                     <Filter title="Add relationship" options={resourceIdOptions} onChange={handleRelationshipsChanged} />
                 </div>
                 <div>
-                    <Button label={props.resource ? 'Save' : 'Add'} onClick={handleSave} />
+                    <Button label={'Add'} onClick={handleSave} />
                 </div>
             </div>
         </Modal>

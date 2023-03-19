@@ -13,6 +13,7 @@ module.exports = {
             primary: '#f1f5f9',
             secondary: '#94a3b8',
             disabled: '#475569',
+            danger: '#b91c1c',
         },
         backgroundColor: {
             darker: '#080d17',

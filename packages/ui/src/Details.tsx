@@ -1,4 +1,4 @@
-import { TrashIcon } from '@heroicons/react/20/solid';
+import { MinusIcon, TrashIcon } from '@heroicons/react/20/solid';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -77,9 +77,13 @@ export function Details(props: DetailProps) {
                     )}
                     {relationship.url && <div className="mt-1">{relationshipLink(relationship.url)}</div>}
                 </div>
-                <div className="group-hover:opacity-100 opacity-0 transition-opacity">
-                    <Button icon={TrashIcon} onClick={() => props.removeRelationship(props.resource.id, relationship.resourceId)} danger={true} background={false} />
-                </div>
+
+                {(props.resource.diff === '-' || relationship.diff === '-') && <MinusIcon width={25} className="text-danger rounded" />}
+                {props.resource.diff !== '-' && relationship.diff !== '-' && (
+                    <div className="group-hover:opacity-100 opacity-0 transition-opacity">
+                        <Button icon={TrashIcon} onClick={() => props.removeRelationship(props.resource.id, relationship.resourceId)} danger={true} background={false} />
+                    </div>
+                )}
             </div>
         );
     }
@@ -89,9 +93,10 @@ export function Details(props: DetailProps) {
             <div className="flex flex-col gap-5">
                 <div className="flex items-center gap-3">
                     {props.resource.type && <img src={getTypeImagePath(props.resource.type)} className="max-h-7" />}
-                    <div className="text-xl font-bold">{props.resource.name}</div>
+                    <div className="text-xl font-bold">{props.resource.name ?? props.resource.id}</div>
                     <div className="h-0.5 bg-secondary flex-1"></div>
-                    <Button icon={TrashIcon} onClick={() => props.removeResource(props.resource.id)} danger={true} background={false} />
+                    {props.resource.diff === '-' && <MinusIcon width={25} className="text-danger rounded" />}
+                    {props.resource.diff !== '-' && <Button icon={TrashIcon} onClick={() => props.removeResource(props.resource.id)} danger={true} background={false} />}
                 </div>
                 {props.resource.description && <div className="text-secondary text-sm font-bold">{props.resource.description}</div>}
                 {detail('ID', props.resource.id)}
@@ -101,15 +106,15 @@ export function Details(props: DetailProps) {
                     'Relationships',
                     props.resource.relationships && (
                         <div className="flex flex-col gap-2">
-                            {props.resource.relationships
-                                ?.filter((r) => r.diff !== '-')
-                                .map((r, i) => (
-                                    <div key={`details-relationship-${i}`}>{relationship(r)}</div>
-                                ))}
+                            {props.resource.relationships.map((r, i) => (
+                                <div key={`details-relationship-${i}`}>{relationship(r)}</div>
+                            ))}
                         </div>
                     )
                 )}
-                <Select title="Add relationship" options={resourceIdOptions} onChange={(resourceId) => props.addRelationship(props.resource.id, resourceId)} />
+                {props.resource.diff !== '-' && (
+                    <Select title="Add relationship" options={resourceIdOptions} onChange={(resourceId) => props.addRelationship(props.resource.id, resourceId)} />
+                )}
                 {detail(
                     'Tags',
                     !!props.resource.tags?.length && (
