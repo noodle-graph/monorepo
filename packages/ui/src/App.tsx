@@ -13,13 +13,14 @@ import { Select } from './Select';
 import { Toggle } from './Toggle';
 import { VisNetwork } from './VisNetwork';
 import { scanOutputStore } from './scanOutputStore';
-import type { ScanResultExtended, SelectOption, FilterOption } from './types';
+import type { SelectOption, FilterOption } from './types';
 import { everyIncludes, produceNewRelationship } from './utils';
 
 export function App() {
+    const [isImporting, setIsImporting] = useState<boolean>(true);
+
     const [withDiff, setWithDiff] = useState(true);
 
-    const [scanOutput, setScanOutput] = useState<ScanResultExtended>();
     const [tags, setTags] = useState<FilterOption<string>[]>([]);
     const [resources, setResources] = useState<SelectOption<string>[]>([]);
     const [selectedResourceId, setSelectedResourceId] = useState<string>();
@@ -27,10 +28,14 @@ export function App() {
 
     const selectedTags = tags.filter((tag) => tag.selected);
     const selectedTagValues = selectedTags.map((tag) => tag.value);
-    const selectedResource = selectedResourceId ? scanOutput?.resources.find((r) => r.id === selectedResourceId) : undefined;
+    const selectedResource = selectedResourceId ? scanOutputStore.scanOutput?.resources.find((r) => r.id === selectedResourceId) : undefined;
 
     useEffect(() => {
-        scanOutputStore.importBundledScanOutput().then(syncWithStore);
+        (async () => {
+            await scanOutputStore.importBundledScanOutput();
+            setIsImporting(false);
+            syncWithStore();
+        })();
     }, []);
 
     useEffect(() => {
@@ -39,15 +44,20 @@ export function App() {
         }
     }, [tags]);
 
+    async function importScanOutput() {
+        await scanOutputStore.import(() => setIsImporting(true));
+        setIsImporting(false);
+        syncWithStore();
+    }
+
     function syncWithStore() {
-        setScanOutput(JSON.parse(JSON.stringify(scanOutputStore.scanOutput)));
         setTags(scanOutputStore.extractTagOptions());
         setResources(scanOutputStore.extractResourceOptions());
     }
 
     function handleTagPillClick(clickedTag: SelectOption<string>): void {
         const newTags = JSON.parse(JSON.stringify(tags));
-        newTags.find((tag) => tag.value === clickedTag.value).selected = false;
+        newTags.find((tag: SelectOption<string>) => tag.value === clickedTag.value).selected = false;
         setTags(newTags);
     }
 
@@ -64,8 +74,8 @@ export function App() {
     }
 
     function handleNewResource(resource: Resource): void {
-        const extendedResource = scanOutputStore.addResource(resource);
-        VisNetwork.addResource(extendedResource);
+        const extendedResource = scanOutputStore.addNode(resource);
+        VisNetwork.addNode(extendedResource);
         syncWithStore();
         closeResourceEditModal();
     }
@@ -77,12 +87,15 @@ export function App() {
             for (const relationship of resource.relationships ?? []) {
                 if ((relationship.diff ?? resource.diff) === '+') {
                     resource.relationships = resource.relationships?.filter((r) => r.resourceId !== relationship.resourceId);
-                    VisNetwork.removeRelationship(resourceId, relationship.resourceId);
+                    VisNetwork.removeEdge(resourceId, relationship.resourceId);
                 } else {
-                    VisNetwork.updateRelationship(resource, relationship);
+                    VisNetwork.syncEdgeStyle(resource, relationship);
                 }
             }
-        } else VisNetwork.removeResource(resourceId);
+        } else {
+            VisNetwork.removeNode(resourceId);
+            setSelectedResourceId(undefined);
+        }
         syncWithStore();
     }
 
@@ -104,15 +117,15 @@ export function App() {
         if (!relationship) throw new Error('Invalid relationship');
         if ((relationship.diff ?? resource.diff) === '+') {
             resource.relationships = resource.relationships?.filter((r) => r.resourceId !== relationshipResourceId);
-            VisNetwork.removeRelationship(resourceId, relationshipResourceId);
+            VisNetwork.removeEdge(resourceId, relationshipResourceId);
         } else {
             relationship.diff = '-';
-            VisNetwork.updateRelationship(resource, relationship);
+            VisNetwork.syncEdgeStyle(resource, relationship);
         }
         syncWithStore();
     }
 
-    return scanOutput == null ? (
+    return isImporting ? (
         <div>Loading...</div>
     ) : (
         <div className="flex h-screen">
@@ -125,7 +138,7 @@ export function App() {
                 </div>
                 <div className="flex gap-1 flex-wrap">
                     <Button label="Download" onClick={() => scanOutputStore.download()} icon={FolderArrowDownIcon} />
-                    <Button label="Import" onClick={() => scanOutputStore.import().then(syncWithStore)} icon={ArrowDownTrayIcon} />
+                    <Button label="Import" onClick={importScanOutput} icon={ArrowDownTrayIcon} />
                     <Button label="Add Resource" onClick={() => setIsResourceEditOpen(true)} icon={PlusIcon} />
                     <Toggle label="Show diff" checked={withDiff} onChange={setWithDiff} />
                 </div>
@@ -147,15 +160,7 @@ export function App() {
                 )}
             </div>
             <div>
-                {scanOutput && (
-                    <VisNetwork
-                        scanOutput={scanOutput}
-                        selectedTags={selectedTagValues}
-                        resourceSelected={setSelectedResourceId}
-                        selectedResourceId={selectedResourceId}
-                        withDiff={withDiff}
-                    />
-                )}
+                <VisNetwork selectedTags={selectedTagValues} resourceSelected={setSelectedResourceId} selectedResourceId={selectedResourceId} withDiff={withDiff} />
             </div>
             <NewResourceModal isOpen={isResourceEditOpen} close={closeResourceEditModal} save={handleNewResource} />
         </div>

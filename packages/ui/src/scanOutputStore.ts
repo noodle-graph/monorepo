@@ -3,13 +3,21 @@ import type { Resource } from '@noodle-graph/types';
 import { ResourceAlreadyExistError } from './errors';
 import type { ResourceExtended, ScanResultExtended, SelectOption, FilterOption } from './types';
 
+type ImportState = 'importing' | 'imported' | undefined;
+
 class ScanOutputStore {
+    private _importState: ImportState;
+
     // If there is any performance issue, we can store the resources as object instead of array.
     private firstScanOutput: ScanResultExtended = { resources: [] };
     private _scanOutput: ScanResultExtended = { resources: [] };
 
     public get scanOutput(): ScanResultExtended {
         return this._scanOutput;
+    }
+
+    public get importState(): ImportState {
+        return this._importState;
     }
 
     public download(): void {
@@ -22,7 +30,7 @@ class ScanOutputStore {
         window.URL.revokeObjectURL(url);
     }
 
-    public import(): Promise<void> {
+    public import(onImportStarted: () => void): Promise<void> {
         return new Promise((resolve) => {
             const input = document.createElement('input');
             input.type = 'file';
@@ -32,6 +40,7 @@ class ScanOutputStore {
                 if (!file) {
                     return;
                 }
+                onImportStarted();
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     if (e.target?.result == null) return;
@@ -83,7 +92,7 @@ class ScanOutputStore {
         }
     }
 
-    public addResource(resource: Resource): ResourceExtended {
+    public addNode(resource: Resource): ResourceExtended {
         if (this._scanOutput.resources.some((r) => r.id === resource.id)) throw new ResourceAlreadyExistError();
 
         const newResource: ResourceExtended = { ...resource, source: 'ui', diff: '+' };

@@ -5,6 +5,7 @@ import { DataSet, DataView } from 'vis-data';
 import { Network } from 'vis-network';
 
 import { getTypeImagePath } from './constants';
+import { scanOutputStore } from './scanOutputStore';
 import type { Diff, RelationshipExtended, ResourceExtended } from './types';
 import { everyIncludes } from './utils';
 
@@ -55,9 +56,6 @@ interface Group {
 }
 
 export interface VisNetworkProps {
-    scanOutput: {
-        resources: ResourceExtended[];
-    };
     selectedTags: string[];
     selectedResourceId: string | undefined;
     resourceSelected: (nodeId: string | undefined) => void;
@@ -72,7 +70,7 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
     private static nodes: DataView<any>;
     private static network?: Network;
 
-    public static addResource(resource: ResourceExtended) {
+    public static addNode(resource: ResourceExtended) {
         const node = produceNode(resource);
         if (node.group && !VisNetwork.groups[node.group]) {
             node.shape = 'image';
@@ -88,7 +86,7 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
         VisNetwork.nodes.getDataSet().update(produceNode(resource));
     }
 
-    public static removeResource(resourceId: string) {
+    public static removeNode(resourceId: string) {
         VisNetwork.nodes.getDataSet().remove(resourceId);
     }
 
@@ -101,14 +99,14 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
         VisNetwork.edges.getDataSet().add(edge);
     }
 
-    public static updateRelationship(resource: ResourceExtended, relationship: RelationshipExtended) {
+    public static syncEdgeStyle(resource: ResourceExtended, relationship: RelationshipExtended) {
         if (resource.diff ?? relationship.diff) {
             const existingEdge = VisNetwork.edges.get(produceEdgeId(resource.id, relationship.resourceId));
             VisNetwork.edges.getDataSet().update({ ...existingEdge, color: produceEdgeColor(resource.diff, relationship.diff) });
         }
     }
 
-    public static removeRelationship(resourceId: string, relationshipResourceId: string) {
+    public static removeEdge(resourceId: string, relationshipResourceId: string) {
         VisNetwork.edges.getDataSet().remove(produceEdgeId(resourceId, relationshipResourceId));
     }
 
@@ -159,14 +157,14 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
     }
 
     private extractNodes(): DataView<any> {
-        return new DataView(new DataSet(this.props.scanOutput.resources.map(produceNode)), {
+        return new DataView(new DataSet(scanOutputStore.scanOutput.resources.map(produceNode)), {
             filter: (node) => (this.props.withDiff || node.diff == null) && everyIncludes(this.props.selectedTags, node.tags),
         });
     }
 
     private extractEdges(): DataView<any> {
         const edges: Record<string, any> = {};
-        for (const resource of this.props.scanOutput.resources) {
+        for (const resource of scanOutputStore.scanOutput.resources) {
             for (const relationship of resource.relationships ?? []) {
                 const id = produceEdgeId(resource.id, relationship.resourceId);
                 edges[id] ??= produceEdge(resource, relationship);
@@ -198,10 +196,7 @@ export class VisNetwork extends React.Component<VisNetworkProps> {
                 for (const edge of VisNetwork.network.getConnectedEdges(this.props.selectedResourceId)) {
                     VisNetwork.network.updateEdge(edge, { width: edgeWidth.selected });
                 }
-                VisNetwork.network.focus(this.props.selectedResourceId, {
-                    animation: true,
-                    scale: 1,
-                });
+                VisNetwork.network.focus(this.props.selectedResourceId, { animation: true, scale: 1 });
             }
         }
 
