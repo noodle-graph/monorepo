@@ -1,7 +1,7 @@
 interface ButtonProps {
     onClick: () => void;
     label?: string;
-    icon?: React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement> & { title?: string; titleId?: string }>;
+    icon?: React.ExoticComponent<{ width: number }>;
     background?: boolean;
     danger?: boolean;
 }

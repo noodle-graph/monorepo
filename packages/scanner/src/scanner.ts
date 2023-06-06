@@ -10,7 +10,8 @@ import { getDefaultRegex } from './utils';
 
 const DEFAULT_INCLUDE_REGEX = /(.ts|.tsx|.js|.jsx|.java|.py|.go|.tf)$/;
 // TODO: Extract to shared component with the UI.
-const NOODLE_COMMENT_REGEX = /noodle\s+([<-])(?:-([a-z\s]+)-|-)([->])\s+([a-z0-9-]+)\s*(?:\(([a-z0-9-,]+)+\)|)/;
+const NOODLE_COMMENT_REGEX_WIDE = /noodle\s*[\w<>/,-]/;
+const NOODLE_COMMENT_REGEX = /noodle\s+([<-])(?:-([\w/\s]+)-|-)([->])\s+([\w/-]+)\s*(?:\(([\w/,-]+)+\)|)/;
 export const DEFAULT_FILES_WORKERS_NUM = 8;
 
 export class Scanner {
@@ -69,7 +70,7 @@ export class Scanner {
                 .map(async (generator) => {
                     for await (const path of generator) {
                         filesScanned++;
-                        resourceCopy.relationships!.push(...(await scanFile(filesIterator.settings, path)));
+                        resourceCopy.relationships!.push(...(await this.scanFile(filesIterator.settings, path)));
                     }
                 })
         );
@@ -107,27 +108,31 @@ export class Scanner {
             resource.tags = [...resourcesEnrichments.get(resource.id)!.tags];
         }
     }
-}
 
-async function scanFile(iteratorSettings: FilesIteratorSettings, path: string): Promise<Relationship[]> {
-    let currentLine = 0;
-    return (await readFile(join(iteratorSettings.localBaseUrl, path)))
-        .toString()
-        .split('\n')
-        .map((line) => {
-            currentLine++;
-            const matches = NOODLE_COMMENT_REGEX.exec(line);
-            if (!matches) return null;
-            return {
-                action: matches[2] == null ? undefined : matches[2],
-                resourceId: matches[4],
-                tags: matches[5]?.split(',') ?? [],
-                url: produceRelationshipUrl(iteratorSettings, path, currentLine++),
-                from: matches[1] === '<',
-                to: matches[3] === '>',
-            };
-        })
-        .filter(Boolean) as Relationship[];
+    private async scanFile(iteratorSettings: FilesIteratorSettings, path: string): Promise<Relationship[]> {
+        let currentLine = 0;
+        return (await readFile(join(iteratorSettings.localBaseUrl, path)))
+            .toString()
+            .split('\n')
+            .map((line) => {
+                currentLine++;
+                if (!NOODLE_COMMENT_REGEX_WIDE.test(line)) return null;
+                const matches = NOODLE_COMMENT_REGEX.exec(line);
+                if (!matches) {
+                    this.context.logger?.warn(`Invalid Noodle comment at ${path}:${currentLine}`);
+                    return null;
+                }
+                return {
+                    action: matches[2] == null ? undefined : matches[2],
+                    resourceId: matches[4],
+                    tags: matches[5]?.split(',') ?? [],
+                    url: produceRelationshipUrl(iteratorSettings, path, currentLine++),
+                    from: matches[1] === '<',
+                    to: matches[3] === '>',
+                };
+            })
+            .filter(Boolean) as Relationship[];
+    }
 }
 
 function produceRelationshipUrl(iteratorSettings: FilesIteratorSettings, path: string, line: number) {

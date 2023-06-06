@@ -30,7 +30,7 @@ export async function run(attributes: Attributes): Promise<void> {
     const scanResult = await scan(
         {
             config: JSON.parse((await readFile(configPath)).toString()),
-            github: { token: attributes.githubToken },
+            github: attributes.githubToken ? { token: attributes.githubToken } : undefined,
             scanWorkersNum: attributes.workers,
         },
         logger
