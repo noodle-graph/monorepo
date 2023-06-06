@@ -19,8 +19,8 @@
         "test:integration": "jest --config jest.config.integration.js"
     },
     "dependencies": {
-        "pino": "^8.11.0",
-        "simple-git": "^3.16.1"
+        "pino": "^8.14.1",
+        "simple-git": "^3.19.0"
     },
     "engines": {
         "node": ">=16"

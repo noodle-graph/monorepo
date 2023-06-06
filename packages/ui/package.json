@@ -3,22 +3,22 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@headlessui/react": "^1.7.11",
-    "@heroicons/react": "^2.0.16",
+    "@headlessui/react": "^1.7.15",
+    "@heroicons/react": "^2.0.18",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
-    "@types/jest": "^29.4.0",
-    "@types/node": "^18.14.0",
-    "@types/react": "^18.0.28",
-    "@types/react-dom": "^18.0.11",
+    "@types/jest": "^29.5.2",
+    "@types/node": "^20.2.5",
+    "@types/react": "^18.2.8",
+    "@types/react-dom": "^18.2.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
-    "tailwindcss": "^3.2.7",
+    "tailwindcss": "^3.3.2",
     "typescript": "^4.9.5",
-    "vis-data": "^7.1.4",
-    "vis-network": "^9.1.2"
+    "vis-data": "^7.1.6",
+    "vis-network": "^9.1.6"
   },
   "devDependencies": {
     "@noodle-graph/types": "file:../types/dist"
